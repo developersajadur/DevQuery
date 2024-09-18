@@ -17,7 +17,7 @@ const NavigationLinks = () => {
         },
     ];
     return (
-        <div className=' w-48 min-h-screen overflow-y-scroll border-r-[1px] border-blue-500'>
+        <div className=''>
               <div className='text-white flex flex-col gap-2 text-xl font-medium mt-8'>
                 {
                     navLinks.map((item) => (
