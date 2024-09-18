@@ -4,7 +4,7 @@ import axios from "axios";
 // This function will fetch the questions using axios
 export const getQuestions = async () => {
   try {
-    const response = await axios.get("/questions/api/get");
+    const response = await axios.get("https://devquery-green.vercel.app/questions/api/get");
     const questions = response?.data?.questions;
     return questions;
   } catch (error) {
