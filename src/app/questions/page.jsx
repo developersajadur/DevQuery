@@ -5,7 +5,7 @@ const Questions = async () => {
   return (
     <div>
       {questions?.map((question) => (
-        <div key={question.id}>
+        <div key={question._id}>
           <h2>{question.title}</h2>
           <p>{question.description}</p>
         </div>

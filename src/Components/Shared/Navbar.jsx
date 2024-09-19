@@ -17,10 +17,14 @@ import {
 } from "react-icons/hi";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
+import { useSession } from "next-auth/react";
 
 const Navbar = () => {
   const { register, handleSubmit } = useForm();
   const [isOpen, setIsOpen] = useState(false);
+  const session = useSession();
+  console.log(session);
+  
 
   const onSubmit = (data) => {
     console.log("Searching for:", data.searchQuery);

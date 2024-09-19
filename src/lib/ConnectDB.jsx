@@ -9,8 +9,6 @@ export const ConnectDB = async () => {
     if (!uri) {
       throw new Error("MongoDB URI is not defined in environment variables");
     }
-    
-    console.log(`Connecting to MongoDB at: ${uri}`);
     const client = new MongoClient(uri, {
       serverApi: {
         version: ServerApiVersion.v1,
