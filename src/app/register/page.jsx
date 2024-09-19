@@ -4,12 +4,14 @@ import { Button } from "flowbite-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
+import { useRouter } from 'next/navigation';
 
 const url = process.env.NEXT_PUBLIC_WEB_URL;
 
 const Register = () => {
   const { register, handleSubmit, formState: { errors }, reset, watch } = useForm();
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter()
 
   const fetchUrl = `${url}/register/api/post`;
 
@@ -31,7 +33,8 @@ const Register = () => {
       const res = await axios.post(fetchUrl, data);
       if (res.status === 200) {
         toast.success("Successfully registered!");
-        reset(); // Clear form fields after successful registration
+        reset();
+        router.push("/login");
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {

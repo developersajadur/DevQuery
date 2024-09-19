@@ -13,3 +13,16 @@ export const getQuestions = async () => {
     throw new Error("Error fetching questions");
   }
 };
+
+export const getQuestionDetail = async (id) => {
+  const detailsfetchUrl = `${url}/questions/api/${id}`
+  try {
+    const response = await axios.get(detailsfetchUrl);
+    const questionDetail = response?.data?.question;
+    
+    return questionDetail;
+  } catch (error) {
+    console.error("Error details:", error); // Log the error details
+    throw new Error("Error fetching question detail");
+  }
+}

@@ -4,26 +4,34 @@ import { useForm } from 'react-hook-form';
 import { Button } from 'flowbite-react';
 import { signIn } from "next-auth/react";
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const onSubmit = async (data) => {
     const result = await signIn("credentials", { ...data, redirect: false });
 
     if (result?.error) {
-      if (result.error === "Enter Your Email And Password") {
-        toast.error("Enter Your Email And Password");
-      } else if (result.error === "User Not Found") {
-        toast.error("User Not Found");
-      } else if (result.error === "Wrong Password") {
-        toast.error("Wrong Password");
-      } else {
-        toast.error("Something went wrong.");
+      switch (result.error) {
+        case "Enter Your Email And Password":
+          toast.error("Enter Your Email And Password");
+          break;
+        case "User Not Found":
+          toast.error("User Not Found");
+          break;
+        case "Wrong Password":
+          toast.error("Wrong Password");
+          break;
+        default:
+          toast.error("Something went wrong.");
+          break;
       }
     } else if (result?.ok) {
       toast.success("Successfully Logged In!");
+      router.push("/");
     }
   };
 
@@ -32,7 +40,6 @@ const Login = () => {
       <div className="w-full max-w-md bg-white shadow-md rounded-lg p-6">
         <h2 className="text-2xl font-semibold mb-6">Log in to your account</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Email Input */}
           <div>
             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">Email</label>
             <input
@@ -45,7 +52,6 @@ const Login = () => {
             {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
           </div>
 
-          {/* Password Input */}
           <div>
             <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Password</label>
             <div className="relative">
@@ -67,7 +73,6 @@ const Login = () => {
             {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
           </div>
 
-          {/* Login Button */}
           <Button
             type="submit"
             className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
@@ -75,7 +80,6 @@ const Login = () => {
             Log in
           </Button>
         </form>
-        {/* OAuth Buttons */}
         <div className="mt-6 flex justify-between">
           <Button
             className="w-full text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-2.5 mr-2"

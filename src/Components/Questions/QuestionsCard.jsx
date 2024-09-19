@@ -7,7 +7,7 @@ const QuestionsCard = ({ question }) => {
     <div>
       <div className="px-2 md:px-6 py-3 bg-[#FDF7E7] rounded-xl">
         <Link
-          href="/"
+          href={`questions/${question._id}`}
           className="text-xl md:text-2xl font-semibold text-[#131842] hover:text-[#3FA2F6]"
         >
           {question?.title}

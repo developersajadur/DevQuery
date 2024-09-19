@@ -1,30 +1,18 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { TextInput, Button, Drawer, Sidebar, Avatar } from "flowbite-react";
+import { TextInput, Button, Drawer, Sidebar, Avatar, Dropdown } from "flowbite-react";
 import Link from "next/link";
 import { IoSearch, IoMenu } from "react-icons/io5";
 import { useState } from "react";
-import {
-  HiChartPie,
-  HiClipboard,
-  HiCollection,
-  HiInformationCircle,
-  HiLogin,
-  HiPencil,
-  HiSearch,
-  HiShoppingBag,
-  HiUsers,
-} from "react-icons/hi";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
   const { register, handleSubmit } = useForm();
   const [isOpen, setIsOpen] = useState(false);
-  const session = useSession();
-  console.log(session);
-  
+  const { data: session, status } = useSession();
+  const user = session?.user;
 
   const onSubmit = (data) => {
     console.log("Searching for:", data.searchQuery);
@@ -54,10 +42,7 @@ const Navbar = () => {
             DevQuery
           </Link>
           <div>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="flex items-center"
-            >
+            <form onSubmit={handleSubmit(onSubmit)} className="flex items-center">
               <TextInput
                 id="search"
                 className="w-96"
@@ -69,12 +54,30 @@ const Navbar = () => {
               />
             </form>
           </div>
-          <Link
-            href="/login"
-            className="bg-blue-500 py-3 px-5 rounded-lg text-white font-semibold"
+          {status === "loading" ? (
+            <div>Loading...</div>
+          ) : user ? (
+            <Dropdown
+            label={
+              <div className="flex gap-2 items-center bg-transparent">
+                <Avatar size="sm" name={user.name} />
+                <h5 className="text-base font-semibold">{user.name}</h5>
+              </div>
+            }
+            dismissOnClick={false}
+            className="flex gap-2 items-center"
           >
-            Login
-          </Link>
+            <Dropdown.Item>Dashboard</Dropdown.Item>
+            <Dropdown.Item>Settings</Dropdown.Item>
+            <Dropdown.Item>Earnings</Dropdown.Item>
+            <Dropdown.Item onClick={() => signOut()}>Sign out</Dropdown.Item>
+          </Dropdown>          
+          
+          ) : (
+            <Link href="/login" className="flex gap-2 items-center bg-blue-500 rounded-xl px-4 py-2">
+              <h5 className="text-lg text-white font-semibold">Login</h5>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -83,10 +86,7 @@ const Navbar = () => {
         <Drawer open={isOpen} onClose={handleClose}>
           <Drawer.Header title="MENU" titleIcon={() => <></>} />
           <Drawer.Items>
-            <Sidebar
-              aria-label="Sidebar with multi-level dropdown example"
-              className="[&>div]:bg-transparent [&>div]:p-0"
-            >
+            <Sidebar aria-label="Sidebar with multi-level dropdown example">
               <div className="flex h-full flex-col justify-between py-2">
                 <div>
                   <form onSubmit={handleSubmit(onSubmit)} className="pb-3">
@@ -122,10 +122,7 @@ const Navbar = () => {
           </Drawer.Items>
         </Drawer>
         <div className="flex justify-between items-center py-5 px-2 md:px-5 lg:px-10 bg-[#F5F7F8]">
-          <Button
-            className="w-fit bg-transparent"
-            onClick={() => setIsOpen(true)}
-          >
+          <Button className="w-fit bg-transparent" onClick={() => setIsOpen(true)}>
             <IoMenu className="text-black text-3xl" />
           </Button>
           <Link href="/" className="text-2xl lg:text-3xl font-semibold">
@@ -134,7 +131,7 @@ const Navbar = () => {
           <Link href="/">
             <Avatar
               className="w-10 h-10"
-              img="https://i.ibb.co.com/4g09B3N/beautiful-cat-with-fluffy-background-23-2150752750.jpg"
+              img="https://i.ibb.co/4g09B3N/beautiful-cat-with-fluffy-background-23-2150752750.jpg"
             />
           </Link>
         </div>
