@@ -1,16 +1,14 @@
-/* eslint-disable @next/next/no-async-client-component */
+// In components/QuestionDetails.js
 "use client";
 import React, { useState } from "react";
 import { Button, Avatar, Textarea, Card, Badge } from "flowbite-react";
 import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
-import { getQuestionDetail } from "@/Components/Questions/GetQuestions";
 
-const QuestionDetails = async ({ params }) => {
+const QuestionDetails = ({ questionDetails }) => {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [answer, setAnswer] = useState("");
   const [comment, setComment] = useState("");
-  const questionDetails = await getQuestionDetail(params.id);
 
   const handleLike = () => {
     setLiked(!liked);
@@ -23,13 +21,11 @@ const QuestionDetails = async ({ params }) => {
   };
 
   const handleAnswerSubmit = () => {
-    // Handle answer submission logic
     console.log("Submitted Answer:", answer);
     setAnswer(""); // Clear input after submission
   };
 
   const handleCommentSubmit = () => {
-    // Handle comment submission logic
     console.log("Submitted Comment:", comment);
     setComment(""); // Clear input after submission
   };
@@ -48,9 +44,9 @@ const QuestionDetails = async ({ params }) => {
               <Badge color="success">Performance</Badge>
             </div>
             <p className="text-gray-600 mb-4">
-              I have a large-scale React application, and I want to optimize it for better performance. What are the best practices to achieve this?
+              {questionDetails.description}
             </p>
-            <div className="vflex flex-col md:flex-row items-start md:items-center justify-between">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
               <p className="text-gray-500 text-sm">Posted by John Doe on Sep 19, 2024</p>
               <div className="flex items-center">
                 <Button.Group>
@@ -78,20 +74,6 @@ const QuestionDetails = async ({ params }) => {
               </Button>
             </div>
 
-            {/* Add Comment Section */}
-            <div className="mt-6">
-              <h3 className="text-lg font-semibold mb-4">Add a Comment</h3>
-              <Textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Write your comment here..."
-                rows={4}
-                className="mb-4"
-              />
-              <Button className="bg-blue-600 text-white w-full" onClick={handleCommentSubmit}>
-                Submit Comment
-              </Button>
-            </div>
           </div>
         </div>
       </Card>
@@ -138,44 +120,6 @@ const QuestionDetails = async ({ params }) => {
           </div>
         </Card>
 
-        <Card className="mb-4">
-          <div className="flex items-start">
-            <Avatar img="https://randomuser.me/api/portraits/men/3.jpg" />
-            <div className="ml-4 w-full">
-              <h4 className="font-medium">Mark Johnson</h4>
-              <p className="text-gray-600 mt-1 mb-2">
-                One more suggestion is to avoid prop drilling and use context or state management libraries like Redux or Zustand for global state management.
-              </p>
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-                <p className="text-gray-500 text-sm">Answered on Sep 20, 2024</p>
-                <div className="flex items-center">
-                  <Button.Group>
-                    <Button color="light">
-                      <AiOutlineLike size={20} /> Like
-                    </Button>
-                    <Button color="light">
-                      <AiOutlineDislike size={20} /> Dislike
-                    </Button>
-                  </Button.Group>
-                </div>
-              </div>
-
-              {/* Add Comment Section for Each Answer */}
-              <div className="mt-4">
-                <Textarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Write your comment here..."
-                  rows={2}
-                  className="mb-4"
-                />
-                <Button className="bg-blue-600 text-white" onClick={handleCommentSubmit}>
-                  Submit Comment
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
       </div>
     </div>
   );

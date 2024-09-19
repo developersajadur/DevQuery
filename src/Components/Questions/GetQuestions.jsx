@@ -15,9 +15,9 @@ export const getQuestions = async () => {
 };
 
 export const getQuestionDetail = async (id) => {
-  const detailsfetchUrl = `${url}/questions/api/${id}`
+  const detailsFetchUrl = `${url}/questions/api/${id}`
   try {
-    const response = await axios.get(detailsfetchUrl);
+    const response = await axios.get(detailsFetchUrl);
     const questionDetail = response?.data?.question;
     
     return questionDetail;

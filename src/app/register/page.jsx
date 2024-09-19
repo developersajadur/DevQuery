@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
+import Link from "next/link";
 
 const url = process.env.NEXT_PUBLIC_WEB_URL;
 
@@ -114,6 +115,7 @@ const Register = () => {
             Sign up
           </Button>
         </form>
+        <div className="text-center text-blue-500">Already Have An Account? <Link className='text-black font-bold' href="/login">Click Here</Link></div>
 
         {/* OAuth Buttons */}
         <div className="mt-6 flex justify-between">

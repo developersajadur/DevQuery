@@ -5,6 +5,7 @@ import { Button } from 'flowbite-react';
 import { signIn } from "next-auth/react";
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -80,6 +81,7 @@ const Login = () => {
             Log in
           </Button>
         </form>
+        <div className="text-center text-blue-500">{"Don't "}Have An Account? <Link className='text-black font-bold' href="/register">Click Here</Link></div>
         <div className="mt-6 flex justify-between">
           <Button
             className="w-full text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-2.5 mr-2"
