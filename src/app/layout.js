@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
        <ReactQueryProvider>
         <AuthProvider>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className=''
       >
         <Toaster />
        
