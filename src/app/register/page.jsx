@@ -7,14 +7,13 @@ import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
 
-const url = process.env.NEXT_PUBLIC_WEB_URL;
 
 const Register = () => {
   const { register, handleSubmit, formState: { errors }, reset, watch } = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter()
 
-  const fetchUrl = `${url}/register/api/post`;
+  const fetchUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/register/api/post`;
 
   // Password validation function
   const validatePassword = (password) => {
