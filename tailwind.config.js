@@ -8,7 +8,7 @@ module.exports = {
     flowbite.content(),
   ],
   theme: {
-
+    extend: {},
   },
   plugins: [
     flowbite.plugin(),
