@@ -79,7 +79,7 @@ const QuestionDetails = async ({ params }) => {
             </div>
 
             {/* Add Comment Section */}
-            <div className="mt-6">
+            {/* <div className="mt-6">
               <h3 className="text-lg font-semibold mb-4">Add a Comment</h3>
               <Textarea
                 value={comment}
@@ -91,7 +91,7 @@ const QuestionDetails = async ({ params }) => {
               <Button className="bg-blue-600 text-white w-full" onClick={handleCommentSubmit}>
                 Submit Comment
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       </Card>
