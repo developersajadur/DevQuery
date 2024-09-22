@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Button, Avatar, Textarea, Card, Badge } from "flowbite-react";
 import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
-import { getQuestionDetail } from "@/Components/Questions/GetQuestions";
+import { getQuestionDetail } from "@/app/Components/Questions/GetQuestions";
 
 const QuestionDetails = async ({ params }) => {
   const [liked, setLiked] = useState(false);

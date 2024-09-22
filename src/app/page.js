@@ -1,6 +1,6 @@
-export const dynamic = "force-dynamic";
-import Home from "@/Pages/Home/Home";
+import Home from "./Pages/Home/Home";
 
+export const dynamic = "force-dynamic";
 const page = () => {
   return (
     <div>

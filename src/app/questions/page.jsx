@@ -1,4 +1,4 @@
-import { getQuestions } from "@/Components/Questions/GetQuestions";
+import { getQuestions } from "../Components/Questions/GetQuestions";
 
 const Questions = async () => {
   const questions = await getQuestions();

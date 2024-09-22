@@ -1,12 +1,10 @@
+import ReactQueryProvider from "@/Providers/ReactQueryProvider";
 import "./globals.css";
-import ReactQueryProvider from "@/lib/Providers/ReactQueryProvider";
-import Navbar from "@/Components/Shared/Navbar";
-import NavigationLinks from "@/Components/Shared/NavigationLinks";
-import Footer from "@/Components/Shared/Footer";
-import AuthProvider from "@/lib/Providers/AuthProvider";
 import { Toaster } from "react-hot-toast";
-
-
+import AuthProvider from "@/Providers/AuthProvider";
+import Navbar from "./Components/Shared/Navbar";
+import NavigationLinks from "./Components/Shared/NavigationLinks";
+import Footer from "./Components/Shared/Footer";
 
 // Metadata for SEO (server-side)
 export const metadata = {
