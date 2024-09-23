@@ -1,4 +1,6 @@
 import NextAuth from "next-auth";
+import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { ConnectDB } from "@/lib/ConnectDB";
 import bcrypt from "bcrypt";
@@ -6,7 +8,7 @@ import bcrypt from "bcrypt";
 const authOptions = {
   session: {
     strategy: "jwt",
-    maxAge: 10 * 24 * 60 * 60,
+    maxAge: 10 * 24 * 60 * 60, // 10 days
   },
   providers: [
     CredentialsProvider({
@@ -37,8 +39,39 @@ const authOptions = {
         return currentUser;
       },
     }),
+    GoogleProvider({
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET,
+    }),
+    GitHubProvider({
+      clientId: process.env.NEXT_PUBLIC_GITHUB_ID,
+      clientSecret: process.env.NEXT_PUBLIC_GITHUB_SECRET,
+    }),
   ],
-  callbacks: {},
+  callbacks: {
+    async signIn({ user, account }) {
+      if (account.provider === "google" || account.provider === "github") {
+        try {
+          const { name, email, image } = user;
+          const db = await ConnectDB();
+          const existingUser = await db.collection("users").findOne({ email });
+
+          if (!existingUser) {
+            await db.collection("users").insertOne({
+              name,
+              email,
+              image,
+            });
+          }
+          return user; 
+        } catch (error) {
+          console.log(error);
+          return false;
+        }
+      }
+      return user; 
+    },
+  },
   pages: {
     signIn: "/login",
   },

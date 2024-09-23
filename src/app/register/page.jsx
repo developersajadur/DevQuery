@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
+import SocialSignIn from "../Components/Others/SocialSignIn";
 
 
 const Register = () => {
@@ -117,20 +118,7 @@ const Register = () => {
         <div className="text-center text-blue-500">Already Have An Account? <Link className='text-black font-bold' href="/login">Click Here</Link></div>
 
         {/* OAuth Buttons */}
-        <div className="mt-6 flex justify-between">
-          <Button
-            className="w-full text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-2.5 mr-2"
-            onClick={() => console.log("Sign up with Google")}
-          >
-            Sign up with Google
-          </Button>
-          <Button
-            className="w-full text-white bg-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-2 py-2.5 ml-2"
-            onClick={() => console.log("Sign up with GitHub")}
-          >
-            Sign up with GitHub
-          </Button>
-        </div>
+      <SocialSignIn/>
       </div>
     </div>
   );
