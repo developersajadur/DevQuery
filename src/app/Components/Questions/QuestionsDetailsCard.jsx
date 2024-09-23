@@ -1,47 +1,64 @@
 "use client";
 import { Avatar, Badge, Button, Card, Textarea } from 'flowbite-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
 
-const QuestionsDetailsCard = ({questionDetails}) => {
-    const [liked, setLiked] = useState(false);
-    const [disliked, setDisliked] = useState(false);
-    const [answer, setAnswer] = useState("")
+const getTimeAgo = (createdAt) => {
+  const now = new Date();
+  const createdDate = new Date(createdAt);
+  const differenceInMs = now - createdDate;
 
-    const handleLike = () => {
-        setLiked(!liked);
-        if (disliked) setDisliked(false);
-      };
-    
-      const handleDislike = () => {
-        setDisliked(!disliked);
-        if (liked) setLiked(false);
-      };
+  // Calculate time differences in seconds, minutes, and hours
+  const minutes = Math.floor(differenceInMs / (1000 * 60));
+  const hours = Math.floor(minutes / 60);
 
-      
+  const remainingMinutes = minutes % 60;
+
+  if (hours > 0) return `${hours} hour(s) ${remainingMinutes} minutes ago`;
+  return `${remainingMinutes} minutes ago`;
+};
+
+const QuestionsDetailsCard = ({ questionDetails }) => {
+  const timeAgo = getTimeAgo(questionDetails?.createdAt);
+  const { user, title, description, image, tags } = questionDetails;
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
+  const [answer, setAnswer] = useState("");
+
+  const handleLike = () => {
+    setLiked(!liked);
+    if (disliked) setDisliked(false);
+  };
+
+  const handleDislike = () => {
+    setDisliked(!disliked);
+    if (liked) setLiked(false);
+  };
+
   const handleAnswerSubmit = () => {
     // Handle answer submission logic
     console.log("Submitted Answer:", answer);
-    setAnswer(""); // Clear input after submission
+    // After submission logic (e.g., API call) can be placed here
+
+    // Clear input after submission
+    setAnswer(""); 
   };
 
-    return (
-        <div>
-              <Card className="mb-6">
+  return (
+    <div>
+      <Card className="mb-6">
         <div className="flex items-start">
-          <Avatar img="https://randomuser.me/api/portraits/men/1.jpg" />
+          <Avatar img={image} />
           <div className="ml-4 w-full">
-            <h2 className="text-xl font-semibold">{questionDetails.title}</h2>
+            <h2 className="text-xl font-semibold">{title}</h2>
             <div className="flex items-center space-x-2 mb-2">
-              <Badge color="info">React</Badge>
-              <Badge color="gray">Optimization</Badge>
-              <Badge color="success">Performance</Badge>
+              {tags?.map((tag, index) => (
+                <Badge className='mr-2' key={index} color="info">{tag}</Badge> // Fixed key prop
+              ))}
             </div>
-            <p className="text-gray-600 mb-4">
-              I have a large-scale React application, and I want to optimize it for better performance. What are the best practices to achieve this?
-            </p>
-            <div className="vflex flex-col md:flex-row items-start md:items-center justify-between">
-              <p className="text-gray-500 text-sm">Posted by John Doe on Sep 19, 2024</p>
+            <p className="text-gray-600 mb-4">{description}</p>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+              <p className="text-gray-500 my-2 text-sm">Posted: {timeAgo}</p>
               <div className="flex items-center">
                 <Button.Group>
                   <Button color="light" onClick={handleLike}>
@@ -58,7 +75,7 @@ const QuestionsDetailsCard = ({questionDetails}) => {
             <div className="mt-4">
               <Textarea
                 value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
+                onChange={(e) => setAnswer(e.target.value)} // Handle input change
                 placeholder="Write your answer here..."
                 rows={4}
                 className="mb-4"
@@ -70,8 +87,8 @@ const QuestionsDetailsCard = ({questionDetails}) => {
           </div>
         </div>
       </Card>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default QuestionsDetailsCard;

@@ -6,7 +6,7 @@ export const POST = async (req) => {
   try {
     // Parse the request body
     const question = await req.json();
-    const { title, description, user , image} = question;
+    const { title, description, user , image, tags} = question;
 
     // Connect to the MongoDB database
     const db = await ConnectDB();
@@ -20,6 +20,7 @@ export const POST = async (req) => {
       user:user,
       image:image,
       description: description,
+      tags: tags,
       createdAt: new Date(),  // Optional: Add timestamp
     }, {status:201});
 
