@@ -13,6 +13,8 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
   const user = session?.user;
+  console.log(user);
+  
 
   const onSubmit = (data) => {
     console.log("Searching for:", data.searchQuery);
@@ -60,8 +62,8 @@ const Navbar = () => {
             <Dropdown
             label={
               <div className="flex gap-2 items-center bg-transparent">
-                <Avatar size="sm" name={user.name} />
-                <h5 className="text-base font-semibold">{user.name}</h5>
+                <Avatar img={user?.image} />
+                <h5 className="text-base font-semibold">{user?.name}</h5>
               </div>
             }
             dismissOnClick={false}
