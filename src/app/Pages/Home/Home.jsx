@@ -11,7 +11,7 @@ const Home = async () => {
         <h1 className="text-xl md:text-3xl font-semibold">Newest Questions</h1>
         <Link
           href="/"
-          className="px-3 py-2 rounded-xl bg-blue-500 text-white font-semibold"
+          className="px-3 py-2 rounded-xl bg-blue-600 text-white font-semibold"
         >
           Make Question
         </Link>
