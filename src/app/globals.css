@@ -3,3 +3,9 @@
 @tailwind utilities;
 
 @import 'flowbite';
+
+
+.custom-quill {
+    height: 150px; /* Set your desired height */
+  }
+  

@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import '/src/app/globals.css';
+
 
 const stripHtml = (html) => {
   if (typeof window === "undefined") return html;
@@ -22,9 +24,15 @@ const getTimeAgo = (createdAt) => {
 
   const minutes = Math.floor(differenceInMs / (1000 * 60));
   const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
   const remainingMinutes = minutes % 60;
+  const remainingHours = hours % 24;
 
-  if (hours > 0) return `${hours} hour(s) ${remainingMinutes} minutes ago`;
+  if (days > 0) {
+    return `${days} day(s) ${remainingHours} hours ago`;
+  } else if (hours > 0) {
+    return `${hours} hours ${remainingMinutes} minutes ago`;
+  }
   return `${remainingMinutes} minutes ago`;
 };
 
@@ -103,15 +111,17 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
             </div>
 
             {/* Add Answer Section with React Quill */}
-            <div className="mt-4">
+            <div className="mt-4 my-4">
               <ReactQuill
                 value={answer}
                 onChange={setAnswer} 
                 placeholder="Write your answer here..."
                 theme="snow"
-                className="mb-4 p-2"
+                className="mb-4 p-2 my-2 custom-quill"
+                style={{ height: '150px' }}
+                
               />
-              <Button className="bg-blue-600 text-white w-full" onClick={handleAnswerSubmit}>
+              <Button className="bg-blue-600 mt-4 text-white w-full" onClick={handleAnswerSubmit}>
                 Submit Answer
               </Button>
             </div>
