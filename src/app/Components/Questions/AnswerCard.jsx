@@ -83,7 +83,7 @@ const AnswerCard = ({ questionDetails }) => {
           visible={true}
           height="50"
           width="50"
-          color="#4fa94d"
+          color="#0000FF"
           ariaLabel="three-circles-loading"
         />
       </div>
