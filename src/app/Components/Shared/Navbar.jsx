@@ -18,7 +18,7 @@ const Navbar = () => {
     // Redirect to the homepage with or without a search query
     if (searchQuery.trim() === "") {
       // If search query is empty, show all data
-      router.push(`/`);
+      // router.push(`/`);
     } else {
       // If search query exists, show filtered data
       router.push(`/?search=${searchQuery}`);
