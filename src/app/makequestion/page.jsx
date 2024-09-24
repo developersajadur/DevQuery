@@ -9,7 +9,7 @@ const Page = () => {
     const [tags, setTags] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [tagInput, setTagInput] = useState(""); // State for tag input
+   
     const { data: session } = useSession();
     const user = session?.user.email;
     const image = session?.user?.image;
@@ -18,48 +18,46 @@ const Page = () => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-
-        // Check if tags array is empty
+    
+        console.log("Form submission started");  // Add this
+    
         if (tags.length === 0) {
             toast.error("Please add at least one tag before submitting!");
             setLoading(false);
             return;
         }
-
+    
         const title = e.target.title.value;
         const description = e.target.description.value;
         const addQuestion = { title, description, user, image, tags };
-
+    
         try {
-            // Send POST request to your backend API
+            console.log("Sending request with data:", addQuestion);  // Add this
+    
             const response = await axios.post('/questions/api/add', addQuestion);
-
-            if (response.status === 201) {
-                console.log("Question added successfully:", response.data);
+    
+            if (response.status === 200) {
+                console.log("Question added successfully:", response.data);  // Existing log
                 toast.success("Your question was successfully submitted!");
-                e.target.reset(); // Reset the entire form
-                setTags([]); // Clear tags after submission
-                setTagInput(""); // Clear the tag input field
+                e.target.reset();
+                setTags([""]);
             }
         } catch (error) {
+            console.log("Error occurred:", error);  // Add this
             setError('Failed to add the question. Please try again.');
             toast.error("Something went wrong!");
-            console.error("Error adding question:", error);
         } finally {
             setLoading(false);
         }
     };
+    
 
-    const handleTagInputKeyDown = (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault(); // Prevent form submission on Enter
-            const newTag = tagInput.trim();
-            if (newTag && !tags.includes(newTag)) {
-                setTags([...tags, newTag]); // Add tag to the array
-                setTagInput(""); // Clear input field
-            }
-        }
-    };
+    const handleTagsChange = (e) => {
+        const inputTags = e.target.value.split(',').map(tag => tag.trim());  // Convert string to array of tags
+        setTags(inputTags);
+        
+    }
+    
 
     return (
         <div className="max-w-3xl mx-auto my-6">
@@ -92,36 +90,21 @@ const Page = () => {
                 {/* Tags input */}
                 <label className="w-full mx-auto" htmlFor="tags">
                     <h1 className="text-xl font-semibold my-2 p-3">Tags</h1>
-                    <input
-                        className='p-2 outline-none rounded-md w-full mx-3'
-                        name="tags"
-                        type="text"
-                        placeholder="Type a tag and press Enter"
-                        value={tagInput}
-                        onChange={(e) => setTagInput(e.target.value)} // Update tag input state
-                        onKeyDown={handleTagInputKeyDown} // Handle Enter key
-                    />
+                    <input 
+                    className='w-full p-2 border rounded-md mx-3' 
+                    value={tags.join(', ')}  // Display tags as a comma-separated string
+                    onChange={handleTagsChange} 
+                    type="text" 
+                    placeholder='Enter tags separated by commas' 
+                    required
+                />
                 </label>
 
                 {/* Display tags */}
-                <div className="flex flex-wrap gap-2 my-2">
-                    {tags.map((tag, index) => (
-                        <span key={index} className="bg-blue-200 p-2 rounded-md">
-                            {tag}
-                            <button
-                                type="button"
-                                onClick={() => setTags(tags.filter((_, i) => i !== index))} // Remove tag
-                                className="ml-2 text-red-500"
-                            >
-                                &times;
-                            </button>
-                        </span>
-                    ))}
-                </div>
-
+               
                 {/* Submit button */}
                 <input
-                    className="w-full border text-xl font-semibold rounded-md bg-blue-500 hover:bg-blue-600 cursor-pointer p-2 text-white"
+                    className="w-full border text-xl font-semibold rounded-md bg-blue-500 hover:bg-blue-600 cursor-pointer p-2 mx-3  text-white"
                     type="submit"
                     value={loading ? 'Submitting...' : 'Add question'}
                     disabled={loading}

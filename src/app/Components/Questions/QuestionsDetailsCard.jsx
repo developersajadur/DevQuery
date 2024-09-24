@@ -53,7 +53,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
             <h2 className="text-xl font-semibold">{title}</h2>
             <div className="flex items-center space-x-2 mb-2">
               {tags?.map((tag, index) => (
-                <Badge className='mr-2' key={index} color="info">{tag}</Badge> // Fixed key prop
+                <Badge className='mr-2' key={index} color="info">#{tag}</Badge> // Fixed key prop
               ))}
             </div>
             <p className="text-gray-600 mb-4">{description}</p>
