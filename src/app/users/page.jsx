@@ -4,7 +4,7 @@ import { getUsers } from "../Pages/Users/GetUsers";
 import Link from "next/link";
 
 const Users =async () => {
-const users =await getUsers();
+const users = await getUsers();
 
 
   return (
@@ -12,7 +12,7 @@ const users =await getUsers();
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {users?.map((user) => (
           <div
-            key={user?._id}
+            key={user._id}
             className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-md"
           >
             {/* User Avatar */}
