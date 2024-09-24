@@ -12,6 +12,7 @@ const Navbar = () => {
   const { data: session, status } = useSession();
   const user = session?.user;
   const router = useRouter(); // next/navigation hook for client-side routing
+  
 
   useEffect(() => {
     // Redirect to the homepage with or without a search query
