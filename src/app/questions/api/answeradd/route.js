@@ -5,22 +5,22 @@ import { NextResponse } from 'next/server';
 export const POST = async (req) => {
   try {
     // Parse the request body
-    const question = await req.json();
-    const { title, description, user , image, tags} = question;
+    const answer = await req.json();
+    const {  user , image, ans, question_id} = answer;
 
     // Connect to the MongoDB database
     const db = await ConnectDB();
 
     // Get the questions collection
-    const questionsCollection = db.collection("questions");
+    const questionsCollection = db.collection("answer");
 
     // Insert the new question document into the collection
     const result = await questionsCollection.insertOne({
-      title: title,
+      
       user:user,
       image:image,
-      description: description,
-      tags: tags,
+      answer:ans,
+      question_id:question_id,
       likes:0,
       unlikes:0,
       createdAt: new Date(),  // Optional: Add timestamp
@@ -28,14 +28,14 @@ export const POST = async (req) => {
 
     // Return a success response with the inserted question ID
     return NextResponse.json({
-      message: 'Question added successfully',
+      message: 'Answer added successfully',
       questionId: result.insertedId
     });
 
   } catch (error) {
     // Return an error response in case of failure
     return NextResponse.json({
-      message: 'Failed to add question',
+      message: 'Failed to add answer',
       error: error.message,
     }, { status: 500 });
   }

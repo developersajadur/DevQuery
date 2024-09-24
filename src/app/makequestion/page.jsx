@@ -2,10 +2,13 @@
 
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 const Page = () => {
+    const router = useRouter();
+
     const [tags, setTags] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -14,10 +17,15 @@ const Page = () => {
     const user = session?.user.email;
     const image = session?.user?.image;
 
+
     const handleAddQuestion = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+        
+    if(!session?.user){
+        return router.push('/login')
+    }
     
         console.log("Form submission started");  // Add this
     

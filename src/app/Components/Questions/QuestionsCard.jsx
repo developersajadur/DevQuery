@@ -23,9 +23,9 @@ const QuestionsCard = ({ question }) => {
   const timeAgo = getTimeAgo(question?.createdAt);
   return (
     <div>
-      <div className="px-2 md:px-6 py-3 bg-[#FDF7E7] rounded-xl">
+      <div className="px-2 md:px-6 py-3 bg-[#d6d6d6] h-[150px] shadow-lg rounded-xl">
          <div className="flex items-center gap-3">
-         <Image className="rounded-[50%]  border-2 border-blue-700" src={question.image} height={50} width={50} alt="question image" />
+         <Image className="rounded-xl  border-2 " src={question.image} height={10} width={40} alt="question image" />
 
           <div className="flex flex-col gap-2 items-start">
           <Link

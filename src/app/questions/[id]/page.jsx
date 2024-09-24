@@ -44,7 +44,7 @@ const QuestionDetails = ({ params }) => {
       <QuestionsDetailsCard questionDetails={questionDetails} />
 
       {/* Answer Section */}
-      <AnswerCard />
+      <AnswerCard questionDetails={questionDetails} />
     </div>
   );
 };
