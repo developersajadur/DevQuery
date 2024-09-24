@@ -5,7 +5,7 @@ import Link from "next/link";
 const Home = async () => {
   const questions = await getQuestions();
   return (
-    <div className="lg:px-4 py-3">
+    <div className="px-2 md:px-4 py-3">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-xl md:text-3xl font-semibold">Newest Questions</h1>
         <Link

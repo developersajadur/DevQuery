@@ -13,7 +13,6 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
   const user = session?.user;
-  console.log(user);
   
 
   const onSubmit = (data) => {
