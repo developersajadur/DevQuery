@@ -21,8 +21,8 @@ const Home = () => {
       setLoading(true);
       try {
         const url = searchQuery
-          ? `http://localhost:3000/questions/api/get?search=${searchQuery}&filter=${filterQuery}`
-          : `http://localhost:3000/questions/api/get?filter=${filterQuery}`;
+          ? `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?search=${searchQuery}&filter=${filterQuery}`
+          : `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?filter=${filterQuery}`;
         
         const res = await fetch(url);
         const data = await res.json();
