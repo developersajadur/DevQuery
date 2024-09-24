@@ -1,7 +1,6 @@
-import React from "react";
-import Link from "next/link";
-import QuestionsCard from "@/app/Components/Questions/QuestionsCard";
 import { getQuestions } from "@/app/Components/Questions/GetQuestions";
+import QuestionsCard from "@/app/Components/Questions/QuestionsCard";
+import Link from "next/link";
 
 const Home = async () => {
   const questions = await getQuestions();
@@ -10,7 +9,7 @@ const Home = async () => {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-xl md:text-3xl font-semibold">Newest Questions</h1>
         <Link
-          href="/"
+          href="/makequestion"
           className="px-3 py-2 rounded-xl bg-blue-500 text-white font-semibold"
         >
           Make Question
