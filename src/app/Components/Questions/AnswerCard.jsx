@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
+import { ThreeCircles } from 'react-loader-spinner';
 
 const AnswerCard = ({ questionDetails }) => {
   const [loading, setLoading] = useState(true)
@@ -16,6 +17,7 @@ const AnswerCard = ({ questionDetails }) => {
   console.log("answer", questionDetails);
   const [comment, setComment] = useState("");
   const [answers, setAnswers] = useState([]); // Store answers
+
 
   console.log(comment);
 
@@ -74,9 +76,19 @@ const AnswerCard = ({ questionDetails }) => {
     }
   };
 
-  if(loading){
-    return <h1>Loading..;.</h1>
- }
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center my-4">
+        <ThreeCircles
+          visible={true}
+          height="50"
+          width="50"
+          color="#4fa94d"
+          ariaLabel="three-circles-loading"
+        />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -96,7 +108,7 @@ const AnswerCard = ({ questionDetails }) => {
                   </p>
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
                     <p className="text-gray-500 text-sm">Answered on {getTimeAgo(answer.createdAt)}</p>
-                     <p>{answer._id}</p>
+                  
                     <div className="flex items-center">
                       <Button.Group>
                         <Button color="light">
@@ -123,7 +135,7 @@ const AnswerCard = ({ questionDetails }) => {
                         Submit Comment
                       </Button>
                       <Link
-                      className='my-4 ml-5 p-2 hover:bg-gray-200 hover:shadow-lg border rounded-md hover:text-white cursor-pointer'
+                      className='my-4 ml-5 p-2 hover:bg-gray-200 hover:shadow-lg border rounded-md hover:text-blue-600 cursor-pointer'
                       href={`/allcomments/${answer._id}`}> {/* Use answer._id as part of the URL */}
                       See all comments
                     </Link>
@@ -136,7 +148,7 @@ const AnswerCard = ({ questionDetails }) => {
             </Card>
           ))
         ) : (
-          <p className="text-gray-500">No answers yet.</p> // Message for no answers
+          <p className="text-gray-500 font-semibold text-center">No answers yet.</p> // Message for no answers
         )}
       </div>
     </div>
