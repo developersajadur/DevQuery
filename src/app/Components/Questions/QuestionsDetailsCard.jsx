@@ -31,7 +31,7 @@ const getTimeAgo = (createdAt) => {
 const QuestionsDetailsCard = ({ questionDetails }) => {
   const router = useRouter();
   const { data: session } = useSession();
-  console.log("question",questionDetails)
+  // console.log("question",questionDetails)
   const currentUserEmail = session?.user?.email || "";
   const currentUserImage = session?.user?.image || "";
 

@@ -8,7 +8,7 @@ const CommentCard = () => {
       
   const handleCommentSubmit = () => {
     // Handle comment submission logic
-    console.log("Submitted Comment:", comment);
+    // console.log("Submitted Comment:", comment);
     setComment(""); // Clear input after submission
   };
     return (

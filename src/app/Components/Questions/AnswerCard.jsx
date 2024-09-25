@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
 
 const AnswerCard = ({ questionDetails }) => {
-  console.log("answer", questionDetails);
   const [comment, setComment] = useState("");
   const [answers, setAnswers] = useState([]); // Store answers
 
@@ -37,7 +36,7 @@ const AnswerCard = ({ questionDetails }) => {
   }, [questionDetails._id]); // Add questionDetails._id as a dependency to refetch if it changes
 
   const handleCommentSubmit = () => {
-    console.log("Submitted Comment:", comment);
+    // console.log("Submitted Comment:", comment);
     setComment(""); // Clear input after submission
   };
 

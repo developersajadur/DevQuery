@@ -42,7 +42,6 @@ const Navbar = () => {
   useEffect(() => {
     // Handle search input changes for desktop
     if (searchQuery.trim() === "") {
-      // Show all data
     } else {
       // Show filtered data
       router.push(`/?search=${searchQuery}`);
