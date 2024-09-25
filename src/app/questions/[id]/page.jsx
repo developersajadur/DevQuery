@@ -1,5 +1,4 @@
 "use client";
-import AnswerCard from "@/app/Components/Questions/AnswerCard";
 import { getQuestionDetail } from "@/app/Components/Questions/GetQuestions";
 import QuestionsDetailsCard from "@/app/Components/Questions/QuestionsDetailsCard";
 import { useEffect, useState } from "react";
@@ -44,7 +43,7 @@ const QuestionDetails = ({ params }) => {
       <QuestionsDetailsCard questionDetails={questionDetails} />
 
       {/* Answer Section */}
-      <AnswerCard questionDetails={questionDetails} />
+   
     </div>
   );
 };
