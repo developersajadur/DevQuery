@@ -39,6 +39,14 @@ const getTimeAgo = (createdAt) => {
 };
 
 const QuestionsDetailsCard = ({ questionDetails }) => {
+<<<<<<< HEAD
+=======
+  const router = useRouter();
+  const { data: session } = useSession();
+  // console.log("question",questionDetails)
+  const currentUserEmail = session?.user?.email || "";
+  const currentUserImage = session?.user?.image || "";
+>>>>>>> 3b7aa77cfc1f1d5626de64e2b38f37201ec5691e
 
  
 //  const [answers, setAnswers] = useState([])

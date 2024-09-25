@@ -27,7 +27,7 @@ const Page = () => {
         return router.push('/login')
     }
     
-        console.log("Form submission started");  // Add this
+        // console.log("Form submission started");  // Add this
     
         if (tags.length === 0) {
             toast.error("Please add at least one tag before submitting!");
@@ -45,7 +45,7 @@ const Page = () => {
             const response = await axios.post('/questions/api/add', addQuestion);
     
             if (response.status === 200) {
-                console.log("Question added successfully:", response.data);  // Existing log
+                // console.log("Question added successfully:", response.data);  // Existing log
                 toast.success("Your question was successfully submitted!");
                 e.target.reset();
                 setTags([""]);

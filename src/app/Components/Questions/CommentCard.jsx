@@ -7,6 +7,7 @@ import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
 import Loading from '../Loading/page';
 ;
 
+<<<<<<< HEAD
  
 
 const CommentCard = ({ answerId , referrer}) => {
@@ -34,6 +35,15 @@ const CommentCard = ({ answerId , referrer}) => {
       return `${hours} hour(s) ${remainingMinutes} minute(s) ago`;
     }
     return `${remainingMinutes} minute(s) ago`;
+=======
+const CommentCard = () => {
+    const [comment, setComment] = useState("");
+      
+  const handleCommentSubmit = () => {
+    // Handle comment submission logic
+    // console.log("Submitted Comment:", comment);
+    setComment(""); // Clear input after submission
+>>>>>>> 3b7aa77cfc1f1d5626de64e2b38f37201ec5691e
   };
 
   useEffect(() => {
