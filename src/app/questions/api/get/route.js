@@ -12,22 +12,28 @@ export const GET = async (req) => {
   let query = {};
   let sortOption = {}; // Sorting option
 
+  // Search query logic
   if (search) {
     query = {
       title: { $regex: search, $options: "i" }, // Case-insensitive title search
     };
   }
 
-  // Handle filter for likes, unlikes, and newest
+  // Handle filter for likes, unlikes, newest, oldest, and show all
   if (filter === "most_liked") {
     sortOption = { likes: -1 }; // Sort by likes in descending order
   } else if (filter === "most_unliked") {
     sortOption = { unlikes: -1 }; // Sort by unlikes in descending order
   } else if (filter === "newest") {
     sortOption = { createdAt: -1 }; // Sort by newest questions
+  } else if (filter === "oldest") {
+    sortOption = { createdAt: 1 }; // Sort by oldest questions
+  } else if (filter === "show_all") {
+    // No sorting for "Show All" - fetch all without sorting
+    sortOption = {};
   } else {
-    // Default sort option
-    sortOption = { createdAt: -1 }; // Fallback to sorting by newest if no filter is provided
+    // Default sort option if no valid filter is provided
+    sortOption = { createdAt: -1 }; // Fallback to newest
   }
 
   try {

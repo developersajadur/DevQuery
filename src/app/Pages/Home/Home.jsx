@@ -21,9 +21,8 @@ const Home = () => {
       setLoading(true);
       try {
         const url = searchQuery
-          ? `http://localhost:3000/questions/api/get?search=${searchQuery}&filter=${filterQuery}`
-          : `http://localhost:3000/questions/api/get?filter=${filterQuery}`;
-        
+          ? `${ process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?search=${searchQuery}&filter=${filterQuery}`
+          : `${ process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?filter=${filterQuery}`;
         const res = await fetch(url);
         const data = await res.json();
         setQuestions(data.questions);
@@ -51,11 +50,14 @@ const Home = () => {
         </h1>
 
         {/* Filter dropdown */}
-        <select onChange={handleFilterChange} value={filterQuery} className="border p-2 rounded md:w-96 ">
-          <option value="newest">Newest</option>
-          <option value="most_liked">Most Liked</option>
-          <option value="most_unliked">Most Unliked</option>
-        </select>
+        <select onChange={handleFilterChange} value={filterQuery} className="border p-2 rounded md:w-96">
+  <option value="show_all">Show All</option> {/* Added Show All option */}
+  <option value="newest">Newest</option>
+  <option value="oldest">Oldest</option>
+  <option value="most_liked">Most Liked</option>
+  <option value="most_unliked">Most Unliked</option>
+</select>
+
         <Link
           href="/makequestion"
           className="px-3 py-2 rounded-xl bg-blue-500 text-white font-semibold"
