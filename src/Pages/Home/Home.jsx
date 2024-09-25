@@ -1,7 +1,9 @@
 import React from "react";
 import Link from "next/link";
-import QuestionsCard from "@/Components/Questions/QuestionsCard";
+
 import { getQuestions } from "@/Components/Questions/GetQuestions";
+import QuestionsCard from "@/Components/Questions/QuestionsCard";
+
 
 const Home = async () => {
   const questions = await getQuestions();

@@ -34,17 +34,22 @@ const QuestionDetails = ({ questionDetails }) => {
     <div className="max-w-6xl mx-auto p-4">
       {/* Question Section */}
       <Card className="mb-6">
+     
         <div className="flex items-start">
+        <div>
+     
+     </div>
           <Avatar img="https://randomuser.me/api/portraits/men/1.jpg" />
           <div className="ml-4 w-full">
             <h2 className="text-xl font-semibold">{questionDetails.title}</h2>
             <div className="flex items-center space-x-2 mb-2">
-              <Badge color="info">React</Badge>
+              {/* <Badge color="info">React</Badge> */}
               <Badge color="gray">Optimization</Badge>
               <Badge color="success">Performance</Badge>
+              <h1>BookMark</h1>
             </div>
             <p className="text-gray-600 mb-4">
-              {questionDetails.description}
+              {/* {questionDetails.description} */}
             </p>
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
               <p className="text-gray-500 text-sm">Posted by John Doe on Sep 19, 2024</p>
