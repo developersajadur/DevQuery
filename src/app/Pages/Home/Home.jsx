@@ -21,8 +21,8 @@ const Home = () => {
       setLoading(true);
       try {
         const url = searchQuery
-          ? `${ process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?search=${searchQuery}&filter=${filterQuery}`
-          : `${ process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?filter=${filterQuery}`;
+          ? `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?search=${searchQuery}&filter=${filterQuery}`
+          : `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?filter=${filterQuery}`;
         const res = await fetch(url);
         const data = await res.json();
         setQuestions(data.questions);
@@ -44,23 +44,28 @@ const Home = () => {
 
   return (
     <div className="px-2 md:px-4 py-3">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-xl md:text-3xl font-semibold">
+      {/* Navbar - Responsive */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+        <h1 className="text-lg md:text-3xl font-semibold mb-4 md:mb-0 text-center">
           {searchQuery ? `Search Results for "${searchQuery}"` : "Newest Questions"}
         </h1>
 
         {/* Filter dropdown */}
-        <select onChange={handleFilterChange} value={filterQuery} className="border p-2 rounded md:w-96">
-  <option value="show_all">Show All</option> {/* Added Show All option */}
-  <option value="newest">Newest</option>
-  <option value="oldest">Oldest</option>
-  <option value="most_liked">Most Liked</option>
-  <option value="most_unliked">Most Unliked</option>
-</select>
+        <select
+          onChange={handleFilterChange}
+          value={filterQuery}
+          className="border p-2 rounded w-full md:w-96 mb-4 md:mb-0"
+        >
+          <option value="show_all">Show All</option>
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="most_liked">Most Liked</option>
+          <option value="most_unliked">Most Unliked</option>
+        </select>
 
         <Link
           href="/makequestion"
-          className="px-3 py-2 rounded-xl bg-blue-500 text-white font-semibold"
+          className="w-full md:w-auto px-3 py-2 rounded-xl bg-blue-500 text-white text-center font-semibold"
         >
           Make Question
         </Link>
@@ -71,7 +76,7 @@ const Home = () => {
       {error && <p>{error}</p>}
 
       {/* Display Questions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4">
         {!loading && !error && questions.map((question) => (
           <QuestionsCard key={question._id} question={question} />
         ))}
