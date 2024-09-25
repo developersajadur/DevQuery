@@ -7,20 +7,27 @@ import { useState } from "react";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
 import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const route = useRouter();
   const { register, handleSubmit } = useForm();
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
   const user = session?.user;
-  console.log(user);
-  
+  // console.log(user);
+
 
   const onSubmit = (data) => {
     console.log("Searching for:", data.searchQuery);
   };
 
   const handleClose = () => setIsOpen(false);
+
+  const handleProfile = () => {
+    route.push('/profile')
+  }
+
 
   const navLinks = [
     {
@@ -60,21 +67,22 @@ const Navbar = () => {
             <div>Loading...</div>
           ) : user ? (
             <Dropdown
-            label={
-              <div className="flex gap-2 items-center bg-transparent">
-                <Avatar img={user?.image} />
-                <h5 className="text-base font-semibold">{user?.name}</h5>
-              </div>
-            }
-            dismissOnClick={false}
-            className="flex gap-2 items-center"
-          >
-            <Dropdown.Item>Dashboard</Dropdown.Item>
-            <Dropdown.Item>Settings</Dropdown.Item>
-            <Dropdown.Item>Earnings</Dropdown.Item>
-            <Dropdown.Item onClick={() => signOut()}>Sign out</Dropdown.Item>
-          </Dropdown>          
-          
+              label={
+                <div className="flex gap-2 items-center bg-transparent">
+                  <Avatar img={user?.image} />
+                  <h5 className="text-base font-semibold">{user?.name}</h5>
+                </div>
+              }
+              dismissOnClick={false}
+              className="flex gap-2 items-center"
+            >
+              <Dropdown.Item onClick={handleProfile}>Profile</Dropdown.Item>
+              <Dropdown.Item>Dashboard</Dropdown.Item>
+              <Dropdown.Item>Settings</Dropdown.Item>
+              <Dropdown.Item>Earnings</Dropdown.Item>
+              <Dropdown.Item onClick={() => signOut()}>Sign out</Dropdown.Item>
+            </Dropdown>
+
           ) : (
             <Link href="/login" className="flex gap-2 items-center bg-blue-500 rounded-xl px-4 py-2">
               <h5 className="text-lg text-white font-semibold">Login</h5>
