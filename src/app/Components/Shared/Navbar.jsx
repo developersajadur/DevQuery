@@ -7,15 +7,28 @@ import { useRouter } from "next/navigation"; // for navigation
 import { signOut, useSession } from "next-auth/react";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
-  const [searchQuery, setSearchQuery] = useState(""); // manage the search query state
+  const route = useRouter();
+  const { register, handleSubmit } = useForm();
   const [isOpen, setIsOpen] = useState(false);
   const { data: session, status } = useSession();
   const user = session?.user;
-  const router = useRouter(); // next/navigation hook for client-side routing
-  
+  // console.log(user);
+
+
+  const onSubmit = (data) => {
+    console.log("Searching for:", data.searchQuery);
+  };
+
   const handleClose = () => setIsOpen(false);
+
+  const handleProfile = () => {
+    route.push('/profile')
+  }
+
 
   const navLinks = [
     {
@@ -81,6 +94,7 @@ const Navbar = () => {
               dismissOnClick={false}
               className="flex gap-2 items-center"
             >
+              <Dropdown.Item onClick={handleProfile}>Profile</Dropdown.Item>
               <Dropdown.Item>Dashboard</Dropdown.Item>
               <Dropdown.Item>Settings</Dropdown.Item>
               <Dropdown.Item>Earnings</Dropdown.Item>
