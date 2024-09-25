@@ -1,27 +1,12 @@
 "use client";
-import { useForm } from "react-hook-form";
 import { TextInput, Button, Drawer, Sidebar, Avatar, Dropdown } from "flowbite-react";
 import Link from "next/link";
 import { IoSearch, IoMenu } from "react-icons/io5";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // for navigation
+import { signOut, useSession } from "next-auth/react";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
-import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-
-const Navbar = () => {
-  const route = useRouter();
-  const { register, handleSubmit } = useForm();
-  const [isOpen, setIsOpen] = useState(false);
-  const { data: session, status } = useSession();
-  const user = session?.user;
-  // console.log(user);
-
-
-  const onSubmit = (data) => {
-    console.log("Searching for:", data.searchQuery);
-  };
-
   const handleClose = () => setIsOpen(false);
 
   const handleProfile = () => {
@@ -42,6 +27,24 @@ const Navbar = () => {
     },
   ];
 
+  // Handle search submission for mobile
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim() !== "") {
+      router.push(`/?search=${searchQuery}`);
+      handleClose(); // Close the drawer after search
+    }
+  };
+
+  useEffect(() => {
+    // Handle search input changes for desktop
+    if (searchQuery.trim() === "") {
+    } else {
+      // Show filtered data
+      router.push(`/?search=${searchQuery}`);
+    }
+  }, [searchQuery, router]);
+
   return (
     <div>
       {/* Desktop Navbar */}
@@ -50,19 +53,18 @@ const Navbar = () => {
           <Link href="/" className="text-3xl font-semibold">
             DevQuery
           </Link>
-          <div>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex items-center">
-              <TextInput
-                id="search"
-                className="w-96"
-                type="text"
-                icon={IoSearch}
-                placeholder="Search..."
-                required
-                {...register("searchQuery")}
-              />
-            </form>
+          <div className="flex items-center">
+            <TextInput
+              id="search"
+              className="w-96"
+              type="text"
+              icon={IoSearch}
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)} // trigger search on typing
+            />
           </div>
+          {/* Auth logic */}
           {status === "loading" ? (
             <div>Loading...</div>
           ) : user ? (
@@ -76,13 +78,11 @@ const Navbar = () => {
               dismissOnClick={false}
               className="flex gap-2 items-center"
             >
-              <Dropdown.Item onClick={handleProfile}>Profile</Dropdown.Item>
               <Dropdown.Item>Dashboard</Dropdown.Item>
               <Dropdown.Item>Settings</Dropdown.Item>
               <Dropdown.Item>Earnings</Dropdown.Item>
               <Dropdown.Item onClick={() => signOut()}>Sign out</Dropdown.Item>
             </Dropdown>
-
           ) : (
             <Link href="/login" className="flex gap-2 items-center bg-blue-500 rounded-xl px-4 py-2">
               <h5 className="text-lg text-white font-semibold">Login</h5>
@@ -90,7 +90,6 @@ const Navbar = () => {
           )}
         </div>
       </div>
-
       {/* Mobile Navbar */}
       <div className="block md:hidden">
         <Drawer open={isOpen} onClose={handleClose}>
@@ -99,16 +98,9 @@ const Navbar = () => {
             <Sidebar aria-label="Sidebar with multi-level dropdown example">
               <div className="flex h-full flex-col justify-between py-2">
                 <div>
-                  <form onSubmit={handleSubmit(onSubmit)} className="pb-3">
-                    <TextInput
-                      id="search"
-                      type="text"
-                      icon={IoSearch}
-                      placeholder="Search..."
-                      required
-                      {...register("searchQuery")}
-                    />
-                  </form>
+                <Link href="/" className="text-2xl lg:text-3xl font-semibold">
+            DevQuery
+          </Link>
                   <Sidebar.Items>
                     <Sidebar.ItemGroup>
                       <div className="text-white flex flex-col gap-2 text-xl font-medium mt-2">
@@ -135,9 +127,18 @@ const Navbar = () => {
           <Button className="w-fit bg-transparent" onClick={() => setIsOpen(true)}>
             <IoMenu className="text-black text-3xl" />
           </Button>
-          <Link href="/" className="text-2xl lg:text-3xl font-semibold">
-            DevQuery
-          </Link>
+              {/* Mobile Search Form */}
+              <form onSubmit={handleSubmit} className="pb-3">
+                    <TextInput
+                      id="search"
+                      type="text"
+                      icon={IoSearch}
+                      placeholder="Search..."
+                      required
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </form>
           <Link href="/">
             <Avatar
               className="w-10 h-10"

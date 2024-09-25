@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaUsers } from "react-icons/fa";
 import { BsPatchQuestionFill } from "react-icons/bs";
 
 const NavigationLinks = () => {
@@ -14,6 +14,11 @@ const NavigationLinks = () => {
             title: "Questions",
             path: "/questions",
             icon: <BsPatchQuestionFill />
+        },
+        {
+            title: "Users",
+            path: "/users",
+            icon: <FaUsers />
         },
     ];
     return (
