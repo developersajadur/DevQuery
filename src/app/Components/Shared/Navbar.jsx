@@ -7,15 +7,12 @@ import { useRouter } from "next/navigation"; // for navigation
 import { signOut, useSession } from "next-auth/react";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
-
-const Navbar = () => {
-  const [searchQuery, setSearchQuery] = useState(""); // manage the search query state
-  const [isOpen, setIsOpen] = useState(false);
-  const { data: session, status } = useSession();
-  const user = session?.user;
-  const router = useRouter(); // next/navigation hook for client-side routing
-  
   const handleClose = () => setIsOpen(false);
+
+  const handleProfile = () => {
+    route.push('/profile')
+  }
+
 
   const navLinks = [
     {
