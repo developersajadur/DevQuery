@@ -1,15 +1,20 @@
 "use client";
 import axios from 'axios';
 import { Avatar, Button, Card } from 'flowbite-react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
-import { ThreeCircles } from 'react-loader-spinner';
+import Loading from '../Loading/page';
 ;
 
-const CommentCard = ({ answerId }) => {
+ 
+
+const CommentCard = ({ answerId , referrer}) => {
   const [comments, setComments] = useState([]); // Store comments from the backend
   const [loading, setLoading] = useState(true);
-  
+ 
+   
+
 
   // Function to calculate time ago from a date
   const getTimeAgo = (createdAt) => {
@@ -38,7 +43,7 @@ const CommentCard = ({ answerId }) => {
         const response = await axios.get(`/questions/api/getcomments?answerId=${answerId}`);
         // Assuming you updated the API route
         setComments(response.data.comments); // Update the state with fetched comments
-        console.log("Fetched comments:", response.data.comments); // Log the fetched comments
+       
       } catch (error) {
         console.error("Error fetching comments:", error);
       } finally {
@@ -56,15 +61,7 @@ const CommentCard = ({ answerId }) => {
   // Loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center mt-24">
-        <ThreeCircles
-          visible={true}
-          height="50"
-          width="50"
-          color="#0000FF"
-          ariaLabel="three-circles-loading"
-        />
-      </div>
+        <Loading></Loading>
     );
   }
 
@@ -98,6 +95,10 @@ const CommentCard = ({ answerId }) => {
       ) : (
         <p className="text-gray-500">No comments yet.</p>
       )}
+
+       <div className='my-6'>
+        <Link className='border rounded-md px-4 py-2 text-xl font-semibold bg-blue-400 hover:bg-blue-600 cursor-pointer ' href={referrer}>Back</Link>
+       </div>
     </div>
   );
 };
