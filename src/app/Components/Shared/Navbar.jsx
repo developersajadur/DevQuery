@@ -1,5 +1,12 @@
 "use client";
-import { TextInput, Button, Drawer, Sidebar, Avatar, Dropdown } from "flowbite-react";
+import {
+  TextInput,
+  Button,
+  Drawer,
+  Sidebar,
+  Avatar,
+  Dropdown,
+} from "flowbite-react";
 import Link from "next/link";
 import { IoSearch, IoMenu } from "react-icons/io5";
 import { useState, useEffect } from "react";
@@ -7,17 +14,15 @@ import { useRouter } from "next/navigation"; // for navigation
 import { signOut, useSession } from "next-auth/react";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
-import { signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 
 const Navbar = () => {
-  const route = useRouter();
+  const router = useRouter();
   const { register, handleSubmit } = useForm();
   const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();
   const user = session?.user;
-  // console.log(user);
-
 
   const onSubmit = (data) => {
     console.log("Searching for:", data.searchQuery);
@@ -26,9 +31,8 @@ const Navbar = () => {
   const handleClose = () => setIsOpen(false);
 
   const handleProfile = () => {
-    route.push('/profile')
-  }
-
+    router.push("/profile");
+  };
 
   const navLinks = [
     {
@@ -44,7 +48,7 @@ const Navbar = () => {
   ];
 
   // Handle search submission for mobile
-  const handleSubmit = (e) => {
+  const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim() !== "") {
       router.push(`/?search=${searchQuery}`);
@@ -54,9 +58,7 @@ const Navbar = () => {
 
   useEffect(() => {
     // Handle search input changes for desktop
-    if (searchQuery.trim() === "") {
-    } else {
-      // Show filtered data
+    if (searchQuery.trim() !== "") {
       router.push(`/?search=${searchQuery}`);
     }
   }, [searchQuery, router]);
@@ -101,12 +103,16 @@ const Navbar = () => {
               <Dropdown.Item onClick={() => signOut()}>Sign out</Dropdown.Item>
             </Dropdown>
           ) : (
-            <Link href="/login" className="flex gap-2 items-center bg-blue-500 rounded-xl px-4 py-2">
+            <Link
+              href="/login"
+              className="flex gap-2 items-center bg-blue-500 rounded-xl px-4 py-2"
+            >
               <h5 className="text-lg text-white font-semibold">Login</h5>
             </Link>
           )}
         </div>
       </div>
+
       {/* Mobile Navbar */}
       <div className="block md:hidden">
         <Drawer open={isOpen} onClose={handleClose}>
@@ -115,9 +121,9 @@ const Navbar = () => {
             <Sidebar aria-label="Sidebar with multi-level dropdown example">
               <div className="flex h-full flex-col justify-between py-2">
                 <div>
-                <Link href="/" className="text-2xl lg:text-3xl font-semibold">
-            DevQuery
-          </Link>
+                  <Link href="/" className="text-2xl lg:text-3xl font-semibold">
+                    DevQuery
+                  </Link>
                   <Sidebar.Items>
                     <Sidebar.ItemGroup>
                       <div className="text-white flex flex-col gap-2 text-xl font-medium mt-2">
@@ -140,22 +146,23 @@ const Navbar = () => {
             </Sidebar>
           </Drawer.Items>
         </Drawer>
+
         <div className="flex justify-between items-center py-5 px-2 md:px-5 lg:px-10 bg-[#F5F7F8]">
           <Button className="w-fit bg-transparent" onClick={() => setIsOpen(true)}>
             <IoMenu className="text-black text-3xl" />
           </Button>
-              {/* Mobile Search Form */}
-              <form onSubmit={handleSubmit} className="pb-3">
-                    <TextInput
-                      id="search"
-                      type="text"
-                      icon={IoSearch}
-                      placeholder="Search..."
-                      required
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </form>
+          {/* Mobile Search Form */}
+          <form onSubmit={handleSearchSubmit} className="pb-3">
+            <TextInput
+              id="search"
+              type="text"
+              icon={IoSearch}
+              placeholder="Search..."
+              required
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </form>
           <Link href="/">
             <Avatar
               className="w-10 h-10"
