@@ -4,7 +4,7 @@ import { Avatar, Button, Card } from 'flowbite-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
-import Loading from '../Loading/page';
+import Loading from '../Loading/Loading';
 ;
 
  

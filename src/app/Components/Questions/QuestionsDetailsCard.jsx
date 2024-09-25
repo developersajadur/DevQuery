@@ -10,8 +10,8 @@ import toast from 'react-hot-toast';
 import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import Loading from '../Loading/page';
 import '/src/app/globals.css';
+import Loading from '../Loading/Loading';
 
 const stripHtml = (html) => {
   if (typeof window === "undefined") return html;
