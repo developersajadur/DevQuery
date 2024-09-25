@@ -10,8 +10,8 @@ import toast from 'react-hot-toast';
 import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import Loading from '../Loading/page';
 import '/src/app/globals.css';
+import Loading from '../Loading/Loading';
 
 const stripHtml = (html) => {
   if (typeof window === "undefined") return html;
@@ -39,14 +39,6 @@ const getTimeAgo = (createdAt) => {
 };
 
 const QuestionsDetailsCard = ({ questionDetails }) => {
-<<<<<<< HEAD
-=======
-  const router = useRouter();
-  const { data: session } = useSession();
-  // console.log("question",questionDetails)
-  const currentUserEmail = session?.user?.email || "";
-  const currentUserImage = session?.user?.image || "";
->>>>>>> 3b7aa77cfc1f1d5626de64e2b38f37201ec5691e
 
  
 //  const [answers, setAnswers] = useState([])

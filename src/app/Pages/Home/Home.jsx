@@ -4,6 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation"; // For reading and
 import QuestionsCard from "@/app/Components/Questions/QuestionsCard";
 import { getQuestions } from "@/app/Components/Questions/GetQuestions";
 import Link from "next/link";
+import Loading from "@/app/Components/Loading/Loading";
 
 const Home = () => {
   const [questions, setQuestions] = useState([]);
@@ -72,7 +73,7 @@ const Home = () => {
       </div>
 
       {/* Loading and Error States */}
-      {loading && <p>Loading questions...</p>}
+      {loading && <Loading/>}
       {error && <p>{error}</p>}
 
       {/* Display Questions */}

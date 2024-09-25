@@ -1,4 +1,5 @@
 "use client";
+import Loading from "@/app/Components/Loading/Loading";
 import { getQuestionDetail } from "@/app/Components/Questions/GetQuestions";
 import QuestionsDetailsCard from "@/app/Components/Questions/QuestionsDetailsCard";
 import { useEffect, useState } from "react";
@@ -24,17 +25,7 @@ const QuestionDetails = ({ params }) => {
   }, [params.id]);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <ThreeCircles
-          visible={true}
-          height="100"
-          width="100"
-          color="#0000FF" // Red color for loader
-          ariaLabel="three-circles-loading"
-        />
-      </div>
-    );
+    return <Loading/>
   }
 
   return (
