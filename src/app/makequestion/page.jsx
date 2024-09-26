@@ -86,7 +86,7 @@ const Page = () => {
     
 
     return (
-        <div className="max-w-3xl mx-auto my-6">
+        <div className="w-[90%] lg:max-w-3xl mx-auto my-6">
             <h1 className="text-2xl font-bold text-center text-black">Make your Question</h1>
 
             <form onSubmit={handleAddQuestion} className="flex flex-col justify-center items-center gap-3 w-full">
