@@ -18,7 +18,6 @@ import { useForm } from "react-hook-form";
 
 const Navbar = () => {
   const router = useRouter();
-  const { register, handleSubmit } = useForm();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();

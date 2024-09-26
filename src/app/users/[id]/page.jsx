@@ -1,11 +1,12 @@
 "use client";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { FiMail } from "react-icons/fi";
 import Link from "next/link"; // Import Link for routing
 import { useQuery } from "@tanstack/react-query";
 import Loading from "@/app/Components/Loading/Loading";
 import axios from "axios";
+import { Button } from "flowbite-react";
 
 const ProfilePage = ({ params }) => {
   const { data: session } = useSession();
@@ -76,6 +77,7 @@ const ProfilePage = ({ params }) => {
         </div>
         {/* Update Profile Button */}
         {sessionEmail && user?.email && sessionEmail === user?.email && (
+            <div className="flex gap-5 items-center">
           <div className="mt-6">
             <Link
               href={`/users/edit/${user._id}`}
@@ -84,6 +86,11 @@ const ProfilePage = ({ params }) => {
               Update Profile
             </Link>
           </div>
+          <Button onClick={() => signOut()} className="mt-6">
+            LogOut
+          </Button>
+            </div>
+
         )}
       </div>
 
