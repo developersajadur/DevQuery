@@ -31,6 +31,7 @@ const Navbar = () => {
       path: "/questions",
       icon: <BsPatchQuestionFill />,
     },
+  
   ];
 
   return (

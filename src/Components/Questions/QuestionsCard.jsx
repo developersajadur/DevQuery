@@ -1,8 +1,35 @@
+"use client"
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
 import { RiShareForwardLine } from "react-icons/ri";
 
 const QuestionsCard = ({ question }) => {
+  const { data: session, status } = useSession();
+  const user = session?.user;
+
+  const buttonForBookmark = async () => {
+    const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
+    const bookMark = {
+      email: user.email,
+      id: question._id
+    }
+    console.log(bookMark)
+    try {
+      const res = await axios.post(postBookmark, bookMark)
+      console.log("success", res.data);
+      if(res.status === 200){
+        alert("Success")
+      }
+    } catch (error) {
+      console.log(error)
+      
+    }
+    console.log(bookMark);
+  }
+
+
+
   return (
     <div>
       <div className="px-2 md:px-6 py-3 bg-[#FDF7E7] rounded-xl">
