@@ -11,15 +11,21 @@ const getTimeAgo = (createdAt) => {
   // Calculate time differences in seconds, minutes, and hours
   const minutes = Math.floor(differenceInMs / (1000 * 60));
   const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
 
   const remainingMinutes = minutes % 60;
+  const remainingHours = hours % 24;
 
-  if (hours > 0) return `${hours} hour(s) ${remainingMinutes} minutes ago`;
+  if (days > 0) {
+    return `${days} day(s) ${remainingHours} hours ago`;
+  } else if (hours > 0) {
+    return `${hours} hours ${remainingMinutes} minutes ago`;
+  }
   return `${remainingMinutes} minutes ago`;
 };
 
 const QuestionsCard = ({ question }) => {
-
+  console.log("user-det", question)
   const timeAgo = getTimeAgo(question?.createdAt);
   return (
     <div>

@@ -6,7 +6,7 @@ export const POST = async (req) => {
   try {
     // Parse the request body
     const question = await req.json();
-    const { title, description, user , image, tags} = question;
+    const { title, description, user, image, tags} = question;
 
     // Connect to the MongoDB database
     const db = await ConnectDB();
@@ -17,8 +17,8 @@ export const POST = async (req) => {
     // Insert the new question document into the collection
     const result = await questionsCollection.insertOne({
       title: title,
-      user:user,
-      image:image,
+      user: user,
+      image: image,
       description: description,
       tags: tags,
       likes:0,
