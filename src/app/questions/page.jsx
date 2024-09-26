@@ -14,7 +14,7 @@ const Page = () => {
         const response = await axios.get('/questions/api/allquestion'); // API call to fetch questions
         if (response.status === 200) { // Check for a 200 OK status
           setQuestions(response.data.questions); // Set state with the questions array
-          console.log(response.data.questions); // Log questions to verify
+          // console.log(response.data.questions); // Log questions to verify
         } else {
           console.log("Error fetching questions"); // Log if there's an unexpected status code
         }
