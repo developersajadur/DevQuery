@@ -18,11 +18,29 @@ const Page = () => {
     const image = session?.user?.image;
 
 
+  
+
     const handleAddQuestion = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
         
+        let user_id;  
+       
+        try {
+            // Append user as a query parameter in the URL
+            const res = await axios.post(`/questions/api/add_id`, {user});
+             
+             
+            const {newUser} = res.data;
+             user_id = newUser._id;
+            console.log(newUser)
+            console.log("idusre", user_id)
+        } catch (error) {
+            console.log("mak err", error);
+        }
+         
+
     if(!session?.user){
         return router.push('/login')
     }
@@ -37,7 +55,7 @@ const Page = () => {
     
         const title = e.target.title.value;
         const description = e.target.description.value;
-        const addQuestion = { title, description, user, image, tags };
+        const addQuestion = { title, description, user,image, tags };
     
         try {
             console.log("Sending request with data:", addQuestion);  // Add this

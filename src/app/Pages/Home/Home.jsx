@@ -1,13 +1,13 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation"; // For reading and setting search params
-import QuestionsCard from "@/app/Components/Questions/QuestionsCard";
-import { getQuestions } from "@/app/Components/Questions/GetQuestions";
-import Link from "next/link";
 import Loading from "@/app/Components/Loading/Loading";
+import QuestionsCard from "@/app/Components/Questions/QuestionsCard";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation"; // For reading and setting search params
+import { useEffect, useState } from "react";
 
 const Home = () => {
   const [questions, setQuestions] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -17,6 +17,26 @@ const Home = () => {
   const searchQuery = searchParams.get("search");
   const filterQuery = searchParams.get("filter") || "newest"; // Default filter is 'newest'
 
+  // Fetch user questions and set users
+  // useEffect(() => {
+  //   const fetchUserQuestions = async () => {
+  //     setLoading(true); // Set loading state
+  //     try {
+  //       const res = await axios.get('/questions/api/get_qs_user');
+  //       setQuestions(res.data.users); // Set users directly
+  //       console.log("UU", res.data); // Log the response data
+  //     } catch (error) {
+  //       console.error("Error fetching user questions:", error);
+  //       setError("Failed to load users"); // Set error state
+  //     } finally {
+  //       setLoading(false); // End loading state
+  //     }
+  //   };
+
+  //   fetchUserQuestions();
+  // }, []);
+
+  // Fetch questions based on search and filter
   useEffect(() => {
     const fetchQuestions = async () => {
       setLoading(true);
@@ -25,6 +45,11 @@ const Home = () => {
           ? `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?search=${searchQuery}&filter=${filterQuery}`
           : `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?filter=${filterQuery}`;
         const res = await fetch(url);
+        
+        if (!res.ok) {
+          throw new Error("Network response was not ok");
+        }
+        
         const data = await res.json();
         setQuestions(data.questions);
       } catch (err) {
@@ -42,6 +67,9 @@ const Home = () => {
     const newFilter = e.target.value;
     router.push(`/?filter=${newFilter}${searchQuery ? `&search=${searchQuery}` : ""}`);
   };
+
+  // Select the first user or adjust as needed based on your logic
+  const currentUser = users[0]; // Example: Selecting the first user
 
   return (
     <div className="px-2 md:px-4 py-3">
@@ -73,13 +101,14 @@ const Home = () => {
       </div>
 
       {/* Loading and Error States */}
-      {loading && <Loading/>}
+      {loading && <Loading />}
       {error && <p>{error}</p>}
 
       {/* Display Questions */}
       <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4">
-        {!loading && !error && questions.map((question) => (
-          <QuestionsCard key={question._id} question={question} />
+        {!loading && !error && questions?.map((question) => (
+          <QuestionsCard key={question._id} 
+           question={question} />
         ))}
       </div>
     </div>
