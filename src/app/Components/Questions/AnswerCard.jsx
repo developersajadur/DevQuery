@@ -78,7 +78,7 @@ const AnswerCard = ({ questionDetails }) => {
                     rows={2}
                     className="mb-4"
                   />
-                  <Button className="bg-blue-600 text-white" onClick={handleCommentSubmit}>
+                  <Button className="bg-blue-600 text-[12px] lg:text-xl text-white" onClick={handleCommentSubmit}>
                     Submit Comment
                   </Button>
                 </div>

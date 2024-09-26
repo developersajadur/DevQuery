@@ -1,20 +1,18 @@
 "use client";
 import {
-  TextInput,
+  Avatar,
   Button,
   Drawer,
   Sidebar,
-  Avatar,
-  Dropdown,
+  TextInput
 } from "flowbite-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { IoSearch, IoMenu } from "react-icons/io5";
-import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // for navigation
-import { signOut, useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
-import { useForm } from "react-hook-form";
+import { IoMenu, IoSearch } from "react-icons/io5";
 
 const Navbar = () => {
   const router = useRouter();
@@ -22,6 +20,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();
   const user = session?.user;
+  console.log("user", user)
   // console.log(user);
   
 

@@ -16,7 +16,7 @@ const Page = ({ params,  }) => {
 
   return (
     <div>
-      <h1 className="font-bold text-start mx-8 my-5 ">All comments</h1>
+      <h1 className="font-bold text-[12px] lg:text-xl text-start mx-8 my-5 ">All comments</h1>
       <CommentCard referrer = {referrer} answerId={answerId} />
     </div>
   );
