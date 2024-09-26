@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaUsers } from "react-icons/fa";
 import { BsPatchQuestionFill } from "react-icons/bs";
 
 const NavigationLinks = () => {
@@ -16,9 +16,15 @@ const NavigationLinks = () => {
             icon: <BsPatchQuestionFill />
         },
         {
+<<<<<<< HEAD:src/Components/Shared/NavigationLinks.jsx
             title: "Bookmark",
             path: "/Bookmark",
             icon: <BsPatchQuestionFill />
+=======
+            title: "Users",
+            path: "/users",
+            icon: <FaUsers />
+>>>>>>> 92df7fe9c5f05fa474c6c9b0dc2b37fc07f553db:src/app/Components/Shared/NavigationLinks.jsx
         },
     ];
     return (
