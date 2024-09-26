@@ -88,22 +88,9 @@ const Navbar = () => {
           {status === "loading" ? (
             <div>Loading...</div>
           ) : user ? (
-            <Dropdown
-              label={
-                <div className="flex gap-2 items-center bg-transparent">
-                  <Avatar img={user?.image} />
-                  <h5 className="text-base font-semibold">{user?.name}</h5>
-                </div>
-              }
-              dismissOnClick={false}
-              className="flex gap-2 items-center"
-            >
-              <Dropdown.Item onClick={handleProfile}>Profile</Dropdown.Item>
-              <Dropdown.Item>Dashboard</Dropdown.Item>
-              <Dropdown.Item>Settings</Dropdown.Item>
-              <Dropdown.Item>Earnings</Dropdown.Item>
-              <Dropdown.Item onClick={() => signOut()}>Sign out</Dropdown.Item>
-            </Dropdown>
+            <Link href={`/users/${user.id}`} className="">
+            <Avatar img={user?.image} />
+          </Link>
           ) : (
             <Link
               href="/login"

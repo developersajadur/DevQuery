@@ -49,6 +49,20 @@ const authOptions = {
     }),
   ],
   callbacks: {
+       // Modify the session callback to include the user ID in the session token
+       async jwt({ token, user }) {
+        if (user) {
+          token.id = user._id;
+        }
+        return token;
+      },
+      // Include the user's ID in the session
+      async session({ session, token }) {
+        if (token?.id) {
+          session.user.id = token.id;
+        }
+        return session;
+      },
     async signIn({ user, account }) {
       if (account.provider === "google" || account.provider === "github") {
         try {

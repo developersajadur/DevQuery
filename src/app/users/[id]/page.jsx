@@ -78,7 +78,7 @@ const ProfilePage = ({ params }) => {
         {sessionEmail && user?.email && sessionEmail === user?.email && (
           <div className="mt-6">
             <Link
-              href="/profile/update"
+              href={`/users/edit/${user._id}`}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
             >
               Update Profile
