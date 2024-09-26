@@ -3,19 +3,39 @@ import React, { useState } from "react";
 import { Button, FileInput } from "flowbite-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { useSession } from "next-auth/react";
+import Loading from "@/app/Components/Loading/Loading";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
-const UpdateProfile = () => {
-  const { update } = useSession();
-  const { data: session } = useSession();
+const UserUpdateForm = ({params}) => {
+//   const { data: session, update } = useSession();
   const [imageFile, setImageFile] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const imageHostingKey = process.env.NEXT_PUBLIC_IMAGE_HOSTING_KEY;
   const imageHostingAPIUrl = `https://api.imgbb.com/1/upload?key=${imageHostingKey}`;
+
+  const {
+    data: user,
+    isLoading,
+  } = useQuery({
+    queryKey: ["user", params.id],
+    queryFn: async () => {
+      const fetchUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/users/api/${params.id}`;
+      const response = await axios.get(fetchUrl);
+      return response.data.user;
+    },
+    enabled: !!params.id,
+  });
+
+  // Handle loading state for user data
+  if (isLoading) {
+    return <Loading />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,31 +59,27 @@ const UpdateProfile = () => {
         }
       }
 
-      const userInfo = {};
-      if (name) userInfo.name = name;
-      if (email) userInfo.email = email;
-      if (password) userInfo.password = password;
-      if (imageUrl) userInfo.image = imageUrl;
-      if (session?.user?.email) userInfo.existsEmail = session?.user?.email;
+      const userInfo = {
+        name: name || user?.name,
+        email: email || user?.email,
+        image: imageUrl || user?.image,
+        password: password || user?.password,
+        existsEmail: user?.email
+      };
 
-      if (Object.keys(userInfo).length === 0) {
-        toast.error("No fields have been updated.");
-        return;
-      }
-
-      console.log("User info to be updated: ", userInfo);
-
-      const response = await axios.patch(`/profile/api`, userInfo);
-
+      const response = await axios.patch(`/users/api/patch`, userInfo);
+      
       if (response.status === 200) {
         toast.success("Profile updated successfully!");
-
+        router.push(`/users/${params.id}`); // Redirect to the user's profile page after successful update
+        // Update session data in NextAuth
+        update({ name: userInfo.name, email: userInfo.email, image: userInfo.image });
       } else {
-        toast.error("Failed to update profile. Please try again.");
+        toast.error(response.data.message || "Failed to update profile.");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong. Please try again.");
+    //   toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -155,4 +171,4 @@ const UpdateProfile = () => {
   );
 };
 
-export default UpdateProfile;
+export default UserUpdateForm;

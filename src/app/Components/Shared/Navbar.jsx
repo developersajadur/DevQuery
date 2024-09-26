@@ -3,27 +3,26 @@ import {
   Avatar,
   Button,
   Drawer,
-  Dropdown,
   Sidebar,
-  TextInput,
+  TextInput
 } from "flowbite-react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // for navigation
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { FaHome } from "react-icons/fa";
 import { IoMenu, IoSearch } from "react-icons/io5";
 
 const Navbar = () => {
   const router = useRouter();
-  const { register, handleSubmit } = useForm();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();
   const user = session?.user;
   console.log("user", user)
+  // console.log(user);
+  
 
   const onSubmit = (data) => {
     console.log("Searching for:", data.searchQuery);
@@ -87,22 +86,9 @@ const Navbar = () => {
           {status === "loading" ? (
             <div>Loading...</div>
           ) : user ? (
-            <Dropdown
-              label={
-                <div className="flex gap-2 items-center bg-transparent">
-                  <Avatar img={user?.image} />
-                  <h5 className="text-base font-semibold">{user?.name}</h5>
-                </div>
-              }
-              dismissOnClick={false}
-              className="flex gap-2 items-center"
-            >
-              <Dropdown.Item onClick={handleProfile}>Profile</Dropdown.Item>
-              <Dropdown.Item>Dashboard</Dropdown.Item>
-              <Dropdown.Item>Settings</Dropdown.Item>
-              <Dropdown.Item>Earnings</Dropdown.Item>
-              <Dropdown.Item onClick={() => signOut()}>Sign out</Dropdown.Item>
-            </Dropdown>
+            <Link href={`/users/${user.id}`} className="">
+            <Avatar img={user?.image} />
+          </Link>
           ) : (
             <Link
               href="/login"

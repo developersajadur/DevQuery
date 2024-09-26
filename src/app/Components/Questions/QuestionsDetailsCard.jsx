@@ -65,7 +65,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
       return response.data.answers;
     },
     enabled: !!questionDetails._id, // Enable the query only if questionDetails._id is available
-  });
+  }); 
 
 
   const handleLike = () => {
