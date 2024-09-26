@@ -10,7 +10,7 @@ export const getQuestions = async () => {
   } catch (error) {
     console.error("Error details:", error); // Log the error details
     return [];
-  }
+  } 
 };
 
 export const getQuestionDetail = async (id) => {

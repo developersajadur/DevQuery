@@ -26,7 +26,7 @@ const users = await getUsers();
 
             {/* User Info */}
             <div className="flex flex-col">
-              <Link href="/users" className="font-semibold text-lg hover:text-blue-500">{user?.name}</Link>
+              <Link href={`/users/${user._id}`} className="font-semibold text-lg hover:text-blue-500">{user?.name}</Link>
               <span className="text-gray-500">{user.location || "location not found"}</span>
               {/* Skills */}
               <div className="flex gap-2 mt-2">

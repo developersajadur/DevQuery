@@ -11,4 +11,5 @@ export const GET = async (request, {params}) => {
   } catch (error) {
     return NextResponse.json({massage: "question not found", error})
   }
-};
+}; 
+     

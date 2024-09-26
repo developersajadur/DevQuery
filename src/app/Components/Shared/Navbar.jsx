@@ -23,6 +23,8 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();
   const user = session?.user;
+  // console.log(user);
+  
 
   const onSubmit = (data) => {
     console.log("Searching for:", data.searchQuery);

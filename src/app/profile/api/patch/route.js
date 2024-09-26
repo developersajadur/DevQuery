@@ -12,7 +12,7 @@ export const PATCH = async (request) => {
         if (!exists) {
             return NextResponse.json({ message: "User not exists" })
         }
-        else {
+        else { 
             const updateFields = {
                 name: name || exists.name,
                 email: email || exists.email,

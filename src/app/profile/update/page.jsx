@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 
-const UpdateProfile = () => {
+const UserUpdateForm = () => {
   const { update } = useSession();
   const { data: session } = useSession();
   const [imageFile, setImageFile] = useState(null);
@@ -53,7 +53,7 @@ const UpdateProfile = () => {
 
       console.log("User info to be updated: ", userInfo);
 
-      const response = await axios.patch(`/profile/api`, userInfo);
+      const response = await axios.patch(`/profile/api/patch`, userInfo);
 
       if (response.status === 200) {
         toast.success("Profile updated successfully!");
@@ -155,4 +155,4 @@ const UpdateProfile = () => {
   );
 };
 
-export default UpdateProfile;
+export default UserUpdateForm;

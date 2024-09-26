@@ -3,7 +3,6 @@ import Loading from "@/app/Components/Loading/Loading";
 import { getQuestionDetail } from "@/app/Components/Questions/GetQuestions";
 import QuestionsDetailsCard from "@/app/Components/Questions/QuestionsDetailsCard";
 import { useEffect, useState } from "react";
-import { ThreeCircles } from "react-loader-spinner";
 
 const QuestionDetails = ({ params }) => {
   const [questionDetails, setQuestionDetails] = useState(null);

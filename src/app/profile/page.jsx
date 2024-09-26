@@ -5,9 +5,12 @@ import { FiMail } from 'react-icons/fi';
 import Link from 'next/link'; // Import Link for routing
 
 
+
 const ProfilePage =  () => {
     const { data: session } = useSession();
     const email = session?.user?.email;
+
+
 
     
 
@@ -34,7 +37,7 @@ const ProfilePage =  () => {
                 </div>
                 {/* Update Profile Button */}
                 <div className="mt-6">
-                    <Link href={`/profile/${session?.user?.email}`} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    <Link href="/profile/update" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
                         Update Profile
                     </Link>
                 </div>
