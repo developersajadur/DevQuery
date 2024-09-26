@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import Loading from "@/app/Components/Loading/Loading";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 
 const UserUpdateForm = ({params}) => {
 //   const { data: session, update } = useSession();
@@ -13,6 +14,7 @@ const UserUpdateForm = ({params}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const imageHostingKey = process.env.NEXT_PUBLIC_IMAGE_HOSTING_KEY;
   const imageHostingAPIUrl = `https://api.imgbb.com/1/upload?key=${imageHostingKey}`;
@@ -69,6 +71,7 @@ const UserUpdateForm = ({params}) => {
       
       if (response.status === 200) {
         toast.success("Profile updated successfully!");
+        router.push(`/users/${params.id}`); // Redirect to the user's profile page after successful update
         // Update session data in NextAuth
         update({ name: userInfo.name, email: userInfo.email, image: userInfo.image });
       } else {
