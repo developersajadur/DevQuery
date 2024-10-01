@@ -1,6 +1,9 @@
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
+import { RiBookMarkedFill } from "react-icons/ri";
 
 
 const getTimeAgo = (createdAt) => {
@@ -26,24 +29,60 @@ const getTimeAgo = (createdAt) => {
 
 const QuestionsCard = ({ question }) => {
   console.log("user-det", question)
+  const { data: session, status } = useSession();
+  const user = session?.user;
+  const buttonForBookmark = async () => {
+    const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
+    const bookMark = {
+      email: user.email,
+      id: question._id,
+      title: question.title,
+      image:question.image,
+      description: question?.description,
+      likes:question?.likes,
+      unlikes: question?.unlikes
+
+
+    }
+    console.log(bookMark)
+    try {
+      const res = await axios.post(postBookmark, bookMark)
+      console.log("success", res.data);
+      if(res.status === 200){
+        alert("Success")
+      }
+    } catch (error) {
+      console.log(error)
+      
+    }
+    console.log(bookMark);
+  }
+
   const timeAgo = getTimeAgo(question?.createdAt);
   return (
     <div>
       <div className="px-2 md:px-6 py-3 bg-[#d6d6d6] h-[150px] shadow-lg rounded-xl">
+         <div className="flex justify-between">
          <div className="flex items-center gap-3">
          <Image className="rounded-xl  border-2 " src={question.image} height={10} width={40} alt="question image" />
-
+ 
           <div className="flex flex-col gap-2 items-start">
           <Link
           href={`questions/${question._id}`}
           className="text-xl md:text-2xl font-semibold text-[#131842] hover:text-[#3FA2F6]"
         >
           {question?.title}
-        </Link>
+        </Link> 
+        
        <p className="">{question?.description.slice(0, 80)}..</p>
 
           </div>
          </div>
+         <div>
+          <button onClick={buttonForBookmark}><RiBookMarkedFill/></button>
+         </div>
+         </div>
+
         <div className="flex justify-between items-center mt-4">
           <div className="flex items-center gap-1 md:gap-4 text-xl md:text-3xl text-[#131842]">
             <button className="flex items-center">
