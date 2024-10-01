@@ -54,7 +54,7 @@ export const PUT = async (request, { params }) => {
             );
 
             if (question.unlikedBy && question.unlikedBy.includes(email)) {
-                const result2 = await questionsCollection.updateOne(
+                const result3 = await questionsCollection.updateOne(
                     { _id: new ObjectId(params.id) },
                     {
                         $inc: { unlikes: -1 },
