@@ -11,8 +11,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"; // for navigation
 import { useEffect, useState } from "react";
 import { BsPatchQuestionFill } from "react-icons/bs";
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaUsers } from "react-icons/fa";
 import { IoMenu, IoSearch } from "react-icons/io5";
+import { MdOutlineCardTravel } from "react-icons/md";
 
 const Navbar = () => {
   const router = useRouter();
@@ -20,19 +21,11 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();
   const user = session?.user;
-  console.log("user", user)
   // console.log(user);
   
 
-  const onSubmit = (data) => {
-    console.log("Searching for:", data.searchQuery);
-  };
-
   const handleClose = () => setIsOpen(false);
 
-  const handleProfile = () => {
-    router.push("/profile");
-  };
 
   const navLinks = [
     {
@@ -44,6 +37,16 @@ const Navbar = () => {
       title: "Questions",
       path: "/questions",
       icon: <BsPatchQuestionFill />,
+    },
+    {
+      title: "Users",
+      path: "/users",
+      icon: <FaUsers />
+    },
+    {
+      title: "Jobs",
+      path: "/jobs",
+      icon: <MdOutlineCardTravel />
     },
   ];
 
