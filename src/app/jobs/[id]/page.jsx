@@ -31,8 +31,7 @@ const JobDetails = ({params}) => {
       </div>
       <div className="mt-6">
         <Link
-        id={job?._id}
-          href={`/jobs/apply/${job?._id}`} // Link to the apply page or API
+          href={`/jobs/apply/${job?.company_website}`} // Link to the apply page or API
           className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-300"
         >
           Apply Now

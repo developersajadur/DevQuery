@@ -30,7 +30,7 @@ const Jobs = () => {
         <Link className="p-3 bg-blue-500 font-semibold text-white rounded-xl" href="jobs/post-job">Make A Job Post</Link>
         </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {jobs?.map((job) => ( // Show only the first 6 jobs
+        {jobs?.map((job) => ( 
           <div
             key={job?._id}
             className="flex flex-col bg-white border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
@@ -47,12 +47,13 @@ const Jobs = () => {
             {/* Job Info */}
             <div className="p-4 flex flex-col flex-grow">
               <Link
-                href={`/jobs/${job?._id}`}
-                className="font-semibold text-lg hover:text-blue-600 transition-colors duration-200 mb-1"
+              target="_blank"
+                href={job?.company_website}
+                className="font-semibold text-xl hover:text-blue-600 transition-colors duration-200 mb-1"
               >
-                {job.position}
+                {job.company}
               </Link>
-              <span className="text-gray-700 font-medium">{job.company}</span>
+              <span className="text-gray-700 font-medium">{job.position}</span>
               <div className="flex items-center mt-2 text-gray-600">
                 <FaMapMarkerAlt className="mr-1" />
                 <span>{job.location || "Location not found"}</span>
