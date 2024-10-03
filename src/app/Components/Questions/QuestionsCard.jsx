@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
-import { RiBookMarkedFill } from "react-icons/ri";
+import { BsBookmarkStarFill } from "react-icons/bs";
 
 const getTimeAgo = (createdAt) => {
     const now = new Date();
@@ -81,7 +81,7 @@ const QuestionsCard = ({ question }) => {
 
         <div>
           <button onClick={handleBookmark} className="text-2xl text-[#17153B] hover:text-[#3FA2F6]">
-            <RiBookMarkedFill />
+            <BsBookmarkStarFill />
           </button>
         </div>
       </div>
