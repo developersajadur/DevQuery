@@ -2,6 +2,7 @@ import Link from 'next/link';
 import React from 'react';
 import { FaHome, FaUsers } from "react-icons/fa";
 import { BsPatchQuestionFill } from "react-icons/bs";
+import { MdOutlineCardTravel } from 'react-icons/md';
 
 const NavigationLinks = () => {
     const navLinks = [
@@ -15,11 +16,20 @@ const NavigationLinks = () => {
             path: "/questions",
             icon: <BsPatchQuestionFill />
         },
-        {
+        
+
+            {
             title: "Users",
             path: "/users",
             icon: <FaUsers />
-        },
+
+            },
+        {
+            title: "Jobs",
+            path: "/jobs",
+            icon: <MdOutlineCardTravel />
+          },
+
     ];
     return (
         <div className=''>

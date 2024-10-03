@@ -1,4 +1,5 @@
 "use client";
+
 import Loading from "@/app/Components/Loading/Loading";
 import QuestionsCard from "@/app/Components/Questions/QuestionsCard";
 import Link from "next/link";
@@ -60,7 +61,7 @@ const Home = () => {
     <div className="px-2 md:px-4 py-3">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
         <h1 className="text-lg md:text-3xl font-semibold mb-4 md:mb-0 text-center">
-          {searchQuery ? `Search Results for "${searchQuery}"` : "Newest Questions"}
+        Questions
         </h1>
 
         <select
@@ -68,8 +69,8 @@ const Home = () => {
           value={filterQuery}
           className="border p-2 rounded w-full md:w-96 mb-4 md:mb-0"
         >
-          <option value="show_all">Show All</option>
           <option value="newest">Newest</option>
+          <option value="show_all">Show All</option>
           <option value="oldest">Oldest</option>
           <option value="most_liked">Most Liked</option>
           <option value="most_unliked">Most Unliked</option>

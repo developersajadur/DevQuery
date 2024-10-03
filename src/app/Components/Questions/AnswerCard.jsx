@@ -33,7 +33,7 @@ const AnswerCard = ({ questionDetails }) => {
       }
     };
     fetchAnswers();
-  }, [questionDetails._id]); // Add questionDetails._id as a dependency to refetch if it changes
+  }, [questionDetails._id]); 
 
   const handleCommentSubmit = () => {
     // console.log("Submitted Comment:", comment);

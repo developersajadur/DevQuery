@@ -1,30 +1,30 @@
 "use client";
 
-import axios from 'axios'; // Make sure axios is imported
-import { useEffect, useState } from 'react';
+import axios from 'axios'; 
 import AllQuestion from '../Components/Questions/AllQuestions/AllQuestion';
+import { useQuery } from '@tanstack/react-query';
+import Loading from '../Components/Loading/Loading';
 
 const Page = () => {
-  const [questions, setQuestions] = useState([]); // Initialize state for questions
-  
-  // Use useEffect to handle side effects like API calls
-  useEffect(() => {
-    const fetchQuestions = async () => {
+  const{data: questions, isLoading, error} = useQuery({
+    queryKey: ['questions'],
+    queryFn: async () => {
       try {
-        const response = await axios.get('/questions/api/allquestion'); // API call to fetch questions
-        if (response.status === 200) { // Check for a 200 OK status
-          setQuestions(response.data.questions); // Set state with the questions array
-          // console.log(response.data.questions); // Log questions to verify
+        const response = await axios.get('/questions/api/allquestion');
+        if (response.status === 200) {
+          return response.data.questions;
         } else {
-          console.log("Error fetching questions"); // Log if there's an unexpected status code
+          console.log('Error fetching questions');
         }
       } catch (error) {
-        console.error("Error:", error); // Log any errors that occur
+        console.error('Error:', error);
       }
-    };
+    }
+  })
 
-    fetchQuestions(); // Call the fetch function when the component mounts
-  }, []); // Empty dependency array to run only once
+  
+  if (isLoading) return <Loading />;
+  if (error) return <p>Error loading job details.</p>;
 
   return (
     <div>
@@ -33,7 +33,7 @@ const Page = () => {
           <AllQuestion key={index} question={question}></AllQuestion>
         ))
       ) : (
-        <p>No questions available</p> // Fallback message if no questions
+        <p>No questions available</p>
       )}
     </div>
   );
