@@ -40,7 +40,7 @@ const Home = () => {
       {/* Navbar - Responsive */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
         <h1 className="text-lg md:text-3xl font-semibold mb-4 md:mb-0 text-center">
-          {searchQuery ? `Search Results for "${searchQuery}"` : "Newest Questions"}
+        Questions
         </h1>
 
         {/* Filter dropdown */}
