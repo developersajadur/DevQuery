@@ -54,7 +54,7 @@ export const PUT = async (request, { params }) => {
             );
 
             if (question.likedBy && question.likedBy.includes(email) && likes > 0) {
-                const result2 = await questionsCollection.updateOne(
+                const result3 = await questionsCollection.updateOne(
                     { _id: new ObjectId(params.id) },
                     {
                         $inc: { likes: -1 },
