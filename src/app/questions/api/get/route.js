@@ -8,9 +8,13 @@ export const GET = async (req) => {
   const url = new URL(req.url);
   const search = url.searchParams.get("search");
   const filter = url.searchParams.get("filter"); // Get filter from query params
+  const page = parseInt(url.searchParams.get("page")) || 1; // Current page (default to 1)
+  const limit = parseInt(url.searchParams.get("limit")) || 10; // Items per page (default to 10)
+
+  const skip = (page - 1) * limit; // Calculate how many records to skip
 
   let query = {};
-  let sortOption = {}; // Sorting option
+  let sortOption = {};
 
   // Search query logic
   if (search) {
@@ -19,26 +23,31 @@ export const GET = async (req) => {
     };
   }
 
-  // Handle filter for likes, unlikes, newest, oldest, and show all
+  // Filter options logic
   if (filter === "most_liked") {
-    sortOption = { likes: -1 }; // Sort by likes in descending order
+    sortOption = { likes: -1 };
   } else if (filter === "most_unliked") {
-    sortOption = { unlikes: -1 }; // Sort by unlikes in descending order
+    sortOption = { unlikes: -1 };
   } else if (filter === "newest") {
-    sortOption = { createdAt: -1 }; // Sort by newest questions
+    sortOption = { createdAt: -1 };
   } else if (filter === "oldest") {
-    sortOption = { createdAt: 1 }; // Sort by oldest questions
+    sortOption = { createdAt: 1 };
   } else if (filter === "show_all") {
-    // No sorting for "Show All" - fetch all without sorting
     sortOption = {};
   } else {
-    // Default sort option if no valid filter is provided
-    sortOption = { createdAt: -1 }; // Fallback to newest
+    sortOption = { createdAt: -1 };
   }
 
   try {
-    const questions = await questionsCollection.find(query).sort(sortOption).toArray();
-    return NextResponse.json({ questions });
+    const totalQuestions = await questionsCollection.countDocuments(query); // Get total number of questions
+    const questions = await questionsCollection
+      .find(query)
+      .sort(sortOption)
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    return NextResponse.json({ questions, totalQuestions, page, totalPages: Math.ceil(totalQuestions / limit) });
   } catch (error) {
     return NextResponse.json({ message: "Questions not found", error });
   }

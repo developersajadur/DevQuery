@@ -2,48 +2,29 @@
 import Loading from "@/app/Components/Loading/Loading";
 import QuestionsCard from "@/app/Components/Questions/QuestionsCard";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation"; // For reading and setting search params
+import { useRouter, useSearchParams } from "next/navigation"; 
 import { useEffect, useState } from "react";
 
 const Home = () => {
   const [questions, setQuestions] = useState([]);
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [totalPages, setTotalPages] = useState(1); // Total number of pages
+  const [currentPage, setCurrentPage] = useState(1); // Current page
 
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const searchQuery = searchParams.get("search");
-  const filterQuery = searchParams.get("filter") || "newest"; // Default filter is 'newest'
+  const filterQuery = searchParams.get("filter") || "newest"; 
 
-  // Fetch user questions and set users
-  // useEffect(() => {
-  //   const fetchUserQuestions = async () => {
-  //     setLoading(true); // Set loading state
-  //     try {
-  //       const res = await axios.get('/questions/api/get_qs_user');
-  //       setQuestions(res.data.users); // Set users directly
-  //       console.log("UU", res.data); // Log the response data
-  //     } catch (error) {
-  //       console.error("Error fetching user questions:", error);
-  //       setError("Failed to load users"); // Set error state
-  //     } finally {
-  //       setLoading(false); // End loading state
-  //     }
-  //   };
-
-  //   fetchUserQuestions();
-  // }, []);
-
-  // Fetch questions based on search and filter
   useEffect(() => {
     const fetchQuestions = async () => {
       setLoading(true);
       try {
         const url = searchQuery
-          ? `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?search=${searchQuery}&filter=${filterQuery}`
-          : `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?filter=${filterQuery}`;
+          ? `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?search=${searchQuery}&filter=${filterQuery}&page=${currentPage}`
+          : `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?filter=${filterQuery}&page=${currentPage}`;
         const res = await fetch(url);
         
         if (!res.ok) {
@@ -52,6 +33,7 @@ const Home = () => {
         
         const data = await res.json();
         setQuestions(data.questions);
+        setTotalPages(data.totalPages); // Set the total number of pages
       } catch (err) {
         setError("Failed to load questions");
       } finally {
@@ -60,26 +42,27 @@ const Home = () => {
     };
 
     fetchQuestions();
-  }, [searchQuery, filterQuery]);
+  }, [searchQuery, filterQuery, currentPage]);
 
-  // Function to handle filter changes
   const handleFilterChange = (e) => {
     const newFilter = e.target.value;
     router.push(`/?filter=${newFilter}${searchQuery ? `&search=${searchQuery}` : ""}`);
   };
 
-  // Select the first user or adjust as needed based on your logic
-  const currentUser = users[0]; // Example: Selecting the first user
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      router.push(`/?page=${newPage}${filterQuery ? `&filter=${filterQuery}` : ""}${searchQuery ? `&search=${searchQuery}` : ""}`);
+    }
+  };
 
   return (
     <div className="px-2 md:px-4 py-3">
-      {/* Navbar - Responsive */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
         <h1 className="text-lg md:text-3xl font-semibold mb-4 md:mb-0 text-center">
           {searchQuery ? `Search Results for "${searchQuery}"` : "Newest Questions"}
         </h1>
 
-        {/* Filter dropdown */}
         <select
           onChange={handleFilterChange}
           value={filterQuery}
@@ -100,16 +83,45 @@ const Home = () => {
         </Link>
       </div>
 
-      {/* Loading and Error States */}
       {loading && <Loading />}
       {error && <p>{error}</p>}
 
-      {/* Display Questions */}
       <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4">
         {!loading && !error && questions?.map((question) => (
-          <QuestionsCard key={question._id} 
-           question={question} />
+          <QuestionsCard key={question._id} question={question} />
         ))}
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center items-center space-x-2 mt-6">
+        {/* Previous Button */}
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1} // Disable if on the first page
+          className={`px-4 py-2 border ${currentPage === 1 ? "bg-gray-200" : "bg-blue-500 text-white"}`}
+        >
+          Previous
+        </button>
+
+        {/* Page Numbers */}
+        {[...Array(totalPages)].map((_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            className={`px-4 py-2 border ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+          >
+            {index + 1}
+          </button>
+        ))}
+
+        {/* Next Button */}
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages} // Disable if on the last page
+          className={`px-4 py-2 border ${currentPage === totalPages ? "bg-gray-200" : "bg-blue-500 text-white"}`}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
