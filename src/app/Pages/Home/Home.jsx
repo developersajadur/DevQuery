@@ -49,8 +49,8 @@ const Home = () => {
           value={filterQuery}
           className="border p-2 rounded w-full md:w-96 mb-4 md:mb-0"
         >
-          <option value="show_all">Show All</option>
           <option value="newest">Newest</option>
+          <option value="show_all">Show All</option>
           <option value="oldest">Oldest</option>
           <option value="most_liked">Most Liked</option>
           <option value="most_unliked">Most Unliked</option>
