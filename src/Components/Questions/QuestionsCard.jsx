@@ -14,7 +14,12 @@ const QuestionsCard = ({ question }) => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
     const bookMark = {
       email: user.email,
-      id: question._id
+      id: question._id,
+      title: question.title,
+      image:question.image,
+      description: question?.description,
+      likes:question?.likes,
+      unlikes: question?.unlikes
     }
     console.log(bookMark)
     try {

@@ -15,6 +15,11 @@ const NavigationLinks = () => {
             path: "/questions",
             icon: <BsPatchQuestionFill />
         },
+        {
+            title: "Bookmark",
+            path: "/Bookmark",
+            icon: <BsPatchQuestionFill />,
+          },
     ];
     return (
         <div className=''>
