@@ -15,7 +15,7 @@ export const POST = async (req) => {
     return NextResponse.json({
       message: 'Job application submitted successfully',
       applicationId: result.insertedId,
-    }, { status: 201 }); 
+    }, { status: 200 }); 
   } catch (error) {
     console.error("Error inserting job application:", error); 
 

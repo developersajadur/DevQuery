@@ -2,21 +2,25 @@
 
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 const Apply = (props) => {
   const jobId = props?.params?.id; // Get the job ID from the props
 //   console.log(jobId);
 
   // Initialize React Hook Form
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit,reset, formState: { errors } } = useForm();
 
   const onSubmit = async(data) => {
     const sendData = {
-        data:data,
+        data,
         jobId: jobId,
     }
     const res = await axios.post("/jobs/apply/api/post", sendData)
-    console.log(res);
+    if(res.status === 200){
+      reset()
+      return toast.success(res.data.message)
+    }
     
   };
 
