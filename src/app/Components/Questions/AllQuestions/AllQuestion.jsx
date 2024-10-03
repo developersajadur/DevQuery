@@ -24,7 +24,7 @@ const AllQuestion = ({question}) => {
     }
     return `${remainingMinutes} minutes ago`;
   };
-   console.log("quesr", question)
+  //  console.log("quesr", question)
     return (
         <div className='my-6 max-w-[90%] mx-auto'>
         <Card className="mb-4" >

@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import Loading from "@/app/Components/Loading/Loading";
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const UserUpdateForm = ({params}) => {
 //   const { data: session, update } = useSession();

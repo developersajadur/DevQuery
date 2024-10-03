@@ -51,7 +51,7 @@ const UserUpdateForm = () => {
         return;
       }
 
-      console.log("User info to be updated: ", userInfo);
+      // console.log("User info to be updated: ", userInfo);
 
       const response = await axios.patch(`/profile/patch/api`, userInfo);
 

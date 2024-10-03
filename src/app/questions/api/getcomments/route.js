@@ -6,7 +6,7 @@ export const GET = async (req) => {
     // Extract the answerId from the URL parameters
     const { searchParams } = new URL(req.url); // Get search parameters from the request URL
     const answerId = searchParams.get('answerId'); // Get the answerId from search parameters
-    console.log("object", answerId); // Log the answerId for debugging
+    // console.log("object", answerId); // Log the answerId for debugging
 
     if (!answerId) {
       return NextResponse.json({ message: "Answer ID is required" }, { status: 400 });
