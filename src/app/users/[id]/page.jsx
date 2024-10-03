@@ -36,6 +36,11 @@ const ProfilePage = ({ params }) => {
     return <div>Error loading user data.</div>;
   }
 
+  const goToBookmark = (e) =>{
+      console.log(e,"Hello");
+      
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center">
       {/* Profile Header */}
@@ -100,7 +105,7 @@ const ProfilePage = ({ params }) => {
           Questions
         </button>
         <button className="text-gray-500">Answers</button>
-        <button className="text-gray-500">Bookmarks</button>
+        <Link href={"/Bookmark"}><button onClick={goToBookmark} className="text-gray-500">Bookmarks</button></Link>
       </div>
 
       {/* Activity/Content Section */}

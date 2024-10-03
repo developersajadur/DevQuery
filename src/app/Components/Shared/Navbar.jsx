@@ -38,6 +38,9 @@ const Navbar = () => {
       path: "/questions",
       icon: <BsPatchQuestionFill />,
     },
+
+  
+
     {
       title: "Users",
       path: "/users",
@@ -48,6 +51,7 @@ const Navbar = () => {
       path: "/jobs",
       icon: <MdOutlineCardTravel />
     },
+
   ];
 
   // Handle search submission for mobile

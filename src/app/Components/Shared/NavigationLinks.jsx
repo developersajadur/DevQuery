@@ -16,16 +16,20 @@ const NavigationLinks = () => {
             path: "/questions",
             icon: <BsPatchQuestionFill />
         },
-        {
+        
+
+            {
             title: "Users",
             path: "/users",
             icon: <FaUsers />
-        },
+
+            },
         {
             title: "Jobs",
             path: "/jobs",
             icon: <MdOutlineCardTravel />
           },
+
     ];
     return (
         <div className=''>
