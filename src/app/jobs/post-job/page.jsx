@@ -48,7 +48,7 @@ const JobPost = () => {
           location: data.location,
           vacancy: data.vacancy,
           last_date: data.last_date_of_apply,
-          post_date: formatDate(new Date()),
+          post_date: formData(new Date()),
           image: imageUrl,
           description: data.description,
         };
