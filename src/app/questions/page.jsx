@@ -1,18 +1,42 @@
-import { getQuestions } from "@/Components/Questions/GetQuestions";
+"use client";
 
- const Questions = async () => {
-  const questions = await getQuestions();
+import axios from 'axios'; 
+import AllQuestion from '../Components/Questions/AllQuestions/AllQuestion';
+import { useQuery } from '@tanstack/react-query';
+import Loading from '../Components/Loading/Loading';
+
+const Page = () => {
+  const{data: questions, isLoading, error} = useQuery({
+    queryKey: ['questions'],
+    queryFn: async () => {
+      try {
+        const response = await axios.get('/questions/api/allquestion');
+        if (response.status === 200) {
+          return response.data.questions;
+        } else {
+          console.log('Error fetching questions');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+  })
+
+  
+  if (isLoading) return <Loading />;
+  if (error) return <p>Error loading job details.</p>;
+
   return (
     <div>
-      
-      {questions?.map((question) => (
-        <div key={question._id}>
-          <h2>{question.title}</h2>
-          <p>{}</p>
-        </div>
-      ))}
+      {questions.length > 0 ? (
+        questions.map((question, index) => (
+          <AllQuestion key={index} question={question}></AllQuestion>
+        ))
+      ) : (
+        <p>No questions available</p>
+      )}
     </div>
   );
 };
 
-export default Questions;
+export default Page;

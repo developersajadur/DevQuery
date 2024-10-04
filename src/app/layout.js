@@ -1,12 +1,10 @@
+import ReactQueryProvider from "@/Providers/ReactQueryProvider";
 import "./globals.css";
-import ReactQueryProvider from "@/lib/Providers/ReactQueryProvider";
-import Navbar from "@/Components/Shared/Navbar";
-import NavigationLinks from "@/Components/Shared/NavigationLinks";
-import Footer from "@/Components/Shared/Footer";
-import AuthProvider from "@/lib/Providers/AuthProvider";
 import { Toaster } from "react-hot-toast";
-
-
+import AuthProvider from "@/Providers/AuthProvider";
+import Navbar from "./Components/Shared/Navbar";
+import NavigationLinks from "./Components/Shared/NavigationLinks";
+import Footer from "./Components/Shared/Footer";
 
 // Metadata for SEO (server-side)
 export const metadata = {
@@ -18,40 +16,40 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-       <ReactQueryProvider>
+      <ReactQueryProvider>
         <AuthProvider>
-      <body
-        className=''
-      >
-        <Toaster />
-       
-          {/* Wrapping the app with React Query Provider */}
-          <div className="flex flex-col min-h-screen">
-            {/* Navbar */}
-            <header className="border-b-[#A1D6B2] border-b-[1px] rounded-b-xl">
-              <Navbar />
-            </header>
+          <body
+            className=''
+          >
+            <Toaster />
 
-            {/* Main Content */}
-            <main className="flex flex-1 overflow-hidden">
-              {/* Sidebar */}
-              <aside className="md:w-52 hidden md:block min-h-screen overflow-y-auto border-r pl-4 border-[#A1D6B2]">
-                <NavigationLinks />
-              </aside>
+            {/* Wrapping the app with React Query Provider */}
+            <div className="flex flex-col min-h-screen">
+              {/* Navbar */}
+              <header className="border-b-[#A1D6B2] border-b-[1px] rounded-b-xl">
+                <Navbar />
+              </header>
 
-              {/* Main content */}
-              <section className="w-full h-full overflow-y-auto">
-                {children}
-              </section>
-            </main>
+              {/* Main Content */}
+              <main className="flex flex-1 overflow-hidden">
+                {/* Sidebar */}
+                <aside className="md:w-52 hidden md:block min-h-screen overflow-y-auto border-r pl-4 border-[#A1D6B2]">
+                  <NavigationLinks />
+                </aside>
 
-            {/* Footer */}
-            <footer className="mt-auto">
-              <Footer />
-            </footer>
-          </div>
-      </body>
-      </AuthProvider>
+                {/* Main content */}
+                <section className="w-full h-full overflow-y-auto">
+                  {children}
+                </section>
+              </main>
+
+              {/* Footer */}
+              <footer className="mt-auto">
+                <Footer />
+              </footer>
+            </div>
+          </body>
+        </AuthProvider>
       </ReactQueryProvider>
     </html>
   );

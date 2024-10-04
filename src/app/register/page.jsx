@@ -1,18 +1,21 @@
 "use client";
 import React, { useState } from "react";
-import { Button } from "flowbite-react";
+import { Button, FileInput } from "flowbite-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-
+import SocialSignIn from "../Components/Others/SocialSignIn";
 
 const Register = () => {
-  const { register, handleSubmit, formState: { errors }, reset, watch } = useForm();
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter()
+  const [imageFile, setImageFile] = useState(null); // State for image file
+  const router = useRouter();
 
+  const imageHostingKey = process.env.NEXT_PUBLIC_IMAGE_HOSTING_KEY;
+  const imageHostingAPIUrl = `https://api.imgbb.com/1/upload?key=${imageHostingKey}`;
   const fetchUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/register/api/post`;
 
   // Password validation function
@@ -25,16 +28,42 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     if (!validatePassword(data.password)) {
-      toast.error("Password Must Be Strong");
+      toast.error("Password must be strong (at least 8 characters, 1 letter, and 1 number).");
+      return;
+    }
+
+    // If no image is uploaded
+    if (!imageFile) {
+      toast.error("Profile image is required.");
       return;
     }
 
     try {
-      const res = await axios.post(fetchUrl, data);
-      if (res.status === 200) {
-        toast.success("Successfully registered!");
-        reset();
-        router.push("/login");
+      // Upload image to ImgBB
+      const formData = new FormData();
+      formData.append('image', imageFile); // Pass the selected image file
+
+      const imgRes = await axios.post(imageHostingAPIUrl, formData);
+
+      if (imgRes.data.success) {
+        const imageUrl = imgRes.data.data.url; // Get the image URL
+
+        // Submit the form with image URL
+        const userInfo = {
+          email: data.email,
+          name: data.name,
+          image: imageUrl, // Append image URL to data
+          password: data.password,
+          role: "user",
+        };
+
+        const res = await axios.post(fetchUrl, userInfo);
+
+        if (res.status === 200) {
+          toast.success("Successfully registered!");
+          reset();
+          router.push("/login");
+        }
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -64,6 +93,7 @@ const Register = () => {
             />
             {errors.name && <p className="text-red-500 text-xs mt-1">Name is required</p>}
           </div>
+
           {/* Email Input */}
           <div>
             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
@@ -77,6 +107,19 @@ const Register = () => {
               {...register('email', { required: true })}
             />
             {errors.email && <p className="text-red-500 text-xs mt-1">Email is required</p>}
+          </div>
+
+          {/* Image Upload Input */}
+          <div>
+            <label htmlFor="image" className="block mb-2 text-sm font-medium text-gray-900">
+              Profile Image
+            </label>
+            <FileInput
+              id="file-upload-helper-text"
+              helperText="Support PNG, JPG, and JPEG Files"
+              onChange={(e) => setImageFile(e.target.files[0])} // Set the selected image file
+            />
+            {errors.image && <p className="text-red-500 text-xs mt-1">Image is required</p>}
           </div>
 
           {/* Password Input */}
@@ -114,23 +157,12 @@ const Register = () => {
             Sign up
           </Button>
         </form>
-        <div className="text-center text-blue-500">Already Have An Account? <Link className='text-black font-bold' href="/login">Click Here</Link></div>
+        <div className="text-center text-blue-500">
+          Already Have An Account? <Link className="text-black font-bold" href="/login">Click Here</Link>
+        </div>
 
         {/* OAuth Buttons */}
-        <div className="mt-6 flex justify-between">
-          <Button
-            className="w-full text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-2.5 mr-2"
-            onClick={() => console.log("Sign up with Google")}
-          >
-            Sign up with Google
-          </Button>
-          <Button
-            className="w-full text-white bg-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-2 py-2.5 ml-2"
-            onClick={() => console.log("Sign up with GitHub")}
-          >
-            Sign up with GitHub
-          </Button>
-        </div>
+        <SocialSignIn />
       </div>
     </div>
   );

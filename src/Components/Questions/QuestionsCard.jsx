@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import { AiOutlineLike, AiOutlineDislike } from "react-icons/ai";
 import { FaBookmark } from "react-icons/fa";
 import { RiShareForwardLine } from "react-icons/ri";
@@ -9,24 +10,25 @@ import { RiShareForwardLine } from "react-icons/ri";
 const QuestionsCard = ({ question }) => {
   const { data: session, status } = useSession();
   const user = session?.user;
+  console.log(user);
+  
 
   const buttonForBookmark = async () => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
     const bookMark = {
-      email: user.email,
-      id: question._id,
-      title: question.title,
-      image:question.image,
-      description: question?.description,
-      likes:question?.likes,
-      unlikes: question?.unlikes
+      userId: user.id,
+      questionId: question._id,
+     
     }
     console.log(bookMark)
     try {
       const res = await axios.post(postBookmark, bookMark)
       console.log("success", res.data);
       if(res.status === 200){
-        alert("Success")
+        toast.success("Added on the bookmark")
+      }
+      if(res.status === 404){
+        toast.error("Already Added")
       }
     } catch (error) {
       console.log(error)
@@ -79,3 +81,4 @@ const QuestionsCard = ({ question }) => {
 
  
 export default QuestionsCard;
+
