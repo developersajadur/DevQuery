@@ -1,4 +1,5 @@
 import { ConnectDB } from "@/lib/ConnectDB";
+import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
 export const POST = async (request) =>{
@@ -6,10 +7,10 @@ export const POST = async (request) =>{
     try {
         const db = await ConnectDB();
         const bookmarkCollection = db.collection('bookmarks')
-        // const isExist = await bookmarkCollection.findOne({id: bookMark.id})
-        // if(isExist){
-        //     return NextResponse.json({message:"Already Bookmarked"} , {status:404})
-        // }
+        const isExist = await bookmarkCollection.findOne({id: bookMark.id});
+        if (isExist) {
+            return NextResponse.json({ message: "Already Bookmarked" }, { status: 304 });
+        }
         const res = await bookmarkCollection.insertOne(bookMark)
         return NextResponse.json({message:"Question Bookmarked"}, {status: 200})
     } catch (error) {

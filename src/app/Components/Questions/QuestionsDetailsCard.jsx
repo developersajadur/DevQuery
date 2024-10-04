@@ -13,6 +13,9 @@ import 'react-quill/dist/quill.snow.css';
 import '/src/app/globals.css';
 import Loading from '../Loading/Loading';
 
+
+  
+
 const stripHtml = (html) => {
   if (typeof window === "undefined") return html;
   const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -41,6 +44,10 @@ const getTimeAgo = (createdAt) => {
 const QuestionsDetailsCard = ({ questionDetails }) => {
 
  
+
+ 
+
+ 
 //  const [answers, setAnswers] = useState([])
   const url = usePathname()
 
@@ -51,12 +58,15 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   const user = session?.user.email;
   const image = session?.user?.image;
 
+
   const timeAgo = getTimeAgo(questionDetails?.createdAt);
   const { title, description, tags } = questionDetails;
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(true);
+
+
 
   const { data: answers,isLoading, isError, refetch } = useQuery({
     queryKey: ['answers', questionDetails._id],

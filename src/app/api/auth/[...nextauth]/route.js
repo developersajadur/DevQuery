@@ -5,7 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
-const authOptions = {
+export const authOptions = {
   session: {
     strategy: "jwt",
     maxAge: 10 * 24 * 60 * 60, // 10 days

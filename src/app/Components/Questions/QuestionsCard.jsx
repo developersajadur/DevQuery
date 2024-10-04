@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   AiFillDislike,
   AiFillLike,
@@ -47,16 +48,21 @@ const QuestionsCard = ({ question }) => {
       email: user.email,
       id: question._id,
       title: question.title,
-      image: question.image,
+      image:question.image,
       description: question?.description,
-      likes: question?.likes,
-      unlikes: question?.unlikes,
+      likes:question?.likes,
+      unlikes: question?.unlikes
+
+      
     };
 
     try {
       const response = await axios.post(postBookmarkUrl, bookmarkData);
       if (response.status === 200) {
-        alert("Bookmark added successfully!");
+        toast.success("Added on the bookmark")
+      }
+      if(res.status === 304){
+        toast.error("Already Added")
       }
     } catch (error) {
       console.error("Error adding bookmark:", error);
@@ -140,7 +146,7 @@ const QuestionsCard = ({ question }) => {
 
           <div className="flex flex-col gap-2 items-start">
             <Link
-              href={`questions/${question._id}`}
+              href={`/questions/${question._id}`}
               className="text-xl md:text-2xl font-semibold text-[#131842] hover:text-[#3FA2F6]"
             >
               {question?.title}
