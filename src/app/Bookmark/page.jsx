@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import QuestionsCard from '../Components/Questions/QuestionsCard';
 import { useSession } from 'next-auth/react';
 
-const Page = () => {
+const BookPage = () => {
   const [data, setData] = useState([]);
   const { data: session, status } = useSession();
   const user = session?.user;
@@ -13,7 +13,7 @@ const Page = () => {
     const fetchBook = async () => {
       if (user?.email) {  // Make sure the user is logged in and email is available
         try {
-          const response = await axios.get(`http://localhost:3000/questions/api/getBook?email=${user._id}`);
+          const response = await axios.get(`http://localhost:3000/questions/api/getBook?email=${user.email}`);
           
           if (response.status === 200) {
             setData(response.data.books);
@@ -41,4 +41,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default BookPage;

@@ -146,7 +146,7 @@ const QuestionsCard = ({ question }) => {
 
           <div className="flex flex-col gap-2 items-start">
             <Link
-              href={`questions/${question._id}`}
+              href={`/questions/${question._id}`}
               className="text-xl md:text-2xl font-semibold text-[#131842] hover:text-[#3FA2F6]"
             >
               {question?.title}
