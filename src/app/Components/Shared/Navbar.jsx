@@ -10,10 +10,8 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // for navigation
 import { useEffect, useState } from "react";
-import { BsPatchQuestionFill } from "react-icons/bs";
-import { FaHome, FaUsers } from "react-icons/fa";
 import { IoMenu, IoSearch } from "react-icons/io5";
-import { MdOutlineCardTravel } from "react-icons/md";
+import { UserNavLinks, AdminNavLinks } from "./NavigationLinks";
 
 const Navbar = () => {
   const router = useRouter();
@@ -21,38 +19,13 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();
   const user = session?.user;
-  // console.log(user);
-  
+  // console.log(user?.role);
+  // console.log(session);
+
+  // Function to determine which navigation links to render
+  const navLinks = user?.role === "admin" ? AdminNavLinks : UserNavLinks;
 
   const handleClose = () => setIsOpen(false);
-
-
-  const navLinks = [
-    {
-      title: "Home",
-      path: "/",
-      icon: <FaHome />,
-    },
-    {
-      title: "Questions",
-      path: "/questions",
-      icon: <BsPatchQuestionFill />,
-    },
-
-  
-
-    {
-      title: "Users",
-      path: "/users",
-      icon: <FaUsers />
-    },
-    {
-      title: "Jobs",
-      path: "/jobs",
-      icon: <MdOutlineCardTravel />
-    },
-
-  ];
 
   // Handle search submission for mobile
   const handleSearchSubmit = (e) => {
@@ -66,7 +39,11 @@ const Navbar = () => {
   useEffect(() => {
     // Handle search input changes for desktop
     if (searchQuery.trim() !== "") {
-      router.push(`/?search=${searchQuery}`);
+      const delayDebounceFn = setTimeout(() => {
+        router.push(`/?search=${searchQuery}`);
+      }, 500); // Debouncing for 500ms
+
+      return () => clearTimeout(delayDebounceFn); // Cleanup on unmount or re-run
     }
   }, [searchQuery, router]);
 
@@ -94,8 +71,8 @@ const Navbar = () => {
             <div>Loading...</div>
           ) : user ? (
             <Link href={`/users/${user.id}`} className="">
-            <Avatar img={user?.image} />
-          </Link>
+              <Avatar img={user?.image} />
+            </Link>
           ) : (
             <Link
               href="/login"
@@ -160,7 +137,7 @@ const Navbar = () => {
           <Link href="/">
             <Avatar
               className="w-10 h-10"
-              img="https://i.ibb.co/4g09B3N/beautiful-cat-with-fluffy-background-23-2150752750.jpg"
+              img={user?.image || "https://i.ibb.co/4g09B3N/beautiful-cat-with-fluffy-background-23-2150752750.jpg"}
             />
           </Link>
         </div>

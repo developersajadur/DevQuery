@@ -49,20 +49,24 @@ const authOptions = {
     }),
   ],
   callbacks: {
-       // Modify the session callback to include the user ID in the session token
-       async jwt({ token, user }) {
-        if (user) {
-          token.id = user._id;
-        }
-        return token;
-      },
-      // Include the user's ID in the session
-      async session({ session, token }) {
-        if (token?.id) {
-          session.user.id = token.id;
-        }
-        return session;
-      },
+    // Modify the jwt callback to include the user role in the token
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user._id;
+        token.role = user.role; // Add the role to the token
+      }
+      return token;
+    },
+    // Include the role in the session
+    async session({ session, token }) {
+      if (token?.id) {
+        session.user.id = token.id;
+      }
+      if (token?.role) {
+        session.user.role = token.role; // Add the role to the session
+      }
+      return session;
+    },
     async signIn({ user, account }) {
       if (account.provider === "google" || account.provider === "github") {
         try {
@@ -75,15 +79,16 @@ const authOptions = {
               name,
               email,
               image,
+              role: "user", // Default role for new users
             });
           }
-          return user; 
+          return true; 
         } catch (error) {
           console.log(error);
           return false;
         }
       }
-      return user; 
+      return true; 
     },
   },
   pages: {
