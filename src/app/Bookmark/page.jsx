@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import QuestionsCard from '../Components/Questions/QuestionsCard';
 import { useSession } from 'next-auth/react';
 
-const Page = () => {
+const BookPage = () => {
   const [data, setData] = useState([]);
   const { data: session, status } = useSession();
   const user = session?.user;
@@ -41,4 +41,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default BookPage;
