@@ -59,9 +59,10 @@ const QuestionsCard = ({ question }) => {
     try {
       const response = await axios.post(postBookmarkUrl, bookmarkData);
       if (response.status === 200) {
+        console.log(response.data)
         toast.success("Added on the bookmark")
       }
-      if(res.status === 304){
+      if(response.status === 404){
         toast.error("Already Added")
       }
     } catch (error) {
