@@ -22,8 +22,8 @@ if(status === "loading"){
               {/* Main Content */}
               <main className="flex flex-1 overflow-hidden">
                 {/* Sidebar */}
-                <aside className="md:w-52 hidden md:block min-h-screen overflow-y-auto border-r pl-4 border-[#A1D6B2]">
-                  <NavigationLinks />
+                <aside className="md:w-64 hidden md:block min-h-screen overflow-y-auto border-r pl-4 border-[#A1D6B2]">
+                  <NavigationLinks /> 
                 </aside>
 
                 {/* Main content */}
