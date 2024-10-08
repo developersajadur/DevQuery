@@ -183,8 +183,8 @@ const ProfilePage = ({ params }) => {
       </div>
     </TabPanel>
 
-    <TabPanel>
-        <div className="bg-white shadow-md w-full md:w-3/4 lg:w-full p-6 rounded-lg mt-6">
+    <TabPanel> 
+        <div className="bg-white shadow-md w-full md:w-3/4 lg:w-full p-6 rounded-lg mt-5">
       {data.map(dt =>
         <div key={dt._id}>
           <QuestionsCard key={dt._id} question={dt} />
