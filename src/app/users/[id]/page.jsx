@@ -24,7 +24,7 @@ const ProfilePage = ({ params }) => {
     const fetchBook = async () => {
       if (bookUser?.email) {  // Make sure the bookUser is logged in and email is available
         try {
-          const response = await axios.get(`http://localhost:3000/questions/api/getBook?email=${bookUser.email}`);
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/getBook?email=${bookUser.email}`);
           
           if (response.status === 200) {
             setData(response.data.books);
