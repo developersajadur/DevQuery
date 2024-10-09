@@ -1,12 +1,14 @@
 "use client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Table, Avatar, Dropdown } from "flowbite-react";
+import { Button } from "flowbite-react";
 import Loading from "../Components/Loading/Loading";
+import Image from "next/image";
+import Link from "next/link";
 
 const ManageUsers = () => {
   const queryClient = useQueryClient();
-  
+
   const { data: users, isLoading } = useQuery({
     queryKey: ["all-users"],
     queryFn: async () => {
@@ -20,18 +22,14 @@ const ManageUsers = () => {
     },
   });
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   // Toggle block/active state handler
   const handleToggleStatus = async (userId, currentStatus) => {
     try {
       await axios.patch("/manage-users/api/actions", {
         status: currentStatus === "active" ? "blocked" : "active",
-        userId
+        userId,
       });
-      
+
       // Invalidate the query to refetch users
       queryClient.invalidateQueries(["all-users"]);
     } catch (error) {
@@ -39,46 +37,58 @@ const ManageUsers = () => {
     }
   };
 
+  if (isLoading) {
+    return <Loading />;
+  } 
+
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-semibold mb-4">Manage All Users: {users?.length}</h2>
-      <div className="overflow-x-auto">
-        <Table hoverable>
-          <Table.Head>
-            <Table.HeadCell>ID</Table.HeadCell>
-            <Table.HeadCell>Avatar</Table.HeadCell>
-            <Table.HeadCell>Name</Table.HeadCell>
-            <Table.HeadCell>Email</Table.HeadCell>
-            <Table.HeadCell>Role</Table.HeadCell>
-            <Table.HeadCell>Status</Table.HeadCell>
-          </Table.Head>
-          <Table.Body className="divide-y">
-            {users.map((user, index) => (
-              <Table.Row
-                key={user.id}
-                className="bg-white dark:border-gray-700 dark:bg-gray-800"
-              >
-                <Table.Cell>{index}</Table.Cell>
-                <Table.Cell>
-                  <Avatar img={user.image || "/default-avatar.png"} />
-                </Table.Cell>
-                <Table.Cell>{user.name}</Table.Cell>
-                <Table.Cell>{user.email}</Table.Cell>
-                <Table.Cell>{user.role}</Table.Cell>
-                <Table.Cell>
-                  <Dropdown label={user.status === "active" ? "Active" : "Blocked"}>
-                    <Dropdown.Item
-                      onClick={() => handleToggleStatus(user?._id, user?.status)}
-                    >
-                      {user.status === "active" ? "Block" : "Activate"}
-                    </Dropdown.Item>
-                  </Dropdown>
-                </Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </div>
+    <div className="px-2 md:px-4 py-3">
+      <h1 className="text-2xl font-bold mb-4">Manage All Users ({users?.length})</h1>
+      <table className="min-w-full bg-white border border-gray-300">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="py-2 px-4 border">ID</th>
+            <th className="py-2 px-4 border">Avatar</th>
+            <th className="py-2 px-4 border">Name</th>
+            <th className="py-2 px-4 border">Email</th>
+            <th className="py-2 px-4 border">Role</th>
+            <th className="py-2 px-4 border">Status</th>
+            <th className="py-2 px-4 border">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users?.map((user, index) => (
+            <tr key={user._id} className="hover:bg-gray-100">
+              <td className="py-2 px-4 border">{index + 1}</td>
+              <td className="py-2 px-4 border">
+                <Image
+                width="480"
+                height={480}
+                  src={user.image || "/default-avatar.png"}
+                  alt="User Avatar"
+                  className="w-10 h-10 rounded-full"
+                />
+              </td>
+              <td className="py-2 px-4 border"><Link href={`users/${user._id}`}>{user.name}</Link></td>
+              <td className="py-2 px-4 border">{user.email}</td>
+              <td className="py-2 px-4 border">{user.role}</td>
+              <td className={`py-2 px-4 border ${user.status === "active" ? "text-green-600" : "text-red-600"}`}>
+                {user.status === "active" ? "Active" : "Blocked"}
+              </td>
+              <td className="py-2 px-4 border">
+                <Button
+                  onClick={() => handleToggleStatus(user._id, user.status)}
+                  className={`${
+                    user.status === "active" ? "bg-red-600" : "bg-green-600"
+                  } text-white`}
+                >
+                  {user.status === "active" ? "Block" : "Activate"}
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

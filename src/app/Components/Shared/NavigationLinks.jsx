@@ -39,7 +39,7 @@ export const AdminNavLinks = [
   },
   {
     title: "Manage Questions",
-    path: "/questions",
+    path: "/manage-questions",
     icon: <BsPatchQuestionFill />,
   },
   {
@@ -49,7 +49,7 @@ export const AdminNavLinks = [
   },
   {
     title: "Manage Jobs",
-    path: "/jobs",
+    path: "/manage-jobs",
     icon: <MdOutlineCardTravel />,
   },
 ];
