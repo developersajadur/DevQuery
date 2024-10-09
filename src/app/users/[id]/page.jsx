@@ -12,6 +12,7 @@ import 'react-tabs/style/react-tabs.css';
 import BookPage from "@/app/Bookmark/page";
 import React, { useEffect, useState } from 'react';
 import QuestionsCard from "../../Components/Questions/QuestionsCard";
+import { useRouter } from "next/router";
 
 const ProfilePage = ({ params }) => {
   const { data: session } = useSession();
@@ -65,10 +66,10 @@ const ProfilePage = ({ params }) => {
     return <div>Error loading user data.</div>;
   }
 
-  const goToBookmark = (e) =>{
-      console.log(e,"Hello");
+  // const goToBookmark = (e) =>{
+  //     console.log(e,"Hello");
       
-  }
+  // }
   
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center">
@@ -111,19 +112,19 @@ const ProfilePage = ({ params }) => {
         </div>
         {/* Update Profile Button */}
         {sessionEmail && user?.email && sessionEmail === user?.email && (
-            <div className="flex gap-5 items-center">
-          <div className="mt-6">
-            <Link
-              href={`/users/edit/${user._id}`}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Update Profile
-            </Link>
-          </div>
-          <Button onClick={() => signOut()} className="mt-6">
-            LogOut
-          </Button>
-            </div>
+    <div className="flex gap-5 items-center">
+    <div className="mt-6">
+        <Link
+            href={`/users/edit/${user._id}`}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+            Update Profile
+        </Link>
+    </div>
+    <Button onClick={() => signOut({ callbackUrl: "/login" })} className="mt-6">
+        LogOut
+    </Button>
+</div>
 
         )}
       </div>
@@ -136,7 +137,7 @@ const ProfilePage = ({ params }) => {
           Questions
         </button></Tab>
       <Tab><button className="text-gray-500">Answers</button></Tab>
-      <Tab><button onClick={goToBookmark} className="text-gray-500">Bookmarks</button></Tab>
+      <Tab><button className="text-gray-500">Bookmarks</button></Tab>
     </TabList>
     </div>
 

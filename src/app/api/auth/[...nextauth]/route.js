@@ -35,6 +35,9 @@ export const authOptions = {
         if (!bcryptPasswordMatch) {
           throw new Error("Wrong Password");
         }
+        if(currentUser.status === "blocked"){
+          throw new Error("Your account is blocked");
+        }
 
         return currentUser;
       },
