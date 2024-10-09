@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import SocialSignIn from "../Components/Others/SocialSignIn";
-import { status } from "express/lib/response";
 
 const Register = () => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
