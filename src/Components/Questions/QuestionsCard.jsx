@@ -47,7 +47,7 @@ const QuestionsCard = ({ question }) => {
 
   return (
     <div>
-      <div className="px-2 md:px-6 py-3 bg-[#FDF7E7] rounded-xl">
+      <div className="px-2 md:px-6 py-3  bg-[#FDF7E7] rounded-xl">
         <div className="flex item-center justify-between">
           <h1 className="text-xl md:text-2xl font-semibold text-[#131842] hover:text-[#3FA2F6]"> <Link
             href={`questions/${question._id}`}

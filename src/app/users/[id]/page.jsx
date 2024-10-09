@@ -130,7 +130,7 @@ const ProfilePage = ({ params }) => {
 
       {/* Profile Navigation Tabs */}
       <Tabs>
-      <div className="">
+      <div className="w-full">
     <TabList className="flex justify-between gap-10 mb-9">
       <Tab><button className="">
           Questions
@@ -184,9 +184,9 @@ const ProfilePage = ({ params }) => {
     </TabPanel>
 
     <TabPanel> 
-        <div className="bg-white shadow-md w-full md:w-3/4 lg:w-full p-6 rounded-lg mt-5">
+        <div className=" bg-white w-full">
       {data.map(dt =>
-        <div key={dt._id}>
+        <div className="w-full md:w-3/4 lg:w-full px-24 rounded-lg mt-6" key={dt._id}>
           <QuestionsCard key={dt._id} question={dt} />
           {/* <Link href={`/questions/${dt._id}`}></Link> */}
         </div>
