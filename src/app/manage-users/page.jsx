@@ -69,9 +69,9 @@ const ManageUsers = () => {
                   className="w-10 h-10 rounded-full"
                 />
               </td>
-              <td className="py-2 px-4 border"><Link href={`users/${user._id}`}>{user.name}</Link></td>
-              <td className="py-2 px-4 border">{user.email}</td>
-              <td className="py-2 px-4 border">{user.role}</td>
+              <td className="py-2 px-4 border"><Link href={`users/${user?._id}`}>{user?.name}</Link></td>
+              <td className="py-2 px-4 border">{user?.email}</td>
+              <td className="py-2 px-4 border">{user?.role}</td>
               <td className={`py-2 px-4 border ${user.status === "active" ? "text-green-600" : "text-red-600"}`}>
                 {user.status === "active" ? "Active" : "Blocked"}
               </td>
