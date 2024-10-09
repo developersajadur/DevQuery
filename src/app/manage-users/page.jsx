@@ -9,7 +9,7 @@ import Link from "next/link";
 const ManageUsers = () => {
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading } = useQuery({
+  const { data: users, isLoading, refetch } = useQuery({
     queryKey: ["all-users"],
     queryFn: async () => {
       try {
@@ -25,13 +25,15 @@ const ManageUsers = () => {
   // Toggle block/active state handler
   const handleToggleStatus = async (userId, currentStatus) => {
     try {
-      await axios.patch("/manage-users/api/actions", {
+    const res = await axios.patch("/manage-users/api/actions", {
         status: currentStatus === "active" ? "blocked" : "active",
         userId,
       });
-
-      // Invalidate the query to refetch users
-      queryClient.invalidateQueries(["all-users"]);
+      if (res.status === 200) {
+        // Invalidate the query to refetch users
+        refetch()
+        return toast.success(res.data.message);
+      }
     } catch (error) {
       console.error("Error toggling status:", error);
     }
