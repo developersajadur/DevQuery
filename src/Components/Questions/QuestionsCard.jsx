@@ -31,7 +31,7 @@ const QuestionsCard = ({ question }) => {
       const res = await axios.post(postBookmark, bookMark)
       console.log("success", res.data);
       if(res.status === 200){
-        toast.success("Added on the bookmark")
+        toast.success("Added the bookmark")
       }
       if(res.status === 404){
         toast.error("Already Added")
@@ -47,7 +47,7 @@ const QuestionsCard = ({ question }) => {
 
   return (
     <div>
-      <div className="px-2 md:px-6 py-3 bg-[#FDF7E7] rounded-xl">
+      <div className="px-2 md:px-6 py-3  bg-[#FDF7E7] rounded-xl">
         <div className="flex item-center justify-between">
           <h1 className="text-xl md:text-2xl font-semibold text-[#131842] hover:text-[#3FA2F6]"> <Link
             href={`questions/${question._id}`}
