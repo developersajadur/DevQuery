@@ -37,7 +37,7 @@ const QuestionsCard = ({ question }) => {
   const [unliked, setUnliked] = useState(false);
   const [likesCount, setLikesCount] = useState(question?.likes || 0);
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
-  const [bookmarked, setBookmarked] = useState(false); // State for bookmark status
+  
 
   useEffect(() => {
     if (session?.user) {
@@ -48,11 +48,6 @@ const QuestionsCard = ({ question }) => {
       }
       if (question?.unlikedBy?.includes(userEmail)) {
         setUnliked(true);
-      }
-      // Check if the question is already bookmarked by the user
-      // Assuming question.bookmarkedBy is an array of emails
-      if (question?.bookmarkedBy?.includes(userEmail)) {
-        setBookmarked(true);
       }
     }
   }, [session?.user, question]);
@@ -66,7 +61,7 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["questionLikes", questionId]);
-      toast.success("Like added!"); // Show success toast on like
+      // Show success toast on like
     },
     onError: () => {
       toast.error("Error while liking the question."); // Show error toast on like failure
@@ -82,7 +77,7 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["questionLikes", questionId]);
-      toast.success("Unlike added!"); // Show success toast on unlike
+       // Show success toast on unlike
     },
     onError: () => {
       toast.error("Error while unliking the question."); // Show error toast on unlike failure
@@ -91,14 +86,19 @@ const QuestionsCard = ({ question }) => {
 
   const handleLikeToggle = () => {
     if (liked) {
+      // Unlike if already liked
+      likeMutation.mutate();
       setLiked(false);
       setLikesCount((prev) => prev - 1);
-      likeMutation.mutate();
+      toast.success("Like removed!");
     } else if (!unliked) {
+      // Like if not unliked
+      likeMutation.mutate();
       setLiked(true);
       setLikesCount((prev) => prev + 1);
-      likeMutation.mutate();
+      toast.success("Like added!");
     }
+
     // If unliked, remove unlike
     if (unliked) {
       setUnliked(false);
@@ -108,14 +108,19 @@ const QuestionsCard = ({ question }) => {
 
   const handleUnlikeToggle = () => {
     if (unliked) {
+      // Remove unlike if already unliked
+      unlikeMutation.mutate();
       setUnliked(false);
       setUnlikesCount((prev) => prev - 1);
-      unlikeMutation.mutate();
+      toast.success("Unlike removed!");
     } else if (!liked) {
+      // Unlike if not liked
+      unlikeMutation.mutate();
       setUnliked(true);
       setUnlikesCount((prev) => prev + 1);
-      unlikeMutation.mutate();
+      toast.success("Unlike added!");
     }
+
     // If liked, remove like
     if (liked) {
       setLiked(false);
@@ -131,55 +136,55 @@ const QuestionsCard = ({ question }) => {
     toast.error("Error fetching user data."); // Handle user fetch error
     return null; // Optionally handle error state
   }
-
-  const handleBookmarkToggle = async () => {
+  
+  const buttonForBookmark = async () => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
     const bookMark = {
       email: user.email,
       id: question._id,
       title: question.title,
-    };
-
+      
+     
+    }
+    console.log(bookMark)
     try {
-      if (bookmarked) {
-        toast.error("Already Bookmarked"); // Notify if already bookmarked
-      } else {
-        const res = await axios.post(postBookmark, bookMark);
-        if (res.status === 200) {
-          setBookmarked(true); // Update bookmark status
-          toast.success("Added the bookmark");
-        }
+      const res = await axios.post(postBookmark, bookMark)
+      console.log("success", res.data);
+      if(res.status === 200){
+        toast.success("Added the bookmark")
+      }
+      if(res.status === 404){
+        toast.error("Already Added")
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Error while bookmarking the question."); // Handle bookmark error
+      console.log(error)
+      
     }
-  };
+    console.log(bookMark);
+  }
 
   return (
     <div className="p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
       <div className="flex items-center justify-between mb-4">
         <div className='flex justify-between'>
-          <div className="flex items-center">
-            <Image
-              className="w-10 h-10 rounded-full"
-              src={session?.user?.image || "/default-avatar.png"}
-              height={40}
-              width={40}
-              alt="User Avatar"
-            />
-            <div className="ml-3">
-              <Link href={`/users/${session?.user?._id}`} className="text-lg font-semibold text-blue-500">
-                {session?.user?.name || "Unknown User"}
-              </Link>
-              <p className="text-sm text-gray-500">Asked: {getTimeAgo(question.createdAt)}</p>
-            </div>
+        <div className="flex items-center">
+          <Image
+            className="w-10 h-10 rounded-full"
+            src={session?.user?.image || "/default-avatar.png"}
+            height={40}
+            width={40}
+            alt="User Avatar"
+          />
+          <div className="ml-3">
+            <Link href={`/users/${session?.user?._id}`} className="text-lg font-semibold text-blue-500">
+              {session?.user?.name || "Unknown User"}
+            </Link>
+            <p className="text-sm text-gray-500">Asked: {getTimeAgo(question.createdAt)}</p>
           </div>
-          <div>
-            <button onClick={handleBookmarkToggle}>
-              <FaBookmark className={bookmarked ? "text-blue-500" : "text-gray-500"} />
-            </button>
-          </div>
+        </div>
+        <div>
+        <button onClick={buttonForBookmark}><FaBookmark /></button>
+        </div>
         </div>
       </div>
 
@@ -218,9 +223,11 @@ const QuestionsCard = ({ question }) => {
           </div>
         </div>
 
-        <Link href={`/questions/${questionId}`} className="text-[#3FA2F6] hover:underline text-lg font-medium">
-          View Details
-        </Link>
+        <div className="w-full md:w-fit text-end">
+          <Link href={`/questions/${questionId}`} className="bg-blue-500 w-full md:w-fit text-white px-4 py-2 rounded-md">
+            Answer
+          </Link>
+        </div>
       </div>
     </div>
   );
