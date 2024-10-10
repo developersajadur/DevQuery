@@ -147,7 +147,7 @@ const QuestionsCard = ({ question }) => {
     console.log(bookMark)
     try {
       const res = await axios.post(postBookmark, bookMark)
-      console.log("success", res.data);
+      // console.log("success", res.data);
       if(res.status === 200){
         toast.success("Added the bookmark")
       }
