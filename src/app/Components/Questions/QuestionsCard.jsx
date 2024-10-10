@@ -7,6 +7,7 @@ import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "reac
 import Image from "next/image";
 import Link from "next/link";
 import Loading from "../Loading/Loading";
+import { FaBookmark } from "react-icons/fa";
 
 // Helper function to get time ago
 const getTimeAgo = (createdAt) => {
@@ -28,6 +29,7 @@ const getTimeAgo = (createdAt) => {
 
 const QuestionsCard = ({ question }) => {
   const { data: session, status } = useSession();
+  const user = session?.user;
   const queryClient = useQueryClient();
   const questionId = question._id;
 
@@ -35,6 +37,7 @@ const QuestionsCard = ({ question }) => {
   const [unliked, setUnliked] = useState(false);
   const [likesCount, setLikesCount] = useState(question?.likes || 0);
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
+  
 
   useEffect(() => {
     if (session?.user) {
@@ -133,10 +136,37 @@ const QuestionsCard = ({ question }) => {
     toast.error("Error fetching user data."); // Handle user fetch error
     return null; // Optionally handle error state
   }
+  
+  const buttonForBookmark = async () => {
+    const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
+    const bookMark = {
+      email: user.email,
+      id: question._id,
+      title: question.title,
+      
+     
+    }
+    console.log(bookMark)
+    try {
+      const res = await axios.post(postBookmark, bookMark)
+      console.log("success", res.data);
+      if(res.status === 200){
+        toast.success("Added the bookmark")
+      }
+      if(res.status === 404){
+        toast.error("Already Added")
+      }
+    } catch (error) {
+      console.log(error)
+      
+    }
+    console.log(bookMark);
+  }
 
   return (
     <div className="p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
       <div className="flex items-center justify-between mb-4">
+        <div className='flex justify-between'>
         <div className="flex items-center">
           <Image
             className="w-10 h-10 rounded-full"
@@ -151,6 +181,10 @@ const QuestionsCard = ({ question }) => {
             </Link>
             <p className="text-sm text-gray-500">Asked: {getTimeAgo(question.createdAt)}</p>
           </div>
+        </div>
+        <div>
+        <button onClick={buttonForBookmark}><FaBookmark /></button>
+        </div>
         </div>
       </div>
 

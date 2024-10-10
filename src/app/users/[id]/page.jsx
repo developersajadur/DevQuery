@@ -185,13 +185,55 @@ const ProfilePage = ({ params }) => {
     </TabPanel>
 
     <TabPanel> 
-        <div className=" bg-white w-full">
-      {data.map(dt =>
-        <div className="w-full md:w-3/4 lg:w-full px-24 rounded-lg mt-6" key={dt._id}>
-          <QuestionsCard key={dt._id} question={dt} />
-          {/* <Link href={`/questions/${dt._id}`}></Link> */}
+        <div className=" bg-white mb-4">
+   
+        <div className="w-full md:w-3/4 lg:w-full mx-4 rounded-lg ">
+
+<div className="container p-2 mx-auto sm:p-4 dark:text-gray-800">
+	<h2 className=" text-2xl font-bold text-center"><em>Your Bookmark</em></h2>
+  <p className='text-center'><em>The data that you have bookmarked is here.</em></p>
+	<div className="overflow-x-auto">
+		<table className="w-full text-xs">
+			
+			<thead className="dark:bg-gray-300">
+				<tr className="text-left">
+					<th className="p-3">Title</th>
+					<th className="p-3"></th>
+				</tr>
+			</thead>
+
+			<tbody>
+			
+				<tr className="border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
+				
+        {data.map(dt=>
+
+					<div key={dt._id} className='flex justify-between w-full rounded-md bg-slate-100 border-blue-600 border-2 mb-4'>
+
+          <div className='w-96 '>
+          <td className="p-3">
+						<p className='text-xl font-bold'>{dt.title}</p>
+					</td>
+          </div>
+					<div className="">
+          <td className="p-3 text-right">
+						<Link href={`/questions/${dt.id}`}><button className='bg-blue-700 text-white font-bold rounded-md p-2 my-4'>Details</button></Link>
+					</td>
+          </div>
+
+          </div>
+        )}
+					
+				</tr>
+			
+				
+			</tbody>
+		</table>
+	</div>
+</div>
+         
         </div>
-      )}
+    
     </div>
     </TabPanel>
   </Tabs>
