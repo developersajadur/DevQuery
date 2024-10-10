@@ -5,6 +5,8 @@ import { Button } from "flowbite-react";
 import Loading from "../Components/Loading/Loading";
 import Image from "next/image";
 import Link from "next/link";
+import Swal from "sweetalert2"; // Import SweetAlert2
+import toast from "react-hot-toast"; // Ensure you import toast if not already
 
 const ManageUsers = () => {
   const queryClient = useQueryClient();
@@ -22,26 +24,45 @@ const ManageUsers = () => {
     },
   });
 
-  // Toggle block/active state handler
+  // Toggle block/active state handler with confirmation
   const handleToggleStatus = async (userId, currentStatus) => {
-    try {
-    const res = await axios.patch("/manage-users/api/actions", {
-        status: currentStatus === "active" ? "blocked" : "active",
-        userId,
-      });
-      if (res.status === 200) {
-        // Invalidate the query to refetch users
-        refetch()
-        return toast.success(res.data.message);
+    // Show SweetAlert2 confirmation dialog
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to ${currentStatus === "active" ? "block" : "activate"} this user.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, ${currentStatus === "active" ? "block" : "activate"} it!`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await axios.patch("/manage-users/api/actions", {
+            status: currentStatus === "active" ? "blocked" : "active",
+            userId,
+          });
+          if (res?.status === 200) {
+            // Invalidate the query to refetch users
+            refetch();
+            toast.success(res.data.message);
+            Swal.fire({
+              title: "Success!",
+              text: `User has been ${currentStatus === "active" ? "blocked" : "activated"}.`,
+              icon: "success",
+            });
+          }
+        } catch (error) {
+          console.error("Error toggling status:", error);
+          toast.error("Failed to toggle user status!");
+        }
       }
-    } catch (error) {
-      console.error("Error toggling status:", error);
-    }
+    });
   };
 
   if (isLoading) {
     return <Loading />;
-  } 
+  }
 
   return (
     <div className="px-2 md:px-4 py-3">
@@ -64,14 +85,16 @@ const ManageUsers = () => {
               <td className="py-2 px-4 border">{index + 1}</td>
               <td className="py-2 px-4 border">
                 <Image
-                width="480"
-                height={480}
+                  width="480"
+                  height={480}
                   src={user.image || "/default-avatar.png"}
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
                 />
               </td>
-              <td className="py-2 px-4 border"><Link href={`users/${user?._id}`}>{user?.name}</Link></td>
+              <td className="py-2 px-4 border">
+                <Link href={`users/${user?._id}`}>{user?.name}</Link>
+              </td>
               <td className="py-2 px-4 border">{user?.email}</td>
               <td className="py-2 px-4 border">{user?.role}</td>
               <td className={`py-2 px-4 border ${user.status === "active" ? "text-green-600" : "text-red-600"}`}>
@@ -80,9 +103,7 @@ const ManageUsers = () => {
               <td className="py-2 px-4 border">
                 <Button
                   onClick={() => handleToggleStatus(user._id, user.status)}
-                  className={`${
-                    user.status === "active" ? "bg-red-600" : "bg-green-600"
-                  } text-white`}
+                  className={`${user.status === "active" ? "bg-red-600" : "bg-green-600"} text-white`}
                 >
                   {user.status === "active" ? "Block" : "Activate"}
                 </Button>
