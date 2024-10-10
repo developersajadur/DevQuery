@@ -146,7 +146,7 @@ const QuestionsCard = ({ question }) => {
           </div>
         </div>
         <div>
-          <button className="text-2xl text-[#17153B] hover:text-[#3FA2F6]">
+          <button className="text-2xl text-[#17153B] hover:text-[#4a47e6]">
             <BsBookmarkStarFill />
           </button>
         </div>
