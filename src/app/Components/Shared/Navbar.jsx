@@ -2,97 +2,107 @@
 import { Avatar, Button, Drawer, Sidebar, TextInput } from "flowbite-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // for navigation
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { IoMenu, IoSearch } from "react-icons/io5";
+import { IoMenu, IoNotificationsOutline, IoSearch } from "react-icons/io5";
 import { UserNavLinks, AdminNavLinks } from "./NavigationLinks";
+import { TiMessages } from "react-icons/ti";
 
 const Navbar = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { data: session, status } = useSession(); // Check loading status
+  const { data: session, status } = useSession();
   const user = session?.user;
-  const [showAdminLinks, setShowAdminLinks] = useState(false); // Initially false
+  const [showAdminLinks, setShowAdminLinks] = useState(false);
 
   const handleClose = () => setIsOpen(false);
 
-  // Handle search submission for mobile
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim() !== "") {
       router.push(`/?search=${searchQuery}`);
-      handleClose(); // Close the drawer after search
+      handleClose();
     }
   };
 
-  // Toggle between user and admin views and store the preference in localStorage
   const toggleView = () => {
     const newView = !showAdminLinks;
     setShowAdminLinks(newView);
-    localStorage.setItem("showAdminLinks", JSON.stringify(newView)); // Store the new state
-    
-    // Redirect based on the new view
+    localStorage.setItem("showAdminLinks", JSON.stringify(newView));
+
     if (newView) {
-      router.push("/dashboard"); // Redirect to dashboard when switching to admin
+      router.push("/dashboard");
     } else {
-      router.push("/"); // Redirect to home when switching to user
+      router.push("/");
     }
   };
 
   useEffect(() => {
-    // Set the default role-based view after fetching session data
     if (status === "authenticated") {
       const savedView = localStorage.getItem("showAdminLinks");
       if (savedView !== null) {
-        // If a preference exists in localStorage, use it
         setShowAdminLinks(JSON.parse(savedView));
       } else {
-        // Otherwise, set based on the user's role
         setShowAdminLinks(user?.role === "admin");
       }
     }
   }, [user, status]);
 
   useEffect(() => {
-    // Debounce search input changes for desktop
     if (searchQuery.trim() !== "") {
       const delayDebounceFn = setTimeout(() => {
         router.push(`/?search=${searchQuery}`);
-      }, 500); // Debouncing for 500ms
+      }, 500);
 
-      return () => clearTimeout(delayDebounceFn); // Cleanup on unmount or re-run
+      return () => clearTimeout(delayDebounceFn);
     }
   }, [searchQuery, router]);
 
   if (status === "loading") {
-    return <div>Loading...</div>; // Show loading while session is being fetched
+    return <div>Loading...</div>;
   }
 
   return (
     <div>
       {/* Desktop Navbar */}
-      <div className="hidden md:block">
-        <div className="flex justify-between items-center py-5 px-2 md:px-5 lg:px-10 bg-[#F5F7F8]">
-          <Link href="/" className="text-3xl font-semibold">
-            DevQuery
-          </Link>
-          <div className="flex items-center">
-            <TextInput
-              id="search"
-              className="w-96"
-              type="text"
-              icon={IoSearch}
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)} // trigger search on typing
-            />
+      <div className="hidden md:flex justify-between items-center py-5 px-2 md:px-5 lg:px-10 bg-[#F5F7F8]">
+        <Link href="/" className="text-3xl font-semibold">
+          DevQuery
+        </Link>
+        <div className="flex items-center gap-4 lg:gap-20">
+          <div className="hidden lg:block">
+            <div className="flex items-center gap-4 font-bold text-xl">
+              <Link href="#">Home</Link>
+              <Link href="#">About Us</Link>
+              <Link href="#">Blogs</Link>
+              <Link href="#">Contact Us</Link>
+            </div>
           </div>
-          {/* Auth logic */}
+          <TextInput
+            id="search"
+            className="lg:w-96"
+            type="text"
+            icon={IoSearch}
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        {/* User actions */}
+        <div className="flex items-center gap-4">
           {user ? (
-            <Link href={`/users/${user.id}`} className="">
-              <Avatar img={user?.image || "/default-avatar.png"} />
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href={`/users/${user.id}`} className="flex">
+                <Avatar img={user?.image || "/default-avatar.png"} />
+              </Link>
+              <button>
+                <TiMessages className="text-3xl" />
+              </button>
+              <button>
+                <IoNotificationsOutline className="text-3xl" />
+              </button>
+            </div>
           ) : (
             <Link
               href="/login"
@@ -107,24 +117,24 @@ const Navbar = () => {
       {/* Mobile Navbar */}
       <div className="block md:hidden">
         <Drawer open={isOpen} onClose={handleClose}>
-          <Drawer.Header title="MENU" titleIcon={() => <></>} />
+          <Drawer.Header title="MENU" />
           <Drawer.Items>
             <Sidebar aria-label="Sidebar with multi-level dropdown example">
               <div className="flex h-full flex-col justify-between py-2">
                 <div>
-                  <Link href="/" className="text-2xl lg:text-3xl font-semibold">
+                  {/* <Link href="/" className="text-2xl lg:text-3xl font-semibold">
                     DevQuery
-                  </Link>
+                  </Link> */}
                   <Sidebar.Items>
                     <Sidebar.ItemGroup>
-                      <div className="text-white flex flex-col gap-2 text-xl font-medium mt-2">
+                      <div className="text-xl font-medium mt-2">
                         {(showAdminLinks ? AdminNavLinks : UserNavLinks).map(
                           (item) => (
                             <Link
                               href={item.path}
                               key={item.path}
-                              onClick={handleClose} // Close Drawer on link click
-                              className="flex items-center text-black gap-2"
+                              onClick={handleClose}
+                              className="flex items-center gap-2 text-black"
                             >
                               {item.icon && <span>{item.icon}</span>}
                               {item.title}
@@ -133,10 +143,8 @@ const Navbar = () => {
                         )}
                       </div>
                       <div className="flex justify-start mt-2 px-5">
-                        <Button onClick={toggleView} className="bg-gray-500">
-                          {showAdminLinks
-                            ? "Switch to User"
-                            : "Switch to Admin"}
+                        <Button onClick={toggleView}>
+                          {showAdminLinks ? "Switch to User" : "Switch to Admin"}
                         </Button>
                       </div>
                     </Sidebar.ItemGroup>
@@ -146,16 +154,39 @@ const Navbar = () => {
             </Sidebar>
           </Drawer.Items>
         </Drawer>
-
-        <div className="flex justify-between items-center py-5 px-2 md:px-5 lg:px-10 bg-[#F5F7F8]">
-          <Button
-            className="w-fit bg-transparent"
-            onClick={() => setIsOpen(true)}
-          >
+          <div className="">
+        <div className="flex justify-between items-center py-5 px-2 bg-[#F5F7F8]">
+          <Button className="bg-transparent" onClick={() => setIsOpen(true)}>
             <IoMenu className="text-black text-3xl" />
           </Button>
-          {/* Mobile Search Form */}
-          <form onSubmit={handleSearchSubmit} className="pb-3">
+           <Link href="/" className="text-2xl font-semibold">
+          DevQuery
+        </Link>
+          <div>
+            {user ? (
+                 <div className="flex items-center gap-3">
+                 <Link href={`/users/${user.id}`} className="flex">
+                   <Avatar img={user?.image || "/default-avatar.png"} />
+                 </Link>
+                 <button>
+                   <TiMessages className="text-2xl" />
+                 </button>
+                 <button>
+                   <IoNotificationsOutline className="text-2xl" />
+                 </button>
+               </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex gap-2 items-center bg-blue-500 rounded-xl px-4 py-2"
+              >
+                <h5 className="text-lg text-white font-semibold">Login</h5>
+              </Link>
+            )}
+            
+          </div>
+        </div>
+        <form onSubmit={handleSearchSubmit} className="flex-grow mx-2">
             <TextInput
               id="search"
               type="text"
@@ -166,16 +197,6 @@ const Navbar = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </form>
-          {/* Mobile Avatar */}
-          <Link href="/">
-            <Avatar
-              className="w-10 h-10"
-              img={
-                user?.image ||
-                "https://i.ibb.co/4g09B3N/beautiful-cat-with-fluffy-background-23-2150752750.jpg"
-              }
-            />
-          </Link>
         </div>
       </div>
     </div>
