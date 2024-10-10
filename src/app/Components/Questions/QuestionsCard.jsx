@@ -1,14 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import {
-  AiFillDislike,
-  AiFillLike,
-  AiOutlineDislike,
-  AiOutlineLike,
-} from "react-icons/ai";
+import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
 import { BsBookmarkStarFill } from "react-icons/bs";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,7 +31,6 @@ const getTimeAgo = (createdAt) => {
 
 const QuestionsCard = ({ question }) => {
   const { data: session } = useSession();
-  const user = session?.user;
   const queryClient = useQueryClient();
   const questionId = question._id;
 
@@ -59,19 +53,12 @@ const QuestionsCard = ({ question }) => {
   // Like Mutation
   const likeMutation = useMutation({
     mutationFn: async () => {
-      const user = session?.user;
       const url = `${process.env.NEXT_PUBLIC_WEB_URL}/Components/Questions/api/likes/${questionId}`;
-      const response = await axios.put(url, { questionId, user });
+      const response = await axios.put(url, { questionId, user: session?.user });
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["questionLikes", questionId]);
-      setLikesCount((prev) => prev + 1);
-      if (unliked) {
-        setUnlikesCount((prev) => prev - 1);
-        setUnliked(false);
-      }
-      toast.success("Liked successfully!");
     },
     onError: () => {
       toast.error("Error while liking the question.");
@@ -81,40 +68,59 @@ const QuestionsCard = ({ question }) => {
   // Unlike Mutation
   const unlikeMutation = useMutation({
     mutationFn: async () => {
-      const user = session?.user;
       const url = `${process.env.NEXT_PUBLIC_WEB_URL}/Components/Questions/api/unlikes/${questionId}`;
-      const response = await axios.put(url, { questionId, user });
+      const response = await axios.put(url, { questionId, user: session?.user });
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["questionLikes", questionId]);
-      setUnlikesCount((prev) => prev + 1);
-      if (liked) {
-        setLikesCount((prev) => prev - 1);
-        setLiked(false);
-      }
-      toast.success("Unliked successfully!");
     },
     onError: () => {
       toast.error("Error while unliking the question.");
     },
   });
 
-  const handleLike = () => {
-    if (!liked && !unliked) {
+  const handleLikeToggle = () => {
+    if (liked) {
+      // Unlike if already liked
+      likeMutation.mutate();
+      setLiked(false);
+      setLikesCount((prev) => prev - 1);
+      toast.success("Like removed!");
+    } else if (!unliked) {
+      // Like if not unliked
       likeMutation.mutate();
       setLiked(true);
-    } else if (unliked) {
-      toast.error("You cannot like and unlike at the same time!");
+      setLikesCount((prev) => prev + 1);
+      toast.success("Like added!");
+    }
+
+    // If unliked, remove unlike
+    if (unliked) {
+      setUnliked(false);
+      setUnlikesCount((prev) => prev - 1);
     }
   };
 
-  const handleUnlike = () => {
-    if (!unliked && !liked) {
+  const handleUnlikeToggle = () => {
+    if (unliked) {
+      // Remove unlike if already unliked
+      unlikeMutation.mutate();
+      setUnliked(false);
+      setUnlikesCount((prev) => prev - 1);
+      toast.success("Unlike removed!");
+    } else if (!liked) {
+      // Unlike if not liked
       unlikeMutation.mutate();
       setUnliked(true);
-    } else if (liked) {
-      toast.error("You cannot unlike and like at the same time!");
+      setUnlikesCount((prev) => prev + 1);
+      toast.success("Unlike added!");
+    }
+
+    // If liked, remove like
+    if (liked) {
+      setLiked(false);
+      setLikesCount((prev) => prev - 1);
     }
   };
 
@@ -129,7 +135,6 @@ const QuestionsCard = ({ question }) => {
             width={40}
             alt="question image"
           />
-
           <div className="flex flex-col gap-2 items-start">
             <Link
               href={`/questions/${question._id}`}
@@ -137,13 +142,9 @@ const QuestionsCard = ({ question }) => {
             >
               {question?.title}
             </Link>
-
-            <p className="">
-              {question?.description ? question.description.slice(0, 80) : ""}...
-            </p>
+            <p>{question?.description ? question.description.slice(0, 80) : ""}...</p>
           </div>
         </div>
-
         <div>
           <button className="text-2xl text-[#17153B] hover:text-[#3FA2F6]">
             <BsBookmarkStarFill />
@@ -155,7 +156,7 @@ const QuestionsCard = ({ question }) => {
         <div className="flex items-center gap-1 md:gap-4 text-xl md:text-3xl text-[#131842]">
           {/* Like Button */}
           <button
-            onClick={handleLike}
+            onClick={handleLikeToggle}
             className={`flex items-center ${liked ? "text-blue-500" : "text-gray-500"} hover:text-blue-500`}
           >
             {liked ? <AiFillLike /> : <AiOutlineLike />}
@@ -164,7 +165,7 @@ const QuestionsCard = ({ question }) => {
 
           {/* Unlike Button */}
           <button
-            onClick={handleUnlike}
+            onClick={handleUnlikeToggle}
             className={`flex items-center border-[#17153B] pl-2 md:pl-4 border-l-[1px] ${unliked ? "text-red-500" : "text-gray-500"} hover:text-red-500`}
           >
             {unliked ? <AiFillDislike /> : <AiOutlineDislike />}
