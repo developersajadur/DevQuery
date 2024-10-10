@@ -186,8 +186,8 @@ const ProfilePage = ({ params }) => {
 
     <TabPanel> 
         <div className=" bg-white mb-4">
-      {data.map(dt =>
-        <div className="w-full md:w-3/4 lg:w-full mx-4 rounded-lg " key={dt._id}>
+   
+        <div className="w-full md:w-3/4 lg:w-full mx-4 rounded-lg ">
 
 <div className="container p-2 mx-auto sm:p-4 dark:text-gray-800">
 	<h2 className=" text-2xl font-bold text-center"><em>Your Bookmark</em></h2>
@@ -208,7 +208,7 @@ const ProfilePage = ({ params }) => {
 				
         {data.map(dt=>
 
-					<div key={dt._id} className='flex justify-between w-full rounded-md bg-slate-100 border-blue-600 border-2'>
+					<div key={dt._id} className='flex justify-between w-full rounded-md bg-slate-100 border-blue-600 border-2 mb-4'>
 
           <div className='w-96 '>
           <td className="p-3">
@@ -233,7 +233,7 @@ const ProfilePage = ({ params }) => {
 </div>
          
         </div>
-      )}
+    
     </div>
     </TabPanel>
   </Tabs>
