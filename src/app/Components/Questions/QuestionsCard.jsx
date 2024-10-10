@@ -143,8 +143,6 @@ const QuestionsCard = ({ question }) => {
       email: user.email,
       id: question._id,
       title: question.title,
-      
-     
     }
     console.log(bookMark)
     try {
