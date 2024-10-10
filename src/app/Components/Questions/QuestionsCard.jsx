@@ -173,7 +173,7 @@ const QuestionsCard = ({ question }) => {
         </div>
 
         <div>
-          <h1 className="text-sm text-gray-600">Posted: {timeAgo}</h1>
+          <h1 className="text-sm text-gray-600">Posted:: {timeAgo}</h1>
         </div>
       </div>
     </div>
