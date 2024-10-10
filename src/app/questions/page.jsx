@@ -4,6 +4,7 @@ import axios from 'axios';
 import AllQuestion from '../Components/Questions/AllQuestions/AllQuestion';
 import { useQuery } from '@tanstack/react-query';
 import Loading from '../Components/Loading/Loading';
+import QuestionsCard from '../Components/Questions/QuestionsCard';
 
 const Page = () => {
   const{data: questions, isLoading, error} = useQuery({
@@ -22,6 +23,7 @@ const Page = () => {
     }
   })
 
+
   
   if (isLoading) return <Loading />;
   if (error) return <p>Error loading job details.</p>;
@@ -30,7 +32,8 @@ const Page = () => {
     <div>
       {questions.length > 0 ? (
         questions.map((question, index) => (
-          <AllQuestion key={index} question={question}></AllQuestion>
+          <QuestionsCard key={index} question={question}></QuestionsCard>
+          // <AllQuestion key={index} question={question}></AllQuestion>
         ))
       ) : (
         <p>No questions available</p>

@@ -72,7 +72,7 @@ const Navbar = () => {
         </Link>
         <div className="flex items-center gap-4 lg:gap-20">
           <div className="hidden lg:block">
-            <div className="flex items-center gap-4 font-bold text-xl">
+            <div className="flex items-center gap-4 font-semibold text-xl">
               <Link href="#">Home</Link>
               <Link href="#">About Us</Link>
               <Link href="#">Blogs</Link>

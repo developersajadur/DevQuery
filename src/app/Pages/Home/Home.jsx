@@ -70,17 +70,17 @@ const Home = () => {
         </select>
 
         <Link
-          href="/makequestion"
+          href="/ask-question"
           className="w-full md:w-auto px-3 py-2 rounded-xl bg-blue-500 text-white text-center font-semibold"
         >
-          Make Question
+          Ask Question
         </Link>
       </div>
 
       {isLoading && <Loading />}
       {error && <p>{error.message}</p>}
 
-      <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 w-full">
         {!isLoading && !error && questions.map((question) => (
           <QuestionsCard key={question._id} question={question} />
         ))}
