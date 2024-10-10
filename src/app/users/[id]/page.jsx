@@ -7,10 +7,40 @@ import { useQuery } from "@tanstack/react-query";
 import Loading from "@/app/Components/Loading/Loading";
 import axios from "axios";
 import { Button } from "flowbite-react";
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import BookPage from "@/app/Bookmark/page";
+import React, { useEffect, useState } from 'react';
+import QuestionsCard from "../../Components/Questions/QuestionsCard";
+import { useRouter } from "next/router";
 
 const ProfilePage = ({ params }) => {
   const { data: session } = useSession();
   const sessionEmail = session?.user?.email;
+  const [data, setData] = useState([]);
+  // const { data: session, status } = useSession();
+  const bookUser = session?.user;
+
+  useEffect(() => {
+    const fetchBook = async () => {
+      if (bookUser?.email) {  // Make sure the bookUser is logged in and email is available
+        try {
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/getBook?email=${bookUser.email}`);
+          
+          if (response.status === 200) {
+            setData(response.data.books);
+            // console.log(response.data.books);
+          } else {
+            console.error('Error fetching');
+          }
+        } catch (error) {
+          console.error("Error", error);
+        }
+      }
+    };
+
+    fetchBook();
+  }, [bookUser]); // Re-fetch if the user changes
 
   const {
     data: user,
@@ -36,11 +66,11 @@ const ProfilePage = ({ params }) => {
     return <div>Error loading user data.</div>;
   }
 
-  const goToBookmark = (e) =>{
-      console.log(e,"Hello");
+  // const goToBookmark = (e) =>{
+  //     console.log(e,"Hello");
       
-  }
-
+  // }
+  
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center">
       {/* Profile Header */}
@@ -82,34 +112,37 @@ const ProfilePage = ({ params }) => {
         </div>
         {/* Update Profile Button */}
         {sessionEmail && user?.email && sessionEmail === user?.email && (
-            <div className="flex gap-5 items-center">
-          <div className="mt-6">
-            <Link
-              href={`/users/edit/${user._id}`}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-            >
-              Update Profile
-            </Link>
-          </div>
-          <Button onClick={() => signOut()} className="mt-6">
-            LogOut
-          </Button>
-            </div>
+    <div className="flex gap-5 items-center">
+    <div className="mt-6">
+        <Link
+            href={`/users/edit/${user._id}`}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+            Update Profile
+        </Link>
+    </div>
+    <Button onClick={() => signOut({ callbackUrl: "/login" })} className="mt-6">
+        LogOut
+    </Button>
+</div>
 
         )}
       </div>
 
       {/* Profile Navigation Tabs */}
-      <div className="bg-white shadow-md w-full md:w-3/4 lg:w-1/2 p-4 rounded-lg flex justify-around">
-        <button className="text-blue-600 border-b-2 border-blue-600 pb-2">
+      <Tabs>
+      <div className="w-full">
+    <TabList className="flex justify-between gap-10 mb-9">
+      <Tab><button className="">
           Questions
-        </button>
-        <button className="text-gray-500">Answers</button>
-        <Link href={"/Bookmark"}><button onClick={goToBookmark} className="text-gray-500">Bookmarks</button></Link>
-      </div>
+        </button></Tab>
+      <Tab><button className="text-gray-500">Answers</button></Tab>
+      <Tab><button className="text-gray-500">Bookmarks</button></Tab>
+    </TabList>
+    </div>
 
-      {/* Activity/Content Section */}
-      <div className="bg-white shadow-md w-full md:w-3/4 lg:w-1/2 p-6 rounded-lg mt-6">
+    <TabPanel>
+    <div className="bg-white shadow-md w-full md:w-3/4 lg:w-full p-6 rounded-lg mt-6">
         <h2 className="text-xl font-semibold">Recent Activity</h2>
         <div className="mt-4 space-y-4">
           <div className="bg-gray-50 p-4 rounded-lg">
@@ -128,6 +161,48 @@ const ProfilePage = ({ params }) => {
           </div>
         </div>
       </div>
+    </TabPanel>
+    <TabPanel>
+    <div className="bg-white shadow-md w-full md:w-3/4 lg:w-full p-6 rounded-lg mt-6">
+        <h2 className="text-xl font-semibold">Recent Activity</h2>
+        <div className="mt-4 space-y-4">
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="font-semibold">
+              What is the difference between JavaScript and TypeScript?
+            </h3>
+            <p className="text-sm text-gray-500">Asked on September 22, 2024</p>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="font-semibold">
+              How to implement authentication in Next.js?
+            </h3>
+            <p className="text-sm text-gray-500">
+              Answered on September 20, 2024
+            </p>
+          </div>
+        </div>
+      </div>
+    </TabPanel>
+
+    <TabPanel> 
+        <div className=" bg-white w-full">
+      {data.map(dt =>
+        <div className="w-full md:w-3/4 lg:w-full px-24 rounded-lg mt-6" key={dt._id}>
+          <QuestionsCard key={dt._id} question={dt} />
+          {/* <Link href={`/questions/${dt._id}`}></Link> */}
+        </div>
+      )}
+    </div>
+    </TabPanel>
+  </Tabs>
+      
+        
+        
+        
+     
+
+      {/* Activity/Content Section */}
+      
     </div>
   );
 };

@@ -27,6 +27,9 @@ const Login = () => {
         case "Wrong Password":
           toast.error("Wrong Password");
           break;
+        case "Your account is blocked":
+          toast.error("Your account is blocked");
+          break;
         default:
           toast.error("Something went wrong.");
           break;

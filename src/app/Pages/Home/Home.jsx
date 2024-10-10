@@ -4,46 +4,40 @@ import Loading from "@/app/Components/Loading/Loading";
 import QuestionsCard from "@/app/Components/Questions/QuestionsCard";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation"; 
-import { useEffect, useState } from "react";
+import { useQuery } from '@tanstack/react-query'; // Make sure to import from the correct package
 
 const Home = () => {
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [totalPages, setTotalPages] = useState(1); // Total number of pages
-  const [currentPage, setCurrentPage] = useState(1); // Current page
-
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const searchQuery = searchParams.get("search");
   const filterQuery = searchParams.get("filter") || "newest"; 
+  const currentPage = Number(searchParams.get("page")) || 1; // Get current page from URL
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      setLoading(true);
-      try {
-        const url = searchQuery
-          ? `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?search=${searchQuery}&filter=${filterQuery}&page=${currentPage}`
-          : `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?filter=${filterQuery}&page=${currentPage}`;
-        const res = await fetch(url);
-        
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
-        
-        const data = await res.json();
-        setQuestions(data.questions);
-        setTotalPages(data.totalPages); // Set the total number of pages
-      } catch (err) {
-        setError("Failed to load questions");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Define fetch function
+  const fetchQuestions = async () => {
+    const url = searchQuery
+      ? `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?search=${searchQuery}&filter=${filterQuery}&page=${currentPage}`
+      : `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?filter=${filterQuery}&page=${currentPage}`;
+    
+    const res = await fetch(url);
 
-    fetchQuestions();
-  }, [searchQuery, filterQuery, currentPage]);
+    if (!res.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    return res.json();
+  };
+
+  // Use useQuery hook with object-based syntax
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['questions', searchQuery, filterQuery, currentPage],
+    queryFn: fetchQuestions,
+    staleTime: 5000 // Adjust stale time as needed
+  });
+
+  const questions = data?.questions || [];
+  const totalPages = data?.totalPages || 1; // Total number of pages
 
   const handleFilterChange = (e) => {
     const newFilter = e.target.value;
@@ -52,7 +46,6 @@ const Home = () => {
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
       router.push(`/?page=${newPage}${filterQuery ? `&filter=${filterQuery}` : ""}${searchQuery ? `&search=${searchQuery}` : ""}`);
     }
   };
@@ -61,7 +54,7 @@ const Home = () => {
     <div className="px-2 md:px-4 py-3">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
         <h1 className="text-lg md:text-3xl font-semibold mb-4 md:mb-0 text-center">
-        Questions
+          Questions
         </h1>
 
         <select
@@ -84,11 +77,11 @@ const Home = () => {
         </Link>
       </div>
 
-      {loading && <Loading />}
-      {error && <p>{error}</p>}
+      {isLoading && <Loading />}
+      {error && <p>{error.message}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-4">
-        {!loading && !error && questions?.map((question) => (
+        {!isLoading && !error && questions.map((question) => (
           <QuestionsCard key={question._id} question={question} />
         ))}
       </div>

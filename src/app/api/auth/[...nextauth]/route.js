@@ -5,7 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
-const authOptions = {
+export const authOptions = {
   session: {
     strategy: "jwt",
     maxAge: 10 * 24 * 60 * 60, // 10 days
@@ -35,6 +35,9 @@ const authOptions = {
         if (!bcryptPasswordMatch) {
           throw new Error("Wrong Password");
         }
+        if(currentUser.status === "blocked"){
+          throw new Error("Your account is blocked");
+        }
 
         return currentUser;
       },
@@ -49,20 +52,24 @@ const authOptions = {
     }),
   ],
   callbacks: {
-       // Modify the session callback to include the user ID in the session token
-       async jwt({ token, user }) {
-        if (user) {
-          token.id = user._id;
-        }
-        return token;
-      },
-      // Include the user's ID in the session
-      async session({ session, token }) {
-        if (token?.id) {
-          session.user.id = token.id;
-        }
-        return session;
-      },
+    // Modify the jwt callback to include the user role in the token
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user._id;
+        token.role = user.role; // Add the role to the token
+      }
+      return token;
+    },
+    // Include the role in the session
+    async session({ session, token }) {
+      if (token?.id) {
+        session.user.id = token.id;
+      }
+      if (token?.role) {
+        session.user.role = token.role; // Add the role to the session
+      }
+      return session;
+    },
     async signIn({ user, account }) {
       if (account.provider === "google" || account.provider === "github") {
         try {
@@ -75,15 +82,16 @@ const authOptions = {
               name,
               email,
               image,
+              role: "user", // Default role for new users
             });
           }
-          return user; 
+          return true; 
         } catch (error) {
           console.log(error);
           return false;
         }
       }
-      return user; 
+      return true; 
     },
   },
   pages: {
