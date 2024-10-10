@@ -20,9 +20,7 @@ export const PUT = async (request, { params }) => {
 
     try {
         const { questionId, user } = await request.json();
-        // console.log(questionId, user);
         const email = user.email;
-        // console.log(email);
 
         if (!email) {
             return NextResponse.json({ message: "Email is required" }, { status: 400 });
@@ -33,37 +31,23 @@ export const PUT = async (request, { params }) => {
             return NextResponse.json({ message: "Question not found" }, { status: 404 });
         }
 
+        // Check if the user has already liked the question
         if (question.likedBy && question.likedBy.includes(email)) {
-            const result2 = await questionsCollection.updateOne(
-                { _id: new ObjectId(params.id) },
-                {
-                    $inc: { likes: -1 },
-                    $pull: { likedBy: email },
-                }
-            );
             return NextResponse.json({ message: "User has already liked this question" }, { status: 400 });
         }
 
-        if (question.likedBy && question.likedBy.includes(!email)) {
-            const result2 = await questionsCollection.updateOne(
+        // If the user unliked the question, remove the unlike first
+        if (question.unlikedBy && question.unlikedBy.includes(email)) {
+            await questionsCollection.updateOne(
                 { _id: new ObjectId(params.id) },
                 {
-                    $inc: { likes: 1 },
-                    $push: { likedBy: email },
+                    $inc: { unlikes: -1 },
+                    $pull: { unlikedBy: email },
                 }
             );
-
-            if (question.unlikedBy && question.unlikedBy.includes(email)) {
-                const result3 = await questionsCollection.updateOne(
-                    { _id: new ObjectId(params.id) },
-                    {
-                        $inc: { unlikes: -1 },
-                        $pull: { unlikedBy: email },
-                    }
-                );
-            }
         }
 
+        // Increment likes and add the user to likedBy
         const result = await questionsCollection.updateOne(
             { _id: new ObjectId(params.id) },
             {
@@ -82,3 +66,4 @@ export const PUT = async (request, { params }) => {
         return NextResponse.json({ message: "Internal server error", error }, { status: 500 });
     }
 };
+

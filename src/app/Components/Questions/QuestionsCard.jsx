@@ -1,10 +1,8 @@
-"use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   AiFillDislike,
   AiFillLike,
@@ -12,6 +10,8 @@ import {
   AiOutlineLike,
 } from "react-icons/ai";
 import { BsBookmarkStarFill } from "react-icons/bs";
+import Image from "next/image";
+import Link from "next/link";
 
 // Helper function to get time ago
 const getTimeAgo = (createdAt) => {
@@ -40,42 +40,10 @@ const QuestionsCard = ({ question }) => {
   const queryClient = useQueryClient();
   const questionId = question._id;
 
-  // Bookmark Function
-  const handleBookmark = async () => {
-    const postBookmarkUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
-    const bookmarkData = {
-      email: user.email,
-      id: question._id,
-      title: question.title,
-      image: question.image,
-      description: question?.description,
-      likes: question?.likes,
-      unlikes: question?.unlikes,
-    };
-
-    try {
-      const response = await axios.post(postBookmarkUrl, bookmarkData);
-      if (response.status === 200) {
-        alert("Bookmark added successfully!");
-      }
-    } catch (error) {
-      console.error("Error adding bookmark:", error);
-    }
-  };
-
-  const timeAgo = getTimeAgo(question?.createdAt);
-
   const [liked, setLiked] = useState(false);
   const [unliked, setUnliked] = useState(false);
-
-  // Fetch likes and unlikes
-  const { data: questionData, isLoading } = useQuery({
-    queryKey: ["questionLikes", questionId],
-    queryFn: async () => {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/${questionId}`);
-      return res.data;
-    },
-  });
+  const [likesCount, setLikesCount] = useState(question?.likes || 0);
+  const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
 
   useEffect(() => {
     const userEmail = session?.user?.email;
@@ -88,7 +56,7 @@ const QuestionsCard = ({ question }) => {
     }
   }, [session?.user?.email, question]);
 
-  // Mutation for liking the question
+  // Like Mutation
   const likeMutation = useMutation({
     mutationFn: async () => {
       const user = session?.user;
@@ -98,10 +66,19 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["questionLikes", questionId]);
+      setLikesCount((prev) => prev + 1);
+      if (unliked) {
+        setUnlikesCount((prev) => prev - 1);
+        setUnliked(false);
+      }
+      toast.success("Liked successfully!");
+    },
+    onError: () => {
+      toast.error("Error while liking the question.");
     },
   });
 
-  // Mutation for unliking the question
+  // Unlike Mutation
   const unlikeMutation = useMutation({
     mutationFn: async () => {
       const user = session?.user;
@@ -111,18 +88,33 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["questionLikes", questionId]);
+      setUnlikesCount((prev) => prev + 1);
+      if (liked) {
+        setLikesCount((prev) => prev - 1);
+        setLiked(false);
+      }
+      toast.success("Unliked successfully!");
+    },
+    onError: () => {
+      toast.error("Error while unliking the question.");
     },
   });
 
   const handleLike = () => {
-    if (!liked) {
+    if (!liked && !unliked) {
       likeMutation.mutate();
+      setLiked(true);
+    } else if (unliked) {
+      toast.error("You cannot like and unlike at the same time!");
     }
   };
 
   const handleUnlike = () => {
-    if (!unliked) {
+    if (!unliked && !liked) {
       unlikeMutation.mutate();
+      setUnliked(true);
+    } else if (liked) {
+      toast.error("You cannot unlike and like at the same time!");
     }
   };
 
@@ -140,7 +132,7 @@ const QuestionsCard = ({ question }) => {
 
           <div className="flex flex-col gap-2 items-start">
             <Link
-              href={`questions/${question._id}`}
+              href={`/questions/${question._id}`}
               className="text-xl md:text-2xl font-semibold text-[#131842] hover:text-[#3FA2F6]"
             >
               {question?.title}
@@ -153,7 +145,7 @@ const QuestionsCard = ({ question }) => {
         </div>
 
         <div>
-          <button onClick={handleBookmark} className="text-2xl text-[#17153B] hover:text-[#3FA2F6]">
+          <button className="text-2xl text-[#17153B] hover:text-[#3FA2F6]">
             <BsBookmarkStarFill />
           </button>
         </div>
@@ -161,19 +153,27 @@ const QuestionsCard = ({ question }) => {
 
       <div className="flex justify-between items-center mt-4">
         <div className="flex items-center gap-1 md:gap-4 text-xl md:text-3xl text-[#131842]">
-          <button onClick={handleLike} className="flex items-center">
+          {/* Like Button */}
+          <button
+            onClick={handleLike}
+            className={`flex items-center ${liked ? "text-blue-500" : "text-gray-500"} hover:text-blue-500`}
+          >
             {liked ? <AiFillLike /> : <AiOutlineLike />}
-            <span className="text-base md:text-xl">{questionData?.likes}</span>
+            <span className="text-base md:text-xl ml-1">{likesCount}</span>
           </button>
 
-          <button onClick={handleUnlike} className="flex items-center border-[#17153B] pl-2 md:pl-4 border-l-[1px]">
+          {/* Unlike Button */}
+          <button
+            onClick={handleUnlike}
+            className={`flex items-center border-[#17153B] pl-2 md:pl-4 border-l-[1px] ${unliked ? "text-red-500" : "text-gray-500"} hover:text-red-500`}
+          >
             {unliked ? <AiFillDislike /> : <AiOutlineDislike />}
-            <span className="text-base md:text-xl">{questionData?.unlikes}</span>
+            <span className="text-base md:text-xl ml-1">{unlikesCount}</span>
           </button>
         </div>
 
         <div>
-          <h1 className="text-sm text-gray-600">Posted:: {timeAgo}</h1>
+          <h1 className="text-sm text-gray-600">Posted: {getTimeAgo(question.createdAt)}</h1>
         </div>
       </div>
     </div>
