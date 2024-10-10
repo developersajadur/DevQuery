@@ -168,8 +168,9 @@ const QuestionsCard = ({ question }) => {
                 {question.description ? question.description.slice(0, 80) : ""}...
             </p>
 
-            <div className="flex justify-between items-center">
-                <div className="flex items-center text-gray-500">
+            <div className="flex flex-col md:flex-row gap-10 justify-between items-center">
+            <div className="flex gap-5 items-center">
+            <div className="flex items-center text-gray-500">
                     <button onClick={handleLikeToggle} className={`text-blue-500 text-2xl`}>
                         {liked ? <AiFillLike className="mr-1" /> : <AiOutlineLike className="mr-1" />}
                         {likesCount}
@@ -183,7 +184,10 @@ const QuestionsCard = ({ question }) => {
                 <div className="flex items-center">
                     <span className="mr-3">👁 {question?.views || 550} Views</span>
                     <span className="mr-3">{question?.answers || 40} Answers</span>
-                    <Link href={`/questions/${questionId}`} className="bg-blue-500 text-white px-4 py-2 rounded-md">
+                </div>
+            </div>
+                <div className="w-full md:w-fit text-end">
+                <Link href={`/questions/${questionId}`} className="bg-blue-500 w-full md:w-fit text-white px-4 py-2 rounded-md">
                         Answer
                     </Link>
                 </div>
