@@ -7,6 +7,7 @@ import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "reac
 import Image from "next/image";
 import Link from "next/link";
 import Loading from "../Loading/Loading";
+import { FaBookmark } from "react-icons/fa";
 
 // Helper function to get time ago
 const getTimeAgo = (createdAt) => {
@@ -137,8 +138,34 @@ const QuestionsCard = ({ question }) => {
         return null; // Optionally handle error state
     }
 
+    const handleBookmark = async () => {
+      const postBookmarkUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
+      const bookmarkData = {
+        email: user.email,
+        id: question._id,
+        title: question.title,
+        
+      };
+  
+      try {
+        const response = await axios.post(postBookmarkUrl, bookmarkData);
+        if (response.status === 200) {
+          console.log(response.data)
+          toast.success("Added on the bookmark")
+        }
+        if(response.status === 404){
+          toast.error("Already Added")
+        }
+      } catch (error) {
+        console.error("Error adding bookmark:", error);
+      }
+    };
+
+
     return (
         <div className="p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
+
+            <div className='flex justify-between'>
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center">
                     <Image
@@ -155,6 +182,10 @@ const QuestionsCard = ({ question }) => {
                         <p className="text-sm text-gray-500">Asked: {getTimeAgo(question.createdAt)}</p>
                     </div>
                 </div>
+            </div>
+            <div>
+              <button onClick={handleBookmark}><FaBookmark /></button>
+            </div>
             </div>
 
             <Link
