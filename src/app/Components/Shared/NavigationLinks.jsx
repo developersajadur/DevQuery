@@ -42,7 +42,7 @@ export const AdminNavLinks = [
     path: "/manage-questions",
     icon: <BsPatchQuestionFill />,
   },
-  {
+  { 
     title: "Manage Users",
     path: "/manage-users",
     icon: <FaUsers />,
