@@ -217,7 +217,7 @@ const ProfilePage = ({ params }) => {
           </div>
 					<div className="">
           <td className="p-3 text-right">
-						<Link href={`/questions/${dt.id}`}><button className='bg-blue-700 text-white font-bold rounded-md p-2 my-4'>Details</button></Link>
+						<Link href={`/questions/${dt.questionId}`}><button className='bg-blue-700 text-white font-bold rounded-md p-2 my-4'>Details</button></Link>
 					</td>
           </div>
 
