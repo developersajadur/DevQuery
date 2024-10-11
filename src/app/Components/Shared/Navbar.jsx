@@ -66,7 +66,7 @@ const Navbar = () => {
   }
 
   return (
-    <div>
+    <div> 
       {/* Desktop Navbar */}
       <div className="hidden md:flex justify-between items-center py-5 px-2 md:px-5 lg:px-10 bg-[#F5F7F8]">
         <Link href="/" className="text-3xl font-semibold">
@@ -75,7 +75,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4 lg:gap-20">
           <div className="hidden lg:block">
             <div className="flex items-center gap-4 font-semibold text-xl">
-              <Link href="#">Home</Link>
+              <Link href="/">Home</Link>
               <Link href="#">About Us</Link>
               <Link href="#">Blogs</Link>
               <Link href="#">Contact Us</Link>
@@ -98,9 +98,9 @@ const Navbar = () => {
               <Link href={`/users/${user.id}`} className="flex">
                 <Avatar img={user?.image || "/default-avatar.png"} />
               </Link>
-              <button>
+              <Link href="/chat">
                 <TiMessages className="text-3xl" />
-              </button>
+              </Link>
               <button>
                 <IoNotificationsOutline className="text-3xl" />
               </button>
