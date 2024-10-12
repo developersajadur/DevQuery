@@ -31,8 +31,11 @@ export const PUT = async (request, { params }) => {
       return NextResponse.json({ message: "Question not found" }, { status: 404 });
     }
 
-    if (question.unlikedBy && question.unlikedBy.includes(email)) {
-      // If already unliked, remove unlike
+    const isLiked = question.likedBy?.includes(email);
+    const isUnliked = question.unlikedBy?.includes(email);
+
+    if (isUnliked) {
+      // If already unliked, remove the unlike
       await questionsCollection.updateOne(
         { _id: new ObjectId(params.id) },
         {
@@ -43,7 +46,7 @@ export const PUT = async (request, { params }) => {
       return NextResponse.json({ message: "Unlike removed" });
     }
 
-    if (question.likedBy && question.likedBy.includes(email)) {
+    if (isLiked) {
       // Remove like if user previously liked
       await questionsCollection.updateOne(
         { _id: new ObjectId(params.id) },
@@ -54,12 +57,13 @@ export const PUT = async (request, { params }) => {
       );
     }
 
-    // Add unlike
+    // Add unlike and remove like (if present)
     await questionsCollection.updateOne(
       { _id: new ObjectId(params.id) },
       {
         $inc: { unlikes: 1 },
         $push: { unlikedBy: email },
+        $pull: { likedBy: email },
       }
     );
 

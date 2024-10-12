@@ -1,3 +1,4 @@
+"use client"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -9,7 +10,6 @@ import Link from "next/link";
 import Loading from "../Loading/Loading";
 import { FaBookmark } from "react-icons/fa";
 
-// Helper function to get time ago
 const getTimeAgo = (createdAt) => {
   const now = new Date();
   const createdDate = new Date(createdAt);
@@ -48,13 +48,8 @@ const QuestionsCard = ({ question }) => {
   useEffect(() => {
     if (session?.user) {
       const userEmail = session?.user?.email;
-
-      if (question?.likedBy?.includes(userEmail)) {
-        setLiked(true);
-      }
-      if (question?.unlikedBy?.includes(userEmail)) {
-        setUnliked(true);
-      }
+      setLiked(question?.likedBy?.includes(userEmail));
+      setUnliked(question?.unlikedBy?.includes(userEmail));
     }
   }, [session?.user, question]);
 
@@ -67,10 +62,10 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questionLikes", questionId] });
-      toast.success("Like operation successful!"); // Optional: toast for success
+      toast.success("Like operation successful!");
     },
     onError: () => {
-      toast.error("Error while liking the question."); // Error handling toast
+      toast.error("Error while liking the question.");
     },
   });
 
@@ -83,10 +78,10 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questionLikes", questionId] });
-      toast.success("Unlike operation successful!"); // Optional: toast for success
+      toast.success("Unlike operation successful!");
     },
     onError: () => {
-      toast.error("Error while unliking the question."); // Error handling toast
+      toast.error("Error while unliking the question.");
     },
   });
 
@@ -158,7 +153,7 @@ const QuestionsCard = ({ question }) => {
   };
 
   return (
-    <div className="p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
+    <div className="relative p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
       <div className="flex items-center justify-between mb-4">
         <div className='flex justify-between'>
           <div className="flex items-center">
@@ -171,7 +166,7 @@ const QuestionsCard = ({ question }) => {
             />
             <div className="ml-3">
               <Link href={`/users/${user?._id}`} className="text-lg font-semibold text-blue-500">
-                {session?.user?.name || "Unknown User"}
+                {user?.name || "Unknown User"}
               </Link>
               <p className="text-sm text-gray-500">Asked: {getTimeAgo(question.createdAt)}</p>
             </div>
@@ -206,17 +201,6 @@ const QuestionsCard = ({ question }) => {
               {unlikesCount}
             </button>
           </div>
-
-          <div className="flex items-center">
-            <span className="mr-3">👁 {question?.views || 550} Views</span>
-            <span className="mr-3">{question?.answers || 40} Answers</span>
-          </div>
-        </div>
-
-        <div className="w-full md:w-fit text-end">
-          <Link href={`/questions/${questionId}`} className="bg-blue-500 w-full md:w-fit text-white px-4 py-2 rounded-md">
-            Answer
-          </Link>
         </div>
       </div>
     </div>
