@@ -1,4 +1,3 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -8,9 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Loading from "../Loading/Loading";
 import { FaBookmark } from "react-icons/fa";
-import { FaSpinner } from "react-icons/fa"; // Import Spinner Icon
 
-// Helper function to get time ago
 const getTimeAgo = (createdAt) => {
   const now = new Date();
   const createdDate = new Date(createdAt);
@@ -31,7 +28,6 @@ const getTimeAgo = (createdAt) => {
 const QuestionsCard = ({ question }) => {
   const { data: session, status } = useSession();
   const user = session?.user;
-  const queryClient = useQueryClient();
   const questionId = question._id;
 
   const [liked, setLiked] = useState(false);
@@ -39,100 +35,55 @@ const QuestionsCard = ({ question }) => {
   const [likesCount, setLikesCount] = useState(question?.likes || 0);
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
 
-  const [loadingLike, setLoadingLike] = useState(false); // Loader for Like
-  const [loadingUnlike, setLoadingUnlike] = useState(false); // Loader for Unlike
-
-  const [likeStickerVisible, setLikeStickerVisible] = useState(false);
-  const [unlikeStickerVisible, setUnlikeStickerVisible] = useState(false);
-
   useEffect(() => {
     if (session?.user) {
       const userEmail = session?.user?.email;
-
-      if (question?.likedBy?.includes(userEmail)) {
-        setLiked(true);
-      }
-      if (question?.unlikedBy?.includes(userEmail)) {
-        setUnliked(true);
-      }
+      setLiked(question?.likedBy?.includes(userEmail));
+      setUnliked(question?.unlikedBy?.includes(userEmail));
     }
   }, [session?.user, question]);
 
-  // Like Mutation
-  const likeMutation = useMutation({
-    mutationFn: async () => {
+  const handleLikeToggle = async () => {
+    const isCurrentlyLiked = liked;
+    const newLikesCount = isCurrentlyLiked ? likesCount - 1 : likesCount + 1;
+
+    // Optimistically update UI
+    setLiked(!liked);
+    setUnliked(false);
+    setLikesCount(newLikesCount);
+    if (unliked) setUnlikesCount(unlikesCount - 1);
+
+    try {
       const url = `${process.env.NEXT_PUBLIC_WEB_URL}/Components/Questions/api/likes/${questionId}`;
-      const response = await axios.put(url, { questionId, user: session?.user });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["questionLikes", questionId]);
-      setLoadingLike(false); // Hide Loader
-    },
-    onError: () => {
+      await axios.put(url, { questionId, user: session?.user });
+      toast.success(isCurrentlyLiked ? "Like removed!" : "Like added!");
+    } catch (error) {
+      // Revert UI in case of an error
+      setLiked(isCurrentlyLiked);
+      setLikesCount(likesCount);
       toast.error("Error while liking the question.");
-      setLoadingLike(false); // Hide Loader
-    },
-  });
-
-  // Unlike Mutation
-  const unlikeMutation = useMutation({
-    mutationFn: async () => {
-      const url = `${process.env.NEXT_PUBLIC_WEB_URL}/Components/Questions/api/unlikes/${questionId}`;
-      const response = await axios.put(url, { questionId, user: session?.user });
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["questionLikes", questionId]);
-      setLoadingUnlike(false); // Hide Loader
-    },
-    onError: () => {
-      toast.error("Error while unliking the question.");
-      setLoadingUnlike(false); // Hide Loader
-    },
-  });
-
-  const handleLikeToggle = () => {
-    setLoadingLike(true); // Show Loader
-    if (liked) {
-      likeMutation.mutate();
-      setLiked(false);
-      setLikesCount((prev) => prev - 1);
-      toast.success("Like removed!");
-    } else {
-      likeMutation.mutate();
-      setLiked(true);
-      setLikesCount((prev) => prev + 1);
-      toast.success("Like added!");
-      setLikeStickerVisible(true); // Show sticker animation
-      setTimeout(() => setLikeStickerVisible(false), 1000); // Hide sticker after 1 second
-    }
-
-    if (unliked) {
-      setUnliked(false);
-      setUnlikesCount((prev) => prev - 1);
     }
   };
 
-  const handleUnlikeToggle = () => {
-    setLoadingUnlike(true); // Show Loader
-    if (unliked) {
-      unlikeMutation.mutate();
-      setUnliked(false);
-      setUnlikesCount((prev) => prev - 1);
-      toast.success("Unlike removed!");
-    } else {
-      unlikeMutation.mutate();
-      setUnliked(true);
-      setUnlikesCount((prev) => prev + 1);
-      toast.success("Unlike added!");
-      setUnlikeStickerVisible(true); // Show sticker animation
-      setTimeout(() => setUnlikeStickerVisible(false), 1000); // Hide sticker after 1 second
-    }
+  const handleUnlikeToggle = async () => {
+    const isCurrentlyUnliked = unliked;
+    const newUnlikesCount = isCurrentlyUnliked ? unlikesCount - 1 : unlikesCount + 1;
 
-    if (liked) {
-      setLiked(false);
-      setLikesCount((prev) => prev - 1);
+    // Optimistically update UI
+    setUnliked(!unliked);
+    setLiked(false);
+    setUnlikesCount(newUnlikesCount);
+    if (liked) setLikesCount(likesCount - 1);
+
+    try {
+      const url = `${process.env.NEXT_PUBLIC_WEB_URL}/Components/Questions/api/unlikes/${questionId}`;
+      await axios.put(url, { questionId, user: session?.user });
+      toast.success(isCurrentlyUnliked ? "Unlike removed!" : "Unlike added!");
+    } catch (error) {
+      // Revert UI in case of an error
+      setUnliked(isCurrentlyUnliked);
+      setUnlikesCount(unlikesCount);
+      toast.error("Error while unliking the question.");
     }
   };
 
@@ -152,34 +103,30 @@ const QuestionsCard = ({ question }) => {
       userId: user.id,
       questionId: question?._id,
       title: question?.title,
-    }
-  
-   
+    };
+
     try {
-      const res = await axios.post(postBookmark, bookMark)
-      // console.log("success", res.data);
+      const res = await axios.post(postBookmark, bookMark);
       if (res.status === 200) {
-        toast.success("Added the bookmark")
+        toast.success("Added the bookmark");
       }
     } catch (error) {
       if (error.response) {
         if (error.response.status === 409) {
-         toast.error("ALready booked")
-          } else if (error.response.status === 400) {
-          toast.error("Please try again")
+          toast.error("Already bookmarked");
+        } else if (error.response.status === 400) {
+          toast.error("Please try again");
         } else {
-         toast.success("Added on the bookmark")
+          toast.success("Added on the bookmark");
         }
       }
     }
-    console.log(bookMark);
-  }
-
+  };
 
   return (
     <div className="relative p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
       <div className="flex items-center justify-between mb-4">
-        <div className='flex justify-between'>
+        <div className="flex justify-between">
           <div className="flex items-center">
             <Image
               className="w-10 h-10 rounded-full"
@@ -214,40 +161,17 @@ const QuestionsCard = ({ question }) => {
           <div className="flex items-center text-gray-500">
             <button
               onClick={handleLikeToggle}
-              className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${liked ? 'scale-125' : 'hover:scale-110'
-                }`}/>
-            <button 
-              onClick={handleLikeToggle} 
-              disabled={loadingLike} 
               className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${liked ? 'scale-125' : 'hover:scale-110'}`}>
-              {loadingLike ? <FaSpinner className="animate-spin" /> : liked ? <AiFillLike className="mr-1" /> : <AiOutlineLike className="mr-1" />}
+              {liked ? <AiFillLike className="mr-1" /> : <AiOutlineLike className="mr-1" />}
               {likesCount}
             </button>
+
             <button
               onClick={handleUnlikeToggle}
-              className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${unliked ? 'scale-125' : 'hover:scale-110'
-                }`}/>
-            <button 
-              onClick={handleUnlikeToggle} 
-              disabled={loadingUnlike} 
               className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${unliked ? 'scale-125' : 'hover:scale-110'}`}>
-              {loadingUnlike ? <FaSpinner className="animate-spin" /> : unliked ? <AiFillDislike className="mr-1" /> : <AiOutlineDislike className="mr-1" />}
+              {unliked ? <AiFillDislike className="mr-1" /> : <AiOutlineDislike className="mr-1" />}
               {unlikesCount}
             </button>
-
-            {/* Like Sticker Animation with Emoji */}
-            {likeStickerVisible && (
-              <div className="absolute text-5xl animate-bounce transition-transform duration-1000">
-                🎉
-              </div>
-            )}
-            
-            {/* Unlike Sticker Animation with Emoji */}
-            {unlikeStickerVisible && (
-              <div className="absolute text-5xl animate-bounce transition-transform duration-1000">
-                👎
-              </div>
-            )}
           </div>
         </div>
       </div>
