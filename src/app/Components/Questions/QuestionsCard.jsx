@@ -146,27 +146,28 @@ const QuestionsCard = ({ question }) => {
       questionId: question?._id,
       title: question?.title,
     }
-    console.log(bookMark)
-      id: question._id,
-      title: question.title,
-    };
+  
+   
     try {
       const res = await axios.post(postBookmark, bookMark)
       // console.log("success", res.data);
       if (res.status === 200) {
         toast.success("Added the bookmark")
-      const res = await axios.post(postBookmark, bookMark);
-      if (res.status === 200) {
-        toast.success("Added the bookmark");
-      }
-      if (res.status === 404) {
-        toast.error("Already Added");
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Error adding bookmark");
+      if (error.response) {
+        if (error.response.status === 409) {
+         toast.error("ALready booked")
+          } else if (error.response.status === 400) {
+          toast.error("Please try again")
+        } else {
+         toast.success("Added on the bookmark")
+        }
+      }
     }
-  };
+    console.log(bookMark);
+  }
+
 
   return (
     <div className="relative p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
@@ -207,7 +208,7 @@ const QuestionsCard = ({ question }) => {
             <button
               onClick={handleLikeToggle}
               className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${liked ? 'scale-125' : 'hover:scale-110'
-                }`}>
+                }`}/>
             <button 
               onClick={handleLikeToggle} 
               className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${liked ? 'scale-125' : 'hover:scale-110'}`}>
@@ -217,7 +218,7 @@ const QuestionsCard = ({ question }) => {
             <button
               onClick={handleUnlikeToggle}
               className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${unliked ? 'scale-125' : 'hover:scale-110'
-                }`}>
+                }`}/>
             <button 
               onClick={handleUnlikeToggle} 
               className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${unliked ? 'scale-125' : 'hover:scale-110'}`}>
@@ -238,7 +239,7 @@ const QuestionsCard = ({ question }) => {
                 👎
               </div>
             )}
-          </div>
+            </div>
 
           {/* Add any other icons or stats you want to include */}
         </div>

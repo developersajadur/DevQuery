@@ -160,7 +160,7 @@ const ProfilePage = ({ params }) => {
 
 			{
         data.map(dt=>
-      <div key={dt._id} className='flex justify-between item-center hover:border-pink-600 border-[1px] border-sky-600 rounded-md bg-gray-50'>
+      <div key={dt._id} className='flex justify-between item-center hover:border-pink-600 border-[1px] border-sky-600 rounded-md bg-gray-50 my-1'>
 
         <div className="w-96 ">
         <td className="p-3">
