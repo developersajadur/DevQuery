@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 
 import { getQuestions } from "@/Components/Questions/GetQuestions";
-import QuestionsCard from "@/Components/Questions/QuestionsCard";
+import QuestionsCard from "@/app/Components/Questions/QuestionsCard";
 
 
 const Home = async () => {

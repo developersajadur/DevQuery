@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -29,7 +29,7 @@ const getTimeAgo = (createdAt) => {
 
 const QuestionsCard = ({ question }) => {
   const { data: session, status } = useSession();
-  const user = session?.user;
+  const currentUser = session?.user;
   const queryClient = useQueryClient();
   const questionId = question._id;
 
@@ -37,7 +37,13 @@ const QuestionsCard = ({ question }) => {
   const [unliked, setUnliked] = useState(false);
   const [likesCount, setLikesCount] = useState(question?.likes || 0);
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
-  
+
+  // Fetch user data using Tanstack Query
+  const { data: user } = useQuery({
+    queryKey: ['user', question.userId],
+    queryFn: () => axios.get(`/users/api/get-one?userId=${question?.userId}`).then(res => res.data.user),
+    enabled: !!question.userId
+  });
 
   useEffect(() => {
     if (session?.user) {
@@ -60,11 +66,11 @@ const QuestionsCard = ({ question }) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["questionLikes", questionId]);
-      // Show success toast on like
+      queryClient.invalidateQueries({ queryKey: ["questionLikes", questionId] });
+      toast.success("Like operation successful!"); // Optional: toast for success
     },
     onError: () => {
-      toast.error("Error while liking the question."); // Show error toast on like failure
+      toast.error("Error while liking the question."); // Error handling toast
     },
   });
 
@@ -76,30 +82,27 @@ const QuestionsCard = ({ question }) => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["questionLikes", questionId]);
-       // Show success toast on unlike
+      queryClient.invalidateQueries({ queryKey: ["questionLikes", questionId] });
+      toast.success("Unlike operation successful!"); // Optional: toast for success
     },
     onError: () => {
-      toast.error("Error while unliking the question."); // Show error toast on unlike failure
+      toast.error("Error while unliking the question."); // Error handling toast
     },
   });
 
   const handleLikeToggle = () => {
     if (liked) {
-      // Unlike if already liked
       likeMutation.mutate();
       setLiked(false);
       setLikesCount((prev) => prev - 1);
       toast.success("Like removed!");
     } else if (!unliked) {
-      // Like if not unliked
       likeMutation.mutate();
       setLiked(true);
       setLikesCount((prev) => prev + 1);
       toast.success("Like added!");
     }
 
-    // If unliked, remove unlike
     if (unliked) {
       setUnliked(false);
       setUnlikesCount((prev) => prev - 1);
@@ -108,20 +111,17 @@ const QuestionsCard = ({ question }) => {
 
   const handleUnlikeToggle = () => {
     if (unliked) {
-      // Remove unlike if already unliked
       unlikeMutation.mutate();
       setUnliked(false);
       setUnlikesCount((prev) => prev - 1);
       toast.success("Unlike removed!");
     } else if (!liked) {
-      // Unlike if not liked
       unlikeMutation.mutate();
       setUnliked(true);
       setUnlikesCount((prev) => prev + 1);
       toast.success("Unlike added!");
     }
 
-    // If liked, remove like
     if (liked) {
       setLiked(false);
       setLikesCount((prev) => prev - 1);
@@ -129,60 +129,56 @@ const QuestionsCard = ({ question }) => {
   };
 
   if (status === "loading") {
-    return <Loading />; // Show loading component while fetching user data
+    return <Loading />;
   }
 
   if (status === "error") {
-    toast.error("Error fetching user data."); // Handle user fetch error
-    return null; // Optionally handle error state
+    toast.error("Error fetching user data.");
+    return null;
   }
-  
+
   const buttonForBookmark = async () => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
     const bookMark = {
-      email: user.email,
+      email: currentUser.email,
       id: question._id,
       title: question.title,
-    }
-    console.log(bookMark)
+    };
+
     try {
-      const res = await axios.post(postBookmark, bookMark)
-      // console.log("success", res.data);
-      if(res.status === 200){
-        toast.success("Added the bookmark")
-      }
-      if(res.status === 404){
-        toast.error("Already Added")
+      const res = await axios.post(postBookmark, bookMark);
+      if (res.status === 200) {
+        toast.success("Added the bookmark");
+      } else if (res.status === 404) {
+        toast.error("Already Added");
       }
     } catch (error) {
-      console.log(error)
-      
+      console.log(error);
     }
-    console.log(bookMark);
-  }
+  };
 
   return (
     <div className="p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
       <div className="flex items-center justify-between mb-4">
         <div className='flex justify-between'>
-        <div className="flex items-center">
-          <Image
-            className="w-10 h-10 rounded-full"
-            src={session?.user?.image || "/default-avatar.png"}
-            height={40}
-            width={40}
-            alt="User Avatar"
-          />
-          <div className="ml-3">
-            <Link href={`/users/${session?.user?._id}`} className="text-lg font-semibold text-blue-500">
-              {session?.user?.name || "Unknown User"}
-            </Link>
-            <p className="text-sm text-gray-500">Asked: {getTimeAgo(question.createdAt)}</p>
+          <div className="flex items-center">
+            <Image
+              className="w-10 h-10 rounded-full"
+              src={user?.image}
+              height={40}
+              width={40}
+              alt="User Avatar"
+            />
+            <div className="ml-3">
+              <Link href={`/users/${user?._id}`} className="text-lg font-semibold text-blue-500">
+                {session?.user?.name || "Unknown User"}
+              </Link>
+              <p className="text-sm text-gray-500">Asked: {getTimeAgo(question.createdAt)}</p>
+            </div>
           </div>
-        </div>
-        <div>
-        <button onClick={buttonForBookmark}><FaBookmark /></button>
-        </div>
+          <div>
+            <button onClick={buttonForBookmark}><FaBookmark /></button>
+          </div>
         </div>
       </div>
 
@@ -197,19 +193,15 @@ const QuestionsCard = ({ question }) => {
       <div className="flex flex-col md:flex-row gap-10 justify-between items-center">
         <div className="flex gap-5 items-center">
           <div className="flex items-center text-gray-500">
-            <button 
-              onClick={handleLikeToggle} 
-              className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${
-                liked ? 'scale-125' : 'hover:scale-110'
-              }`}>
+            <button
+              onClick={handleLikeToggle}
+              className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${liked ? 'scale-125' : 'hover:scale-110'}`}>
               {liked ? <AiFillLike className="mr-1" /> : <AiOutlineLike className="mr-1" />}
               {likesCount}
             </button>
-            <button 
-              onClick={handleUnlikeToggle} 
-              className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${
-                unliked ? 'scale-125' : 'hover:scale-110'
-              }`}>
+            <button
+              onClick={handleUnlikeToggle}
+              className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${unliked ? 'scale-125' : 'hover:scale-110'}`}>
               {unliked ? <AiFillDislike className="mr-1" /> : <AiOutlineDislike className="mr-1" />}
               {unlikesCount}
             </button>
