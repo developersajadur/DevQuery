@@ -39,6 +39,10 @@ const QuestionsCard = ({ question }) => {
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
 
 
+  
+  const [likeStickerVisible, setLikeStickerVisible] = useState(false);
+  const [unlikeStickerVisible, setUnlikeStickerVisible] = useState(false);
+  
   useEffect(() => {
     if (session?.user) {
       const userEmail = session?.user?.email;
@@ -61,10 +65,9 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["questionLikes", questionId]);
-      // Show success toast on like
     },
     onError: () => {
-      toast.error("Error while liking the question."); // Show error toast on like failure
+      toast.error("Error while liking the question.");
     },
   });
 
@@ -80,26 +83,25 @@ const QuestionsCard = ({ question }) => {
       // Show success toast on unlike
     },
     onError: () => {
-      toast.error("Error while unliking the question."); // Show error toast on unlike failure
+      toast.error("Error while unliking the question.");
     },
   });
 
   const handleLikeToggle = () => {
     if (liked) {
-      // Unlike if already liked
       likeMutation.mutate();
       setLiked(false);
       setLikesCount((prev) => prev - 1);
       toast.success("Like removed!");
-    } else if (!unliked) {
-      // Like if not unliked
+    } else {
       likeMutation.mutate();
       setLiked(true);
       setLikesCount((prev) => prev + 1);
       toast.success("Like added!");
+      setLikeStickerVisible(true); // Show sticker animation
+      setTimeout(() => setLikeStickerVisible(false), 1000); // Hide sticker after 1 second
     }
 
-    // If unliked, remove unlike
     if (unliked) {
       setUnliked(false);
       setUnlikesCount((prev) => prev - 1);
@@ -108,20 +110,19 @@ const QuestionsCard = ({ question }) => {
 
   const handleUnlikeToggle = () => {
     if (unliked) {
-      // Remove unlike if already unliked
       unlikeMutation.mutate();
       setUnliked(false);
       setUnlikesCount((prev) => prev - 1);
       toast.success("Unlike removed!");
-    } else if (!liked) {
-      // Unlike if not liked
+    } else {
       unlikeMutation.mutate();
       setUnliked(true);
       setUnlikesCount((prev) => prev + 1);
       toast.success("Unlike added!");
+      setUnlikeStickerVisible(true); // Show sticker animation
+      setTimeout(() => setUnlikeStickerVisible(false), 1000); // Hide sticker after 1 second
     }
 
-    // If liked, remove like
     if (liked) {
       setLiked(false);
       setLikesCount((prev) => prev - 1);
@@ -129,12 +130,12 @@ const QuestionsCard = ({ question }) => {
   };
 
   if (status === "loading") {
-    return <Loading />; // Show loading component while fetching user data
+    return <Loading />;
   }
 
   if (status === "error") {
-    toast.error("Error fetching user data."); // Handle user fetch error
-    return null; // Optionally handle error state
+    toast.error("Error fetching user data.");
+    return null;
   }
 
   const buttonForBookmark = async () => {
@@ -146,28 +147,29 @@ const QuestionsCard = ({ question }) => {
       title: question?.title,
     }
     console.log(bookMark)
+      id: question._id,
+      title: question.title,
+    };
     try {
       const res = await axios.post(postBookmark, bookMark)
       // console.log("success", res.data);
       if (res.status === 200) {
         toast.success("Added the bookmark")
+      const res = await axios.post(postBookmark, bookMark);
+      if (res.status === 200) {
+        toast.success("Added the bookmark");
+      }
+      if (res.status === 404) {
+        toast.error("Already Added");
       }
     } catch (error) {
-      if (error.response) {
-        if (error.response.status === 409) {
-         toast.error("ALready booked")
-          } else if (error.response.status === 400) {
-          toast.error("Please try again")
-        } else {
-         toast.success("Added on the bookmark")
-        }
-      }
+      console.error(error);
+      toast.error("Error adding bookmark");
     }
-    console.log(bookMark);
-  }
+  };
 
   return (
-    <div className="p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
+    <div className="relative p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
       <div className="flex items-center justify-between mb-4">
         <div className='flex justify-between'>
           <div className="flex items-center">
@@ -206,6 +208,9 @@ const QuestionsCard = ({ question }) => {
               onClick={handleLikeToggle}
               className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${liked ? 'scale-125' : 'hover:scale-110'
                 }`}>
+            <button 
+              onClick={handleLikeToggle} 
+              className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${liked ? 'scale-125' : 'hover:scale-110'}`}>
               {liked ? <AiFillLike className="mr-1" /> : <AiOutlineLike className="mr-1" />}
               {likesCount}
             </button>
@@ -213,21 +218,29 @@ const QuestionsCard = ({ question }) => {
               onClick={handleUnlikeToggle}
               className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${unliked ? 'scale-125' : 'hover:scale-110'
                 }`}>
+            <button 
+              onClick={handleUnlikeToggle} 
+              className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${unliked ? 'scale-125' : 'hover:scale-110'}`}>
               {unliked ? <AiFillDislike className="mr-1" /> : <AiOutlineDislike className="mr-1" />}
               {unlikesCount}
             </button>
+
+            {/* Like Sticker Animation with Emoji */}
+            {likeStickerVisible && (
+              <div className="absolute text-5xl animate-bounce transition-transform duration-1000">
+                🎉
+              </div>
+            )}
+            
+            {/* Unlike Sticker Animation with Emoji */}
+            {unlikeStickerVisible && (
+              <div className="absolute text-5xl animate-bounce transition-transform duration-1000">
+                👎
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center">
-            <span className="mr-3">👁 {question?.views || 550} Views</span>
-            <span className="mr-3">{question?.answers || 40} Answers</span>
-          </div>
-        </div>
-
-        <div className="w-full md:w-fit text-end">
-          <Link href={`/questions/${questionId}`} className="bg-blue-500 w-full md:w-fit text-white px-4 py-2 rounded-md">
-            Answer
-          </Link>
+          {/* Add any other icons or stats you want to include */}
         </div>
       </div>
     </div>
