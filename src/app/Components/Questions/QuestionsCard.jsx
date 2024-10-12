@@ -37,6 +37,8 @@ const QuestionsCard = ({ question }) => {
   const [unliked, setUnliked] = useState(false);
   const [likesCount, setLikesCount] = useState(question?.likes || 0);
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
+
+
   
   const [likeStickerVisible, setLikeStickerVisible] = useState(false);
   const [unlikeStickerVisible, setUnlikeStickerVisible] = useState(false);
@@ -78,6 +80,7 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["questionLikes", questionId]);
+      // Show success toast on unlike
     },
     onError: () => {
       toast.error("Error while unliking the question.");
@@ -139,22 +142,32 @@ const QuestionsCard = ({ question }) => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
     const bookMark = {
       email: user.email,
-      id: question._id,
-      title: question.title,
-    };
+      userId: user.id,
+      questionId: question?._id,
+      title: question?.title,
+    }
+  
+   
     try {
-      const res = await axios.post(postBookmark, bookMark);
+      const res = await axios.post(postBookmark, bookMark)
+      // console.log("success", res.data);
       if (res.status === 200) {
-        toast.success("Added the bookmark");
-      }
-      if (res.status === 404) {
-        toast.error("Already Added");
+        toast.success("Added the bookmark")
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Error adding bookmark");
+      if (error.response) {
+        if (error.response.status === 409) {
+         toast.error("ALready booked")
+          } else if (error.response.status === 400) {
+          toast.error("Please try again")
+        } else {
+         toast.success("Added on the bookmark")
+        }
+      }
     }
-  };
+    console.log(bookMark);
+  }
+
 
   return (
     <div className="relative p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
@@ -192,12 +205,20 @@ const QuestionsCard = ({ question }) => {
       <div className="flex flex-col md:flex-row gap-10 justify-between items-center">
         <div className="flex gap-5 items-center">
           <div className="flex items-center text-gray-500">
+            <button
+              onClick={handleLikeToggle}
+              className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${liked ? 'scale-125' : 'hover:scale-110'
+                }`}/>
             <button 
               onClick={handleLikeToggle} 
               className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${liked ? 'scale-125' : 'hover:scale-110'}`}>
               {liked ? <AiFillLike className="mr-1" /> : <AiOutlineLike className="mr-1" />}
               {likesCount}
             </button>
+            <button
+              onClick={handleUnlikeToggle}
+              className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${unliked ? 'scale-125' : 'hover:scale-110'
+                }`}/>
             <button 
               onClick={handleUnlikeToggle} 
               className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${unliked ? 'scale-125' : 'hover:scale-110'}`}>
@@ -218,7 +239,7 @@ const QuestionsCard = ({ question }) => {
                 👎
               </div>
             )}
-          </div>
+            </div>
 
           {/* Add any other icons or stats you want to include */}
         </div>
