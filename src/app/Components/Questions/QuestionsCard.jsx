@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Loading from "../Loading/Loading";
 import { FaBookmark } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa"; // Import Spinner Icon
 
 // Helper function to get time ago
 const getTimeAgo = (createdAt) => {
@@ -38,11 +39,12 @@ const QuestionsCard = ({ question }) => {
   const [likesCount, setLikesCount] = useState(question?.likes || 0);
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
 
+  const [loadingLike, setLoadingLike] = useState(false); // Loader for Like
+  const [loadingUnlike, setLoadingUnlike] = useState(false); // Loader for Unlike
 
-  
   const [likeStickerVisible, setLikeStickerVisible] = useState(false);
   const [unlikeStickerVisible, setUnlikeStickerVisible] = useState(false);
-  
+
   useEffect(() => {
     if (session?.user) {
       const userEmail = session?.user?.email;
@@ -65,9 +67,11 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["questionLikes", questionId]);
+      setLoadingLike(false); // Hide Loader
     },
     onError: () => {
       toast.error("Error while liking the question.");
+      setLoadingLike(false); // Hide Loader
     },
   });
 
@@ -80,14 +84,16 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["questionLikes", questionId]);
-      // Show success toast on unlike
+      setLoadingUnlike(false); // Hide Loader
     },
     onError: () => {
       toast.error("Error while unliking the question.");
+      setLoadingUnlike(false); // Hide Loader
     },
   });
 
   const handleLikeToggle = () => {
+    setLoadingLike(true); // Show Loader
     if (liked) {
       likeMutation.mutate();
       setLiked(false);
@@ -109,6 +115,7 @@ const QuestionsCard = ({ question }) => {
   };
 
   const handleUnlikeToggle = () => {
+    setLoadingUnlike(true); // Show Loader
     if (unliked) {
       unlikeMutation.mutate();
       setUnliked(false);
@@ -211,8 +218,9 @@ const QuestionsCard = ({ question }) => {
                 }`}/>
             <button 
               onClick={handleLikeToggle} 
+              disabled={loadingLike} 
               className={`text-blue-500 text-2xl transition-transform duration-300 ease-in-out ${liked ? 'scale-125' : 'hover:scale-110'}`}>
-              {liked ? <AiFillLike className="mr-1" /> : <AiOutlineLike className="mr-1" />}
+              {loadingLike ? <FaSpinner className="animate-spin" /> : liked ? <AiFillLike className="mr-1" /> : <AiOutlineLike className="mr-1" />}
               {likesCount}
             </button>
             <button
@@ -221,8 +229,9 @@ const QuestionsCard = ({ question }) => {
                 }`}/>
             <button 
               onClick={handleUnlikeToggle} 
+              disabled={loadingUnlike} 
               className={`ml-4 text-red-600 text-2xl transition-transform duration-300 ease-in-out ${unliked ? 'scale-125' : 'hover:scale-110'}`}>
-              {unliked ? <AiFillDislike className="mr-1" /> : <AiOutlineDislike className="mr-1" />}
+              {loadingUnlike ? <FaSpinner className="animate-spin" /> : unliked ? <AiFillDislike className="mr-1" /> : <AiOutlineDislike className="mr-1" />}
               {unlikesCount}
             </button>
 
@@ -239,9 +248,7 @@ const QuestionsCard = ({ question }) => {
                 👎
               </div>
             )}
-            </div>
-
-          {/* Add any other icons or stats you want to include */}
+          </div>
         </div>
       </div>
     </div>
