@@ -115,7 +115,7 @@ const ProfilePage = ({ params }) => {
 
       <Tabs>
         <div className="w-full">
-          <TabList className="flex justify-between gap-10 mb-9">
+          <TabList className="flex justify-between gap-8 content-center mb-9">
             <Tab><button>Questions</button></Tab>
             <Tab><button className="text-gray-500">Answers</button></Tab>
             <Tab><button className="text-gray-500">Bookmarks</button></Tab>
@@ -145,8 +145,46 @@ const ProfilePage = ({ params }) => {
         </TabPanel>
         <TabPanel>
           <div className="bg-white shadow-md w-full md:w-3/4 lg:w-full p-6 rounded-lg mt-6">
-            <h2 className="text-xl font-semibold">Bookmarks</h2>
-            {/* Add bookmarks content here */}
+            <div className=" sm:p-4 dark:text-gray-800">
+	<h2 className="text-2xl font-semibold text-center"><em>Bookmark</em></h2>
+  <p className="text-center font-semibold"><em>Here are the questions you bookmarked</em></p>
+			
+			<thead className="dark:bg-gray-300">
+				<tr className="text-left">
+					<th className="p-3 ">Title</th>
+					<th className="p-3"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr className="border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
+
+			{
+        data.map(dt=>
+      <div key={dt._id} className='flex justify-between item-center hover:border-pink-600 border-[1px] border-sky-600 rounded-md bg-gray-50 my-1'>
+
+        <div className="w-96 ">
+        <td className="p-3">
+            
+						<p className="text-xl font-bold">{dt.title}</p>
+					</td>
+        </div>
+              
+					<div className="my-2">
+          <td className="p-3">
+						<Link href={`/questions/${dt.questionId}`}><button className="bg-blue-600 text-white hover:bg-sky-900 font-bold rounded-md hover:rounded-lg border-2 p-2">Details</button></Link>
+					</td>
+          </div>
+
+        </div>
+
+        )
+      }	
+
+				</tr>
+			</tbody>
+	
+	
+</div>
           </div>
         </TabPanel>
       </Tabs>
