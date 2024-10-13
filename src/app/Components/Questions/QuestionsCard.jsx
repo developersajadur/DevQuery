@@ -135,7 +135,6 @@ const QuestionsCard = ({ question }) => {
   const buttonForBookmark = async () => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
     const bookMark = {
-      email: currentUser.email,
       userId: currentUser.id,
       questionId: question?._id,
       title: question?.title,
