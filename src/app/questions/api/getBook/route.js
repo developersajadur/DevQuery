@@ -8,15 +8,15 @@ export const GET = async (request) => {
     const getBook = db.collection('bookmarks');
     
     try {
-        // Get the user's email from the query parameter or headers
-        const email = request.nextUrl.searchParams.get("email");
+        // Get the user's ID from the query parameter
+        const userId = request.nextUrl.searchParams.get("userId");
 
-        if (!email) {
-            return NextResponse.json({ message: "Email is required" }, { status: 404 });
+        if (!userId) {
+            return NextResponse.json({ message: "User ID is required" }, { status: 404 });
         }
 
-        // Fetch bookmarks where the email matches
-        const books = await getBook.find({ email }).toArray();
+        // Fetch bookmarks where the user ID matches
+        const books = await getBook.find({ userId }).toArray();
         
         if (books.length === 0) {
             return NextResponse.json({ message: "No bookmarks found for this user" }, { status: 404 });

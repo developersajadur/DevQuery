@@ -28,6 +28,7 @@ const Navbar = () => {
     }
   };
 
+
   const toggleView = () => {
     const newView = !showAdminLinks;
     setShowAdminLinks(newView);
@@ -78,7 +79,7 @@ const Navbar = () => {
               <Link href="/">Home</Link>
               <Link href="#">About Us</Link>
               <Link href="#">Blogs</Link>
-              <Link href="#">Contact Us</Link>
+              <Link href="/Contact">Contact Us</Link>
             </div>
           </div>
           <TextInput

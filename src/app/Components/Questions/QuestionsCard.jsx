@@ -14,11 +14,11 @@ const getTimeAgo = (createdAt) => {
   const now = new Date();
   const createdDate = new Date(createdAt);
   const differenceInMs = now - createdDate;
-
+  
   const minutes = Math.floor(differenceInMs / (1000 * 60));
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
-
+  
   if (days > 0) {
     return `${days} day(s) ${hours % 24} hour(s) ago`;
   } else if (hours > 0) {
@@ -136,21 +136,31 @@ const QuestionsCard = ({ question }) => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
     const bookMark = {
       email: currentUser.email,
-      id: question._id,
-      title: question.title,
-    };
-
+      userId: currentUser.id,
+      questionId: question?._id,
+      title: question?.title,
+    }
+  
+   
     try {
-      const res = await axios.post(postBookmark, bookMark);
+      const res = await axios.post(postBookmark, bookMark)
+      // console.log("success", res.data);
       if (res.status === 200) {
-        toast.success("Added the bookmark");
-      } else if (res.status === 404) {
-        toast.error("Already Added");
+        toast.success("Added the bookmark")
       }
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        if (error.response.status === 409) {
+         toast.error("ALready booked")
+          } else if (error.response.status === 400) {
+          toast.error("Please try again")
+        } else {
+         toast.success("Added on the bookmark")
+        }
+      }
     }
-  };
+    console.log(bookMark);
+  }
 
   return (
     <div className="relative p-6 w-full max-w-3xl border-t border-[#A1D6B2]">
