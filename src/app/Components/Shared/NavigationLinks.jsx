@@ -7,27 +7,27 @@ import { MdOutlineCardTravel, MdOutlineDashboard } from "react-icons/md";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 
-// User and Admin navigation links
+// User and Admin navigation links with stickers
 export const UserNavLinks = [
   {
     title: "Home",
     path: "/",
-    icon: <FaHome />,
+    icon: <FaHome className="text-xl text-blue-500" />, // Add color
   },
   {
     title: "Questions",
     path: "/questions",
-    icon: <BsPatchQuestionFill />,
+    icon: <BsPatchQuestionFill className="text-xl text-green-500" />, // Add color
   },
   {
     title: "Users",
     path: "/users",
-    icon: <FaUsers />,
+    icon: <FaUsers className="text-xl text-red-500" />, // Add color
   },
   {
     title: "Jobs",
     path: "/jobs",
-    icon: <MdOutlineCardTravel />,
+    icon: <MdOutlineCardTravel className="text-xl text-yellow-500" />, // Add color
   },
 ];
 
@@ -35,22 +35,22 @@ export const AdminNavLinks = [
   {
     title: "Dashboard",
     path: "/dashboard",
-    icon: <MdOutlineDashboard />,
+    icon: <MdOutlineDashboard className="text-xl text-purple-500" />, // Add color
   },
   {
     title: "Manage Questions",
     path: "/manage-questions",
-    icon: <BsPatchQuestionFill />,
+    icon: <BsPatchQuestionFill className="text-xl text-green-500" />, // Add color
   },
   { 
     title: "Manage Users",
     path: "/manage-users",
-    icon: <FaUsers />,
+    icon: <FaUsers className="text-xl text-red-500" />, // Add color
   },
   {
     title: "Manage Jobs",
     path: "/manage-jobs",
-    icon: <MdOutlineCardTravel />,
+    icon: <MdOutlineCardTravel className="text-xl text-yellow-500" />, // Add color
   },
 ];
 
@@ -85,27 +85,27 @@ const NavigationLinks = () => {
   };
 
   return (
-    <div className="">
-      <div className="text-white flex flex-col gap-2 text-xl font-medium mt-8">
+    <div className="p-6">
+      <div className="text-black flex flex-col gap-4 text-lg font-medium mt-8">
         {user?.role === "user" && !showAdminLinks ? (
           UserNavLinks.map((item) => (
-            <Link href={item.path} key={item.path} className="flex items-center text-black gap-2">
-              {item.icon && <span>{item.icon}</span>}
-              {item.title}
+            <Link href={item.path} key={item.path} className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-200 transition-all duration-300">
+              {item.icon && <span className="bg-white rounded-full p-2 shadow">{item.icon}</span>}
+              <span className="hover:text-blue-600">{item.title}</span>
             </Link>
           ))
         ) : user?.role === "admin" && showAdminLinks ? (
           AdminNavLinks.map((item) => (
-            <Link href={item.path} key={item.path} className="flex items-center text-black gap-2">
-              {item.icon && <span>{item.icon}</span>}
-              {item.title}
+            <Link href={item.path} key={item.path} className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-200 transition-all duration-300">
+              {item.icon && <span className="bg-white rounded-full p-2 shadow">{item.icon}</span>}
+              <span className="hover:text-blue-600">{item.title}</span>
             </Link>
           ))
         ) : (
           UserNavLinks.map((item) => (
-            <Link href={item.path} key={item.path} className="flex items-center text-black gap-2">
-              {item.icon && <span>{item.icon}</span>}
-              {item.title}
+            <Link href={item.path} key={item.path} className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-200 transition-all duration-300">
+              {item.icon && <span className="bg-white rounded-full p-2 shadow">{item.icon}</span>}
+              <span className="hover:text-blue-600">{item.title}</span>
             </Link>
           ))
         )}
@@ -115,7 +115,7 @@ const NavigationLinks = () => {
       {user?.role === "admin" && (
         <button
           onClick={handleToggle}
-          className="block w-full md:w-auto px-3 py-2 mt-4 rounded-xl bg-blue-500 text-white text-center font-semibold"
+          className="block w-full md:w-auto px-4 py-2 mt-6 rounded-full bg-gradient-to-r from-teal-500 to-pink-500 text-white font-semibold shadow-lg hover:from-pink-500 hover:to-teal-500 transition-all duration-300"
         >
           {showAdminLinks ? "Switch to User" : "Switch to Admin"}
         </button>
