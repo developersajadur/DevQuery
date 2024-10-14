@@ -62,7 +62,6 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questionLikes", questionId] });
-      toast.success("Like operation successful!");
     },
     onError: () => {
       toast.error("Error while liking the question.");
@@ -78,7 +77,7 @@ const QuestionsCard = ({ question }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questionLikes", questionId] });
-      toast.success("Unlike operation successful!");
+      
     },
     onError: () => {
       toast.error("Error while unliking the question.");
@@ -141,43 +140,40 @@ const QuestionsCard = ({ question }) => {
       title: question?.title,
     }
   
-   
     try {
-      const res = await axios.post(postBookmark, bookMark)
-      // console.log("success", res.data);
+      const res = await axios.post(postBookmark, bookMark);
       if (res.status === 200) {
-        toast.success("Added the bookmark")
+        toast.success("Added the bookmark");
       }
     } catch (error) {
       if (error.response) {
         if (error.response.status === 409) {
-         toast.error("ALready booked")
-          } else if (error.response.status === 400) {
-          toast.error("Please try again")
+         toast.error("Already bookmarked");
+        } else if (error.response.status === 400) {
+          toast.error("Please try again");
         } else {
           toast.success("Added to the bookmark");
         }
       }
     }
-    console.log(bookMark);
-  }
+  };
 
   return (
     <div className="flex justify-center py-6">
-      <div className="relative p-6 w-full max-w-3xl border border-gray-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white transform hover:scale-105">
+      <div className="p-6 w-full max-w-3xl border border-gray-200 rounded-lg shadow-lg bg-white">
         <div className="flex items-center justify-between mb-4">
           <div className="flex justify-between">
             <div className="flex items-center">
               <Image
                 className="w-10 h-10 rounded-full"
-                src={session?.user?.image || "/default-avatar.png"}
+                src={user?.image || "/default-avatar.png"}
                 height={40}
                 width={40}
                 alt="User Avatar"
               />
               <div className="ml-3">
-                <Link href={`/users/${session?.user?._id}`} className="text-lg font-semibold text-blue-500 hover:underline">
-                  {session?.user?.name || "Unknown User"}
+                <Link href={`/users/${user?._id}`} className="text-lg font-semibold text-blue-500 hover:underline">
+                  {user?.name || "Unknown User"}
                 </Link>
                 <p className="text-sm text-gray-500">Asked: {getTimeAgo(question.createdAt)}</p>
               </div>
@@ -204,24 +200,24 @@ const QuestionsCard = ({ question }) => {
               <button
                 onClick={handleLikeToggle}
                 className={`flex items-center justify-center w-12 h-12 rounded-full text-white font-semibold transition-transform duration-300 ease-in-out ${
-                  liked ? 'bg-gradient-to-r from-blue-400 to-blue-600 scale-110' : 'bg-blue-500 hover:bg-blue-600'
+                  liked ? 'bg-gradient-to-r from-blue-400 to-blue-600' : 'bg-blue-500 hover:bg-blue-600'
                 }`}
                 aria-label={liked ? "Unlike" : "Like"}>
                 {liked ? <AiFillLike className="text-2xl" /> : <AiOutlineLike className="text-2xl" />}
+                <span className="ml-2">{likesCount}</span>
               </button>
-              <span className="ml-2 text-lg font-semibold text-gray-700">{likesCount}</span>
             </div>
 
             <div className="flex items-center">
               <button
                 onClick={handleUnlikeToggle}
                 className={`flex items-center justify-center w-12 h-12 rounded-full text-white font-semibold transition-transform duration-300 ease-in-out ${
-                  unliked ? 'bg-gradient-to-r from-red-400 to-red-600 scale-110' : 'bg-red-500 hover:bg-red-600'
+                  unliked ? 'bg-gradient-to-r from-red-400 to-red-600' : 'bg-red-500 hover:bg-red-600'
                 }`}
                 aria-label={unliked ? "Remove Unlike" : "Unlike"}>
                 {unliked ? <AiFillDislike className="text-2xl" /> : <AiOutlineDislike className="text-2xl" />}
+                <span className="ml-2">{unlikesCount}</span>
               </button>
-              <span className="ml-2 text-lg font-semibold text-gray-700">{unlikesCount}</span>
             </div>
           </div>
         </div>
