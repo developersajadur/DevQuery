@@ -2,26 +2,26 @@ import { FaFacebook, FaInstagram, FaTwitter, FaYoutube, FaLinkedin } from "react
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-white py-8">
+    <footer className="bg-gradient-to-r from-blue-200 to-purple-400 rounded-t-3xl text-black py-8">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Logo and Social Links */}
         <div className="flex flex-col items-start md:pl-10">
           <div className="text-3xl font-bold text-orange-500">DevQuery</div>
           <div className="mt-4 flex space-x-4">
             {/* Social media icons */}
-            <a href="#" aria-label="Facebook" className="hover:text-gray-400">
+            <a href="#" aria-label="Facebook" className="hover:text-gray-600">
               <FaFacebook className="w-6 h-6" />
             </a>
-            <a href="#" aria-label="Instagram" className="hover:text-gray-400">
+            <a href="#" aria-label="Instagram" className="hover:text-gray-600">
               <FaInstagram className="w-6 h-6" />
             </a>
-            <a href="#" aria-label="Twitter" className="hover:text-gray-400">
+            <a href="#" aria-label="Twitter" className="hover:text-gray-600">
               <FaTwitter className="w-6 h-6" />
             </a>
-            <a href="#" aria-label="YouTube" className="hover:text-gray-400">
+            <a href="#" aria-label="YouTube" className="hover:text-gray-600">
               <FaYoutube className="w-6 h-6" />
             </a>
-            <a href="#" aria-label="LinkedIn" className="hover:text-gray-400">
+            <a href="#" aria-label="LinkedIn" className="hover:text-gray-600">
               <FaLinkedin className="w-6 h-6" />
             </a>
           </div>
@@ -64,7 +64,7 @@ const Footer = () => {
       </div>
 
       {/* Copyright Section */}
-      <div className="mt-8 text-center text-sm text-gray-400">
+      <div className="mt-8 text-center text-sm text-gray-500">
         © 2024 DevQuery, Inc. All rights reserved.
       </div>
     </footer>

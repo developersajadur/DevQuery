@@ -15,8 +15,6 @@ const Navbar = () => {
   const { data: session, status } = useSession();
   const user = session?.user;
   const [showAdminLinks, setShowAdminLinks] = useState(false);
- 
-  
 
   const handleClose = () => setIsOpen(false);
 
@@ -66,51 +64,53 @@ const Navbar = () => {
   }
 
   return (
-    <div> 
+    <div>
       {/* Desktop Navbar */}
-      <div className="hidden md:flex justify-between items-center py-5 px-2 md:px-5 lg:px-10 bg-[#F5F7F8]">
-        <Link href="/" className="text-3xl font-semibold">
+      <div className="hidden md:flex justify-between items-center py-2 px-2 md:px-3 lg:px-4 bg-gradient-to-r from-blue-200 to-purple-400 shadow-lg rounded-b-3xl">
+        <Link href="/" className="text-2xl font-semibold text-black hover:text-gray-200 transition duration-300">
           DevQuery
         </Link>
-        <div className="flex items-center gap-4 lg:gap-20">
+        <div className="flex items-center gap-4 lg:gap-10">
           <div className="hidden lg:block">
-            <div className="flex items-center gap-4 font-semibold text-xl">
-              <Link href="/">Home</Link>
-              <Link href="#">About Us</Link>
-              <Link href="#">Blogs</Link>
-              <Link href="#">Contact Us</Link>
+            <div className="flex items-center gap-4 font-semibold text-lg text-black">
+              <Link href="/" className="hover:text-gray-200 transition duration-300">Home</Link>
+              <Link href="#" className="hover:text-gray-200 transition duration-300">About Us</Link>
+              <Link href="#" className="hover:text-gray-200 transition duration-300">Blogs</Link>
+              <Link href="#" className="hover:text-gray-200 transition duration-300">Contact Us</Link>
             </div>
           </div>
-          <TextInput
-            id="search"
-            className="lg:w-96"
-            type="text"
-            icon={IoSearch}
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <form onSubmit={handleSearchSubmit} className="flex items-center">
+            <TextInput
+              id="search"
+              className="lg:w-96 bg-white text-black border-2 border-purple-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent shadow-md"
+              type="text"
+              icon={IoSearch}
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </form>
         </div>
         {/* User actions */}
         <div className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-3">
+              <Link href="/chat">
+                <TiMessages className="text-2xl text-white hover:text-gray-200 transition duration-300" />
+              </Link>
+              <button className="hover:bg-gray-200 rounded-full p-1 transition duration-300">
+                <IoNotificationsOutline className="text-2xl text-white hover:text-gray-200 transition duration-300" />
+              </button>
               <Link href={`/users/${user.id}`} className="flex">
                 <Avatar img={user?.image || "/default-avatar.png"} />
               </Link>
-              <Link href="/chat">
-                <TiMessages className="text-3xl" />
-              </Link>
-              <button>
-                <IoNotificationsOutline className="text-3xl" />
-              </button>
             </div>
           ) : (
             <Link
               href="/login"
-              className="flex gap-2 items-center bg-blue-500 rounded-xl px-4 py-2"
+              className="flex gap-2 items-center bg-white rounded-lg px-3 py-1 hover:bg-gray-100 transition duration-300"
             >
-              <h5 className="text-lg text-white font-semibold">Login</h5>
+              <h5 className="text-md text-blue-500 font-semibold">Login</h5>
             </Link>
           )}
         </div>
@@ -124,28 +124,23 @@ const Navbar = () => {
             <Sidebar aria-label="Sidebar with multi-level dropdown example">
               <div className="flex h-full flex-col justify-between py-2">
                 <div>
-                  {/* <Link href="/" className="text-2xl lg:text-3xl font-semibold">
-                    DevQuery
-                  </Link> */}
                   <Sidebar.Items>
                     <Sidebar.ItemGroup>
-                      <div className="text-xl font-medium mt-2">
-                        {(showAdminLinks ? AdminNavLinks : UserNavLinks).map(
-                          (item) => (
-                            <Link
-                              href={item.path}
-                              key={item.path}
-                              onClick={handleClose}
-                              className="flex items-center gap-2 text-black"
-                            >
-                              {item.icon && <span>{item.icon}</span>}
-                              {item.title}
-                            </Link>
-                          )
-                        )}
+                      <div className="text-lg font-medium mt-2">
+                        {(showAdminLinks ? AdminNavLinks : UserNavLinks).map((item) => (
+                          <Link
+                            href={item.path}
+                            key={item.path}
+                            onClick={handleClose}
+                            className="flex items-center gap-2 text-black hover:bg-blue-100 transition duration-300 p-2 rounded-lg"
+                          >
+                            {item.icon && <span>{item.icon}</span>}
+                            {item.title}
+                          </Link>
+                        ))}
                       </div>
                       <div className="flex justify-start mt-2 px-5">
-                        <Button onClick={toggleView}>
+                        <Button onClick={toggleView} className="bg-blue-500 text-white hover:bg-blue-600 transition duration-300">
                           {showAdminLinks ? "Switch to User" : "Switch to Admin"}
                         </Button>
                       </div>
@@ -156,45 +151,45 @@ const Navbar = () => {
             </Sidebar>
           </Drawer.Items>
         </Drawer>
-          <div className="">
-        <div className="flex justify-between items-center py-5 px-2 bg-[#F5F7F8]">
-          <Button className="bg-transparent" onClick={() => setIsOpen(true)}>
-            <IoMenu className="text-black text-3xl" />
-          </Button>
-           <Link href="/" className="text-2xl font-semibold">
-          DevQuery
-        </Link>
-          <div>
-            {user ? (
-                 <div className="flex items-center gap-3">
-                 <Link href={`/users/${user.id}`} className="flex">
-                   <Avatar img={user?.image || "/default-avatar.png"} />
-                 </Link>
-                 <button>
-                   <TiMessages className="text-2xl" />
-                 </button>
-                 <button>
-                   <IoNotificationsOutline className="text-2xl" />
-                 </button>
-               </div>
-            ) : (
-              <Link
-                href="/login"
-                className="flex gap-2 items-center bg-blue-500 rounded-xl px-4 py-2"
-              >
-                <h5 className="text-lg text-white font-semibold">Login</h5>
-              </Link>
-            )}
-            
+        <div className="">
+          <div className="flex justify-between items-center py-2 px-2 bg-gradient-to-r from-blue-400 to-purple-500">
+            <Button className="bg-transparent" onClick={() => setIsOpen(true)}>
+              <IoMenu className="text-white text-2xl" />
+            </Button>
+            <Link href="/" className="text-xl font-semibold text-white">
+              DevQuery
+            </Link>
+            <div>
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <Link href={`/users/${user.id}`} className="flex">
+                    <Avatar img={user?.image || "/default-avatar.png"} />
+                  </Link>
+                  <button className="hover:bg-gray-200 rounded-full p-1 transition duration-300">
+                    <TiMessages className="text-xl text-white hover:text-gray-200 transition duration-300" />
+                  </button>
+                  <button className="hover:bg-gray-200 rounded-full p-1 transition duration-300">
+                    <IoNotificationsOutline className="text-xl text-white hover:text-gray-200 transition duration-300" />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  className="flex gap-2 items-center bg-white rounded-lg px-4 py-1 hover:bg-gray-100 transition duration-300"
+                >
+                  <h5 className="text-md text-blue-500 font-semibold">Login</h5>
+                </Link>
+              )}
+            </div>
           </div>
-        </div>
-        <form onSubmit={handleSearchSubmit} className="flex-grow mx-2">
+          <form onSubmit={handleSearchSubmit} className="flex-grow mx-2">
             <TextInput
               id="search"
               type="text"
               icon={IoSearch}
               placeholder="Search..."
               required
+              className="border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
