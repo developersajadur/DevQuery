@@ -8,7 +8,6 @@ import Loading from "../Components/Loading/Loading";
 
 const Root = ({ children }) => {
     const { status } = useSession();
-    const [scrollDirection, setScrollDirection] = useState(null);
     const [lastScrollPos, setLastScrollPos] = useState(0);
     const [hideNavbar, setHideNavbar] = useState(false);
 
@@ -55,9 +54,9 @@ const Root = ({ children }) => {
                 }`}
             >
                 {/* Container to Center Sidebar and Main Content */}
-                <div className="flex w-full max-w-7xl mx-auto ">
-                    {/* Enhanced Fixed Sidebar with Gradient */}
-                    <aside className="hidden lg:block fixed lg:w-64 bg-gradient-to-r from-blue-200 to-purple-400 text-white h-full shadow-lg rounded-lg">
+                <div className="flex w-full max-w-7xl mx-auto">
+                    {/* Enhanced Fixed Sidebar with Preferred Color Palette */}
+                    <aside className="hidden lg:block fixed lg:w-64 bg-gradient-to-r from-[rgb(58,190,249)] to-[rgb(167,230,255)] text-white h-full shadow-lg rounded-lg">
                         <div
                             className={`transition-all duration-300 ${
                                 hideNavbar ? "mt-[0px]" : "mt-[80px] md:mt-[96px]"
@@ -77,7 +76,7 @@ const Root = ({ children }) => {
             </div>
 
             {/* Footer */}
-            <footer className="bg-white shadow-sm z-10">
+            <footer className="bg-white shadow-sm mt-auto z-50">
                 <Footer />
             </footer>
         </div>

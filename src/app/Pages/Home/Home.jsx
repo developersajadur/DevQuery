@@ -30,7 +30,8 @@ const Home = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['questions', searchQuery, filterQuery, currentPage],
     queryFn: fetchQuestions,
-    staleTime: 5000
+    staleTime: 5000,
+    retry: 2, // Retry fetching on failure up to 2 times
   });
 
   const questions = data?.questions || [];
@@ -48,7 +49,7 @@ const Home = () => {
   };
 
   return (
-    <div className="px-4 py-6 bg-gradient-to-r from-blue-200 to-purple-400 rounded-2xl min-h-screen">
+    <div className="px-4 py-6 bg-gradient-to-r from-[rgb(5,12,156)] to-[rgb(58,190,249)] rounded-2xl min-h-screen">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-6 rounded-lg shadow-lg animate-fade-in">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 md:mb-0 text-center">
@@ -58,7 +59,8 @@ const Home = () => {
         <select
           onChange={handleFilterChange}
           value={filterQuery}
-          className="border font-bold p-3 rounded-lg w-full md:w-72 text-gray-700 bg-gradient-to-r from-indigo-300 to-blue-400 focus:outline-none focus:ring-2 focus:ring-purple-500 hover:shadow-lg transition duration-300 ease-in-out"
+          className="border font-bold p-3 rounded-lg w-full md:w-72 text-gray-700 bg-gradient-to-r from-[rgb(53,114,239)] to-[rgb(167,230,255)] focus:outline-none focus:ring-2 focus:ring-purple-500 hover:shadow-lg transition duration-300 ease-in-out"
+          aria-label="Filter Questions"
         >
           <option className="font-bold" value="newest">Newest</option>
           <option className="font-bold" value="show_all">Show All</option>
@@ -69,7 +71,7 @@ const Home = () => {
 
         <Link
           href="/ask-question"
-          className="w-full md:w-auto px-6 py-3 mt-4 md:mt-0 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold text-center shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-pink-500 transition duration-300 ease-in-out transform hover:-translate-y-1"
+          className="w-full md:w-auto px-6 py-3 mt-4 md:mt-0 rounded-full bg-gradient-to-r from-[rgb(58,190,249)] to-[rgb(167,230,255)] text-white font-semibold text-center shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1"
         >
           Ask a Question
         </Link>
@@ -77,46 +79,53 @@ const Home = () => {
 
       {/* Loading and Error Handling */}
       {isLoading && <Loading />}
-      {error && <p className="text-red-500 text-center">{error.message}</p>}
+      {error && <p className="text-red-500 text-center">Failed to load questions. Please try again later.</p>}
 
       {/* Questions List */}
-      <div className="grid grid-cols-1  gap-6 w-full animate-slide-up">
+      <div className="grid grid-cols-1 gap-6 w-full animate-slide-up">
         {!isLoading && !error && questions.map((question) => (
           <QuestionsCard key={question._id} question={question} />
         ))}
       </div>
 
-      {/* Pagination Controls */}
-      <div className="flex justify-center items-center space-x-4 mt-8 animate-fade-in">
-        {/* Previous Button */}
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`px-6 py-2 rounded-full font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 ${currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gradient-to-r from-blue-400 to-purple-500 text-white hover:shadow-lg hover:from-purple-500 hover:to-blue-400"}`}
-        >
-          Previous
-        </button>
-
-        {/* Page Numbers */}
-        {[...Array(totalPages)].map((_, index) => (
+      {/* Enhanced Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center space-x-4 mt-8 animate-fade-in">
+          {/* Previous Button */}
           <button
-            key={index}
-            onClick={() => handlePageChange(index + 1)}
-            className={`px-4 py-2 rounded-full font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 ${currentPage === index + 1 ? "bg-purple-500 text-white shadow-lg" : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-lg"}`}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-6 py-2 rounded-full font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 ${currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gradient-to-r from-[rgb(5,12,156)] to-[rgb(58,190,249)] text-white hover:shadow-lg"}`}
+            aria-label="Previous Page"
           >
-            {index + 1}
+            Previous
           </button>
-        ))}
 
-        {/* Next Button */}
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className={`px-6 py-2 rounded-full font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 ${currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gradient-to-r from-blue-400 to-purple-500 text-white hover:shadow-lg hover:from-purple-500 hover:to-blue-400"}`}
-        >
-          Next
-        </button>
-      </div>
+          {/* Page Numbers */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2))
+            .map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`px-4 py-2 rounded-full font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 ${page === currentPage ? "bg-[rgb(5,12,156)] text-white shadow-lg" : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-lg"}`}
+                aria-label={`Page ${page}`}
+              >
+                {page}
+              </button>
+            ))}
+
+          {/* Next Button */}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`px-6 py-2 rounded-full font-semibold transition duration-300 ease-in-out transform hover:-translate-y-1 ${currentPage === totalPages ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-gradient-to-r from-[rgb(5,12,156)] to-[rgb(58,190,249)] text-white hover:shadow-lg"}`}
+            aria-label="Next Page"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 };

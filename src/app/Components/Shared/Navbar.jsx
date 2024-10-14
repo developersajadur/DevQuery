@@ -26,7 +26,6 @@ const Navbar = () => {
     }
   };
 
-
   const toggleView = () => {
     const newView = !showAdminLinks;
     setShowAdminLinks(newView);
@@ -67,7 +66,7 @@ const Navbar = () => {
   return (
     <div>
       {/* Desktop Navbar */}
-      <div className="hidden md:flex justify-between items-center py-2 px-2 md:px-3 lg:px-4 bg-gradient-to-r from-blue-200 to-purple-400 shadow-lg rounded-b-3xl">
+      <div className="hidden md:flex justify-between items-center py-2 px-2 md:px-3 lg:px-4 bg-gradient-to-r from-[rgb(5,12,156)] to-[rgb(53,114,239)] shadow-lg rounded-b-3xl">
         <Link href="/" className="text-2xl font-semibold text-black hover:text-gray-200 transition duration-300">
           DevQuery
         </Link>
@@ -153,7 +152,7 @@ const Navbar = () => {
           </Drawer.Items>
         </Drawer>
         <div className="">
-          <div className="flex justify-between items-center py-2 px-2 bg-gradient-to-r from-blue-400 to-purple-500">
+          <div className="flex justify-between items-center py-2 px-2 bg-gradient-to-r from-[rgb(5,12,156)] to-[rgb(53,114,239)]">
             <Button className="bg-transparent" onClick={() => setIsOpen(true)}>
               <IoMenu className="text-white text-2xl" />
             </Button>
