@@ -16,12 +16,14 @@ const ProfilePage = ({ params }) => {
   const sessionEmail = session?.user?.email;
   const [data, setData] = useState([]);
   const bookUser = session?.user;
+  // console.log(bookUser.id);
+  
 
   useEffect(() => {
     const fetchBook = async () => {
-      if (bookUser?.email) {
+      if (bookUser?.id) {
         try {
-          const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/getBook?email=${bookUser.email}`);
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/getBook?userId=${bookUser.id}`);
           if (response.status === 200) {
             setData(response.data.books);
           } else {

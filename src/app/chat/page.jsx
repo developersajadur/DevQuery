@@ -11,20 +11,22 @@ export default function Chat() {
 
   const [room, setRoom] = useState("");
   const [targetUserName, setTargetUserName] = useState("");
+  const [targetUserID, setTargetUserID] = useState("");
 
   const handleJoinRoom = (targetUserID, targetUserName) => {
     if (userID && targetUserID) {
       // Create a consistent room ID based on both user IDs
       const newRoom = [userID, targetUserID].sort().join("-");
       setRoom(newRoom);
-      setTargetUserName(targetUserName); // Set the target user's name for display
+      setTargetUserName(targetUserName);
+      setTargetUserID(targetUserID);
     }
   };
 
   return (
     <div className="h-screen flex">
       <ChatSidebar handleJoinRoom={handleJoinRoom} />
-      <ChatWindow room={room} currentUserID={userID} currentUser={user} targetUserName={targetUserName} />
+      <ChatWindow room={room} currentUserID={userID} currentUser={user} targetUserName={targetUserName} targetUserID={targetUserID} />
     </div>
   );
 }

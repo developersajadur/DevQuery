@@ -26,6 +26,7 @@ const Navbar = () => {
     }
   };
 
+
   const toggleView = () => {
     const newView = !showAdminLinks;
     setShowAdminLinks(newView);

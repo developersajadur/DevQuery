@@ -1,3 +1,5 @@
+"use client"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -12,11 +14,11 @@ const getTimeAgo = (createdAt) => {
   const now = new Date();
   const createdDate = new Date(createdAt);
   const differenceInMs = now - createdDate;
-
+  
   const minutes = Math.floor(differenceInMs / (1000 * 60));
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
-
+  
   if (days > 0) {
     return `${days} day(s) ${hours % 24} hour(s) ago`;
   } else if (hours > 0) {
@@ -27,13 +29,21 @@ const getTimeAgo = (createdAt) => {
 
 const QuestionsCard = ({ question }) => {
   const { data: session, status } = useSession();
-  const user = session?.user;
+  const currentUser = session?.user;
+  const queryClient = useQueryClient();
   const questionId = question._id;
 
   const [liked, setLiked] = useState(false);
   const [unliked, setUnliked] = useState(false);
   const [likesCount, setLikesCount] = useState(question?.likes || 0);
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
+
+  // Fetch user data using Tanstack Query
+  const { data: user } = useQuery({
+    queryKey: ['user', question.userId],
+    queryFn: () => axios.get(`/users/api/get-one?userId=${question?.userId}`).then(res => res.data.user),
+    enabled: !!question.userId
+  });
 
   useEffect(() => {
     if (session?.user) {
@@ -43,47 +53,73 @@ const QuestionsCard = ({ question }) => {
     }
   }, [session?.user, question]);
 
-  const handleLikeToggle = async () => {
-    const isCurrentlyLiked = liked;
-    const newLikesCount = isCurrentlyLiked ? likesCount - 1 : likesCount + 1;
-
-    // Optimistically update UI
-    setLiked(!liked);
-    setUnliked(false);
-    setLikesCount(newLikesCount);
-    if (unliked) setUnlikesCount(unlikesCount - 1);
-
-    try {
+  // Like Mutation
+  const likeMutation = useMutation({
+    mutationFn: async () => {
       const url = `${process.env.NEXT_PUBLIC_WEB_URL}/Components/Questions/api/likes/${questionId}`;
-      await axios.put(url, { questionId, user: session?.user });
-      toast.success(isCurrentlyLiked ? "Like removed!" : "Like added!");
-    } catch (error) {
-      // Revert UI in case of an error
-      setLiked(isCurrentlyLiked);
-      setLikesCount(likesCount);
+      const response = await axios.put(url, { questionId, user: session?.user });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["questionLikes", questionId] });
+      toast.success("Like operation successful!");
+    },
+    onError: () => {
       toast.error("Error while liking the question.");
+    },
+  });
+
+  // Unlike Mutation
+  const unlikeMutation = useMutation({
+    mutationFn: async () => {
+      const url = `${process.env.NEXT_PUBLIC_WEB_URL}/Components/Questions/api/unlikes/${questionId}`;
+      const response = await axios.put(url, { questionId, user: session?.user });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["questionLikes", questionId] });
+      toast.success("Unlike operation successful!");
+    },
+    onError: () => {
+      toast.error("Error while unliking the question.");
+    },
+  });
+
+  const handleLikeToggle = () => {
+    if (liked) {
+      likeMutation.mutate();
+      setLiked(false);
+      setLikesCount((prev) => prev - 1);
+      toast.success("Like removed!");
+    } else if (!unliked) {
+      likeMutation.mutate();
+      setLiked(true);
+      setLikesCount((prev) => prev + 1);
+      toast.success("Like added!");
+    }
+
+    if (unliked) {
+      setUnliked(false);
+      setUnlikesCount((prev) => prev - 1);
     }
   };
 
-  const handleUnlikeToggle = async () => {
-    const isCurrentlyUnliked = unliked;
-    const newUnlikesCount = isCurrentlyUnliked ? unlikesCount - 1 : unlikesCount + 1;
+  const handleUnlikeToggle = () => {
+    if (unliked) {
+      unlikeMutation.mutate();
+      setUnliked(false);
+      setUnlikesCount((prev) => prev - 1);
+      toast.success("Unlike removed!");
+    } else if (!liked) {
+      unlikeMutation.mutate();
+      setUnliked(true);
+      setUnlikesCount((prev) => prev + 1);
+      toast.success("Unlike added!");
+    }
 
-    // Optimistically update UI
-    setUnliked(!unliked);
-    setLiked(false);
-    setUnlikesCount(newUnlikesCount);
-    if (liked) setLikesCount(likesCount - 1);
-
-    try {
-      const url = `${process.env.NEXT_PUBLIC_WEB_URL}/Components/Questions/api/unlikes/${questionId}`;
-      await axios.put(url, { questionId, user: session?.user });
-      toast.success(isCurrentlyUnliked ? "Unlike removed!" : "Unlike added!");
-    } catch (error) {
-      // Revert UI in case of an error
-      setUnliked(isCurrentlyUnliked);
-      setUnlikesCount(unlikesCount);
-      toast.error("Error while unliking the question.");
+    if (liked) {
+      setLiked(false);
+      setLikesCount((prev) => prev - 1);
     }
   };
 
@@ -99,29 +135,32 @@ const QuestionsCard = ({ question }) => {
   const buttonForBookmark = async () => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
     const bookMark = {
-      email: user.email,
-      userId: user.id,
+      email: currentUser.email,
+      userId: currentUser.id,
       questionId: question?._id,
       title: question?.title,
-    };
-
+    }
+  
+   
     try {
-      const res = await axios.post(postBookmark, bookMark);
+      const res = await axios.post(postBookmark, bookMark)
+      // console.log("success", res.data);
       if (res.status === 200) {
-        toast.success("Added the bookmark");
+        toast.success("Added the bookmark")
       }
     } catch (error) {
       if (error.response) {
         if (error.response.status === 409) {
-          toast.error("Already bookmarked");
-        } else if (error.response.status === 400) {
-          toast.error("Please try again");
+         toast.error("ALready booked")
+          } else if (error.response.status === 400) {
+          toast.error("Please try again")
         } else {
           toast.success("Added to the bookmark");
         }
       }
     }
-  };
+    console.log(bookMark);
+  }
 
   return (
     <div className="flex justify-center py-6">

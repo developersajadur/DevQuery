@@ -54,8 +54,10 @@ const Register = () => {
           name: data.name,
           image: imageUrl, // Append image URL to data
           password: data.password,
+          createdAt: new Date(),
           role: "user",
           status: "active",
+          chats: [],
         };
 
         const res = await axios.post(fetchUrl, userInfo);
