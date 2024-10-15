@@ -71,15 +71,21 @@ const Navbar = () => {
         <Link href="/" className="text-2xl font-bold text-white hover:text-gray-200 transition duration-300">
           DevQuery
         </Link>
-        <div className="flex items-center gap-4 lg:gap-10">
-          <div className="hidden lg:block">
-            <div className="flex items-center gap-4 font-semibold text-lg text-black">
-              <Link href="/" className="hover:text-gray-200 transition duration-300">Home</Link>
-              <Link href="#" className="hover:text-gray-200 transition duration-300">About Us</Link>
-              <Link href="#" className="hover:text-gray-200 transition duration-300">Blogs</Link>
-              <Link href={'/contact'} className="hover:text-gray-200 transition duration-300">Contact Us</Link>
-            </div>
-          </div>
+        <div className="hidden lg:flex items-center gap-6 text-lg text-white">
+          <Link href="/" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/" ? "text-blue-400" : ""}`}>
+            Home
+          </Link>
+          <Link href="/about" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/about" ? "text-blue-400" : ""}`}>
+            About Us
+          </Link>
+          <Link href="/blogs" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/blogs" ? "text-blue-400" : ""}`}>
+            Blogs
+          </Link>
+          <Link href="/contact" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/contact" ? "text-blue-400" : ""}`}>
+          Contact Us
+          </Link>
+        </div>
+        <div className="flex items-center gap-6">
           <form onSubmit={handleSearchSubmit} className="flex items-center">
             <TextInput
               id="search"
