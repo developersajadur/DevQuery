@@ -131,7 +131,7 @@ const ProfilePage = ({ params }) => {
         </div>
         <div className="flex items-center mt-4 space-x-4">
           <div>
-            <p className="text-gray-500">Reputatio</p>
+            <p className="text-gray-500">Reputation</p>
             <p className="text-xl font-semibold">1,250</p>
           </div>
           <div>
