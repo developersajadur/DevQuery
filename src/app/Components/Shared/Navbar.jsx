@@ -77,7 +77,7 @@ const Navbar = () => {
               <Link href="/" className="hover:text-gray-200 transition duration-300">Home</Link>
               <Link href="#" className="hover:text-gray-200 transition duration-300">About Us</Link>
               <Link href="#" className="hover:text-gray-200 transition duration-300">Blogs</Link>
-              <Link href={'/Contact'} className="hover:text-gray-200 transition duration-300">Contact Us</Link>
+              <Link href={'/contact'} className="hover:text-gray-200 transition duration-300">Contact Us</Link>
             </div>
           </div>
           <form onSubmit={handleSearchSubmit} className="flex items-center">

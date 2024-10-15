@@ -12,7 +12,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css'
 
 
-const Contact = () => {
+export default function Contact () {
 
   const [PhoneNumber, setPhoneNumber] = useState('')
   const [valid, setValid] = useState(true)
@@ -152,4 +152,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+// export default Contact;
