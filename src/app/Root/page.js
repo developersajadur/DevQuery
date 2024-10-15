@@ -5,32 +5,45 @@ import Footer from "../Components/Shared/Footer";
 import Navbar from "../Components/Shared/Navbar";
 import NavigationLinks from "../Components/Shared/NavigationLinks";
 import Loading from "../Components/Loading/Loading";
+import Bannar from "../Components/Bannar/page.jsx";
 
 const Root = ({ children }) => {
     const { status } = useSession();
-    const [lastScrollPos, setLastScrollPos] = useState(0);
-    const [hideNavbar, setHideNavbar] = useState(false);
+    const [isSidebarFixed, setIsSidebarFixed] = useState(false);
 
-    // Hide/show navbar on scroll
+    // Function to check if the screen is large
+    const isLargeScreen = () => window.innerWidth >= 1024;
+
+    // Fix sidebar when banner finishes scrolling (only for large screens)
     useEffect(() => {
         const handleScroll = () => {
-            const currentScrollPos = window.scrollY;
+            if (isLargeScreen()) {
+                const currentScrollPos = window.scrollY;
+                const bannerHeight = 250; // Adjust this value based on your banner's height
 
-            if (currentScrollPos > lastScrollPos) {
-                // Scrolling down
-                setHideNavbar(true);
-            } else {
-                // Scrolling up
-                setHideNavbar(false);
+                if (currentScrollPos > bannerHeight) {
+                    setIsSidebarFixed(true);
+                } else {
+                    setIsSidebarFixed(false);
+                }
             }
+        };
 
-            setLastScrollPos(currentScrollPos);
+        const handleResize = () => {
+            // Reset sidebar state on window resize if not a large screen
+            if (!isLargeScreen()) {
+                setIsSidebarFixed(false);
+            }
         };
 
         window.addEventListener("scroll", handleScroll);
+        window.addEventListener("resize", handleResize);
 
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollPos]);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
 
     if (status === "loading") {
         return <Loading />;
@@ -38,46 +51,47 @@ const Root = ({ children }) => {
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-100">
-            {/* Header */}
-            <header
-                className={`border-b bg-white shadow-sm w-full z-50 rounded-b-3xl fixed top-0 transition-transform duration-300 ${
-                    hideNavbar ? "-translate-y-full" : "translate-y-0"
-                }`}
-            >
-                <Navbar />
+            {/* Header (Navbar) */}
+            <header className="border-b bg-gray-800 shadow-sm w-full z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <Navbar />
+                </div>
             </header>
 
-            {/* Main Wrapper */}
-            <div
-                className={`flex flex-1 pt-[30px] md:pt-[30px] transition-all duration-300 ${
-                    hideNavbar ? "mt-0" : "mt-[80px] md:mt-[96px]"
-                }`}
-            >
-                {/* Container to Center Sidebar and Main Content */}
-                <div className="flex w-full max-w-7xl mx-auto">
-                    {/* Enhanced Fixed Sidebar with Preferred Color Palette */}
-                    <aside className="hidden lg:block fixed lg:w-64 bg-gradient-to-r from-[rgb(58,190,249)] to-[rgb(167,230,255)] text-white h-full shadow-lg rounded-lg">
-                        <div
-                            className={`transition-all duration-300 ${
-                                hideNavbar ? "mt-[0px]" : "mt-[80px] md:mt-[96px]"
-                            }`}
-                        >
-                            <NavigationLinks className="flex flex-col space-y-2" />
-                        </div>
-                    </aside>
+            {/* Full-width Banner */}
+            <div className="mt-0 w-full bg-gradient-to-r from-[rgb(58,190,249)] to-[rgb(167,230,255)]">
+                <Bannar />
+            </div>
 
-                    {/* Main Content */}
-                    <div className="flex-1 lg:ml-64 p-4 md:p-8 bg-gray-50 min-h-screen transition-all duration-300">
-                        <section className="w-full h-full">
-                            {children}
-                        </section>
-                    </div>
-                </div>
+            {/* Main Wrapper */}
+            <div className="flex flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Sidebar (will be sticky or fixed when scrolling only on large screens) */}
+                <aside
+                    className={`hidden lg:block lg:w-64 text-white border-r-2 border-gray-200`}
+                    style={{
+                        position: isSidebarFixed ? "fixed" : "sticky",
+                        top: "0", // Set to 0 for sticky behavior
+                        height: "100vh", // Ensure the sidebar is full height
+                    }}
+                >
+                    <NavigationLinks className="flex flex-col space-y-2 p-4" />
+                </aside>
+
+                {/* Main Content */}
+                <main
+                    className={`flex-1 p-4 md:p-8 bg-gray-50 min-h-screen ${
+                        isSidebarFixed ? "lg:ml-64" : ""
+                    }`}
+                >
+                    <section className="w-full h-full">{children}</section>
+                </main>
             </div>
 
             {/* Footer */}
-            <footer className="bg-white shadow-sm mt-auto z-50">
-                <Footer />
+            <footer className="bg-gray-800 text-white shadow-sm mt-auto z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <Footer />
+                </div>
             </footer>
         </div>
     );
