@@ -2,7 +2,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike } from "react-icons/ai";
+import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike, AiOutlineEye } from "react-icons/ai"; // Importing the eye icon
 import Image from "next/image";
 import Link from "next/link";
 import Loading from "../Loading/Loading";
@@ -35,6 +35,7 @@ const QuestionsCard = ({ question }) => {
   const [unliked, setUnliked] = useState(false);
   const [likesCount, setLikesCount] = useState(question?.likes || 0);
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
+  const [viewCount, setViewCount] = useState(question?.views || 0);
 
   const { data: user2 } = useQuery({
     queryKey: ['user', question.userId],
@@ -127,9 +128,9 @@ const QuestionsCard = ({ question }) => {
   };
 
   return (
-    <div className="flex justify-center my-4">
-      <div className="relative p-6 w-full max-w-3xl bg-white shadow-lg rounded-lg border border-[#A1D6B2] hover:shadow-2xl transition-shadow duration-300">
-        <div className="flex items-center justify-between mb-4">
+    <div className="flex justify-center ">
+      <div className="relative p-6 py-16 w-full bg-white border-b border-gray-300">
+        <div className="flex items-center justify-between  mb-4">
           <div className="flex items-center">
             <Image
               className="w-12 h-12 rounded-full border-2 border-blue-500"
@@ -145,7 +146,7 @@ const QuestionsCard = ({ question }) => {
               <p className="text-sm text-gray-500">Asked: {getTimeAgo(question.createdAt)}</p>
             </div>
           </div>
-          <button onClick={buttonForBookmark} className="text-gray-500 hover:text-blue-500 transition-colors duration-200">
+          <button onClick={buttonForBookmark} className="bg-blue-500 text-white rounded-lg px-3 py-2 hover:bg-blue-600 transition-colors duration-200">
             <FaBookmark size={20} />
           </button>
         </div>
@@ -176,6 +177,9 @@ const QuestionsCard = ({ question }) => {
               <span className="font-semibold">{unlikesCount}</span>
             </button>
           </div>
+          <p className="text-sm text-blue-500 flex items-center"> 
+                <AiOutlineEye className="mr-1 text-2xl text-blue" /> {viewCount} Views
+              </p> {/* Added eye icon next to view count */}
         </div>
       </div>
     </div>
