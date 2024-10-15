@@ -82,7 +82,7 @@ const Navbar = () => {
             Blogs
           </Link>
           <Link href="/contact" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/contact" ? "text-blue-400" : ""}`}>
-            Contact Us
+          Contact Us
           </Link>
         </div>
         <div className="flex items-center gap-6">
