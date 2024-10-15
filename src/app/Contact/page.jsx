@@ -12,7 +12,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css'
 
 
-export default function Contact () {
+const Contact = () => {
 
   const [PhoneNumber, setPhoneNumber] = useState('')
   const [valid, setValid] = useState(true)
@@ -138,7 +138,7 @@ export default function Contact () {
 
             </div>
 
-            {/* Mesage field */}
+            {/* Message field */}
             <div className='mt-4'>
               <label htmlFor="" className='text-gray-700'><small>Message</small></label><br />
               <textarea type="text" placeholder='Write the message' required name='message' rows="6" cols="88" className='w-full' />
@@ -152,4 +152,4 @@ export default function Contact () {
   );
 };
 
-// export default Contact;
+export default Contact;
