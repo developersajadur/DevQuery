@@ -104,14 +104,14 @@ const Contact = () => {
               <div>
                 <label htmlFor="" className=' text-gray-700'><small>Name</small></label><br />
                 <p className='absolute mt-2 pl-2 text-xl '><MdDriveFileRenameOutline /></p>
-                <input type="text" name='name' placeholder='Enter your name' className='w-full h-9 px-9 border-gray-200 rounded-sm border-[1px]' />
+                <input type="text" name='name' required placeholder='Enter your name' className='w-full h-9 px-9 border-gray-200 rounded-sm border-[1px]' />
               </div>
 
               {/* Email field */}
               <div>
                 <label htmlFor="" className=' text-gray-700'><small>Email</small></label><br />
                 <p className='absolute mt-2 pl-2 text-xl '><MdEmail /></p>
-                <input type="email" name='email' placeholder='Enter email' className='w-full h-9 px-9 border-gray-200 rounded-sm border-[1px]' />
+                <input type="email" name='email' required placeholder='Enter email' className='w-full h-9 px-9 border-gray-200 rounded-sm border-[1px]' />
               </div>
 
               {/* Subject field */}
@@ -119,7 +119,7 @@ const Contact = () => {
                 <label htmlFor="" className=' text-gray-700'><small>Subject</small></label><br />
                 <p className='absolute mt-2 pl-2 text-xl '>
                   <MdSubject /></p>
-                <input type="text" name='subject' placeholder='Enter subject' className='w-full h-9 px-9 border-gray-200 rounded-sm border-[1px]' />
+                <input type="text" name='subject' required placeholder='Enter subject' className='w-full h-9 px-9 border-gray-200 rounded-sm border-[1px]' />
               </div>
 
               {/* Number field */}
@@ -141,7 +141,7 @@ const Contact = () => {
             {/* Mesage field */}
             <div className='mt-4'>
               <label htmlFor="" className='text-gray-700'><small>Message</small></label><br />
-              <textarea type="text" placeholder='Write the message' name='message' rows="6" cols="88" className='w-full' />
+              <textarea type="text" placeholder='Write the message' required name='message' rows="6" cols="88" className='w-full' />
             </div>
 
             <button className='bg-blue-600 p-2 text-bold w-full rounded-md'>Submit</button>
