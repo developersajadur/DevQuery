@@ -31,14 +31,13 @@ const Home = () => {
     queryKey: ['questions', searchQuery, filterQuery, currentPage],
     queryFn: fetchQuestions,
     staleTime: 5000,
-    retry: 2, // Retry fetching on failure up to 2 times
+    retry: 2,
   });
 
   const questions = data?.questions || [];
   const totalPages = data?.totalPages || 1;
 
-  const handleFilterChange = (e) => {
-    const newFilter = e.target.value;
+  const handleFilterChange = (newFilter) => {
     router.push(`/?filter=${newFilter}${searchQuery ? `&search=${searchQuery}` : ""}`);
   };
 
@@ -49,32 +48,42 @@ const Home = () => {
   };
 
   return (
-    <div className="px-4 py-6 bg-gradient-to-r from-[rgb(5,12,156)] to-[rgb(58,190,249)] rounded-2xl min-h-screen">
+    <div className="px-4 py-6 min-h-screen">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-6 rounded-lg shadow-lg animate-fade-in">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4 md:mb-0 text-center">
           Trending Questions
         </h1>
 
-        <select
-          onChange={handleFilterChange}
-          value={filterQuery}
-          className="border font-bold p-3 rounded-lg w-full md:w-72 text-gray-700 bg-gradient-to-r from-[rgb(53,114,239)] to-[rgb(167,230,255)] focus:outline-none focus:ring-2 focus:ring-purple-500 hover:shadow-lg transition duration-300 ease-in-out"
-          aria-label="Filter Questions"
-        >
-          <option className="font-bold" value="newest">Newest</option>
-          <option className="font-bold" value="show_all">Show All</option>
-          <option className="font-bold" value="oldest">Oldest</option>
-          <option className="font-bold" value="most_liked">Most Liked</option>
-          <option className="font-bold" value="most_unliked">Most Unliked</option>
-        </select>
-
-        <Link
-          href="/ask-question"
-          className="w-full md:w-auto px-6 py-3 mt-4 md:mt-0 rounded-full bg-gradient-to-r from-[rgb(58,190,249)] to-[rgb(167,230,255)] text-white font-semibold text-center shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1"
-        >
-          Ask a Question
+        {/* Updated Ask a Question Button */}
+        <Link href="/ask-question">
+          <button className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+            <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+              Ask a Question
+            </span>
+          </button>
         </Link>
+      </div>
+
+      {/* Tab Filter Section */}
+      <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+        <ul className="flex flex-wrap -mb-px">
+          {["newest", "show_all", "oldest", "most_liked", "most_unliked"].map((filter) => (
+            <li className="me-2 lg:font-bold lg:text-lg" key={filter}>
+              <button
+                onClick={() => handleFilterChange(filter)}
+                className={`inline-block p-4 border-b-2 rounded-t-lg font-bold transition duration-300 ease-in-out ${
+                  filterQuery === filter
+                    ? "text-blue-600 border-blue-600 dark:text-blue-500 dark:border-blue-500"
+                    : "border-transparent text-gray-500 hover:text-blue-600 hover:border-gray-300"
+                }`}
+                aria-current={filterQuery === filter ? "page" : undefined}
+              >
+                {filter.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Loading and Error Handling */}
@@ -82,7 +91,7 @@ const Home = () => {
       {error && <p className="text-red-500 text-center">Failed to load questions. Please try again later.</p>}
 
       {/* Questions List */}
-      <div className="grid grid-cols-1 gap-6 w-full animate-slide-up">
+      <div className="grid grid-cols-1 w-full">
         {!isLoading && !error && questions.map((question) => (
           <QuestionsCard key={question._id} question={question} />
         ))}
