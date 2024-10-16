@@ -1,56 +1,80 @@
+"use client"
 import { Avatar } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Loading from '../Loading/Loading';
 
 export default function ChatSidebar({ handleJoinRoom }) {
-  const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [state, setState] = useState({
+    users: [],
+    searchTerm: "",
+    loading: true,
+    error: null,
+  });
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB_URL}/users/api/get`);
-        setUsers(response.data.users);
-      } catch (error) {
-        console.error("Error fetching users:", error);
+        setState((prevState) => ({
+          ...prevState,
+          users: response.data.users,
+          loading: false,
+        }));
+      } catch (err) {
+        console.error("Error fetching users:", err);
+        setState((prevState) => ({
+          ...prevState,
+          error: "Failed to fetch users.",
+          loading: false,
+        }));
       }
     };
-
     fetchUsers();
   }, []);
 
-  // Filter users based on the search term
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const handleSearchChange = (e) => {
+    setState((prevState) => ({
+      ...prevState,
+      searchTerm: e.target.value,
+    }));
+  };
+
+  const filteredUsers = state.users.filter(user =>
+    user.name?.toLowerCase().includes(state.searchTerm.toLowerCase())
   );
 
   return (
     <div className="w-1/4 bg-gray-100 p-4 flex flex-col h-full">
-      {/* Search Input */}
       <div className="mb-4">
         <input
           type="text"
           placeholder="Search Users"
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={state.searchTerm}
+          onChange={handleSearchChange}
           className="border rounded-lg p-2 w-full"
         />
       </div>
-
-      {/* Users List */}
+      {state.loading && <Loading/>}
+      {state.error && <p className="text-red-500">{state.error}</p>}
       <div className="flex-grow overflow-y-auto">
-        {filteredUsers?.map((user, idx) => (
-          <div 
-            key={idx} 
-            className={`flex items-center mb-4 p-2 cursor-pointer ${user?.active ? 'bg-blue-100' : ''}`} 
-            onClick={() => handleJoinRoom(user?._id, user?.name)} // Pass user ID and name
-          >
-            <Avatar img={user?.image} rounded={true} size="md" />
-            <div className="ml-3">
-              <p className="font-bold">{user?.name}</p>
-              <p className="text-sm text-gray-500">{user?.lastMessage}</p>
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user, idx) => (
+            <div 
+              key={idx} 
+              className={`flex items-center mb-4 p-2 cursor-pointer ${user?.active ? 'bg-blue-100' : ''}`} 
+              onClick={() => handleJoinRoom(user._id, user.name)}
+            >
+              <Avatar img={user?.image || "/default-avatar.png"} rounded={true} size="md" />
+              <div className="ml-3">
+                <p className="font-bold">{user?.name || "Unknown"}</p>
+                <p className="text-sm text-gray-500">{user?.lastMessage || "No recent messages"}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          !state.loading && <p>No users found.</p>
+        )}
       </div>
     </div>
   );
