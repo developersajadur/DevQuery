@@ -76,7 +76,7 @@ const Navbar = () => {
             <div className="flex items-center gap-4 font-semibold text-lg text-black">
               <Link href="/" className="hover:text-gray-200 transition duration-300">Home</Link>
               <Link href="#" className="hover:text-gray-200 transition duration-300">About Us</Link>
-              <Link href="#" className="hover:text-gray-200 transition duration-300">Blogs</Link>
+              <Link href='/blogs' className="hover:text-gray-200 transition duration-300">Blogs</Link>
               <Link href={'/contact'} className="hover:text-gray-200 transition duration-300">Contact Us</Link>
             </div>
           </div>
