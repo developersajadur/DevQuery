@@ -25,6 +25,8 @@ export const POST = async (req) => {
       user: user,
       image: image || null,  
       answer_id:answerId, 
+      likes:0,
+      unlikes:0,
       createdAt: new Date(),  // Add timestamp
     });
 

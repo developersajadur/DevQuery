@@ -76,12 +76,12 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     enabled: !!questionDetails._id, // Enable the query only if questionDetails._id is available
   });
 
-  const handleLikeToggle = () => {
+  const handleLike = () => {
     setLiked(!liked);
     if (disliked) setDisliked(false);
   };
 
-  const handleUnlikeToggle = () => {
+  const handleDislike = () => {
     setDisliked(!disliked);
     if (liked) setLiked(false);
   };
@@ -172,7 +172,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
           </div>
           <div className="flex items-center">
             <AiOutlineDislike size={20} className="text-red-500" />
-            <span className="ml-1 text-sm">{unlikes} Dislikes</span>
+            <span className="ml-1 text-sm">{unlike} Dislikes</span>
           </div>
         </div>
       </div>

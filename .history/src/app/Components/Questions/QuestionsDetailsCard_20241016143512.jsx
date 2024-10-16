@@ -49,7 +49,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   const url = usePathname();
 
   const timeAgo = getTimeAgo(questionDetails?.createdAt);
-  const { title, description, tags,likes,unlikes } = questionDetails;
+  const { title, description, tags } = questionDetails;
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [answer, setAnswer] = useState("");
@@ -76,12 +76,12 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     enabled: !!questionDetails._id, // Enable the query only if questionDetails._id is available
   });
 
-  const handleLikeToggle = () => {
+  const handleLike = () => {
     setLiked(!liked);
     if (disliked) setDisliked(false);
   };
 
-  const handleUnlikeToggle = () => {
+  const handleDislike = () => {
     setDisliked(!disliked);
     if (liked) setLiked(false);
   };
@@ -168,11 +168,11 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
         <div className="flex items-center space-x-4">
           <div className="flex items-center">
             <AiOutlineLike size={20} className="text-blue-500" />
-            <span className="ml-1 text-sm">{likes} Likes</span>
+            <span className="ml-1 text-sm">{likeCount} Likes</span>
           </div>
           <div className="flex items-center">
             <AiOutlineDislike size={20} className="text-red-500" />
-            <span className="ml-1 text-sm">{unlikes} Dislikes</span>
+            <span className="ml-1 text-sm">{dislikeCount} Dislikes</span>
           </div>
         </div>
       </div>

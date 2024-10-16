@@ -32,6 +32,7 @@ const CommentCard = ({ answerId, referrer }) => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
+        // Fetch comments using GET and pass the answerId as a query parameter
         const response = await axios.get(`/questions/api/getcomments?answerId=${answerId}`);
         setComments(response.data.comments); // Update the state with fetched comments
       } catch (error) {
@@ -54,34 +55,28 @@ const CommentCard = ({ answerId, referrer }) => {
   }
 
   return (
-    <div className="max-w-[90%] mx-auto">
+    <div className='max-w-[90%] mx-auto'>
       {comments.length > 0 ? (
         comments.map((comment) => (
-          <div className="relative p-6 py-8 w-full bg-white border-b border-gray-300 " key={comment._id}>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
+          <Card className="mb-4" key={comment._id}>
+            <div className="flex items-start">
               <Avatar img={comment.image || "https://randomuser.me/api/portraits/men/3.jpg"} />
-                <div className="ml-3">
-                  <h4 className="text-lg font-semibold text-blue-500">{comment.user}</h4>
-                </div>
+              <div className="ml-4 w-full">
+                <h4 className="font-medium">{comment.user}</h4>
+                <p className="text-gray-500 text-sm">Commented {getTimeAgo(comment.createdAt)}</p>
+                <p className="text-gray-600 mt-1 mb-2">{comment.comment}</p>
               </div>
             </div>
-
-            <p className="text-gray-700 mb-4"><span className="text-xl font-bold">Comment: </span><span className="text-lg font-semibold text-gray">{comment.comment}</span></p>
-
-            <div className="absolute bottom-2 right-2 text-sm text-blue-500">
-              {getTimeAgo(comment.createdAt)}
-            </div>
-          </div>
+          </Card>
         ))
       ) : (
         <p className="text-gray-500">No comments yet.</p>
       )}
 
       {referrer ? (
-        <div className="my-6">
+        <div className='my-6'>
           <Link
-            className="border rounded-md px-4 py-2 text-xl font-semibold bg-blue-400 hover:bg-blue-600 cursor-pointer"
+            className='border rounded-md px-4 py-2 text-xl font-semibold bg-blue-400 hover:bg-blue-600 cursor-pointer'
             href={referrer}
           >
             Back
