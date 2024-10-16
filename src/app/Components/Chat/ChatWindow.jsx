@@ -4,7 +4,6 @@ import { Avatar } from "flowbite-react";
 import io from "socket.io-client";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { Spinner } from "flowbite-react"; // Import Spinner from flowbite-react
 import Loading from "../Loading/Loading";
 
 let socket;
@@ -21,6 +20,7 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
     if (targetUserID) {
       const newRoom = generateRoomID(currentUserID, targetUserID);
       setRoom(newRoom);
+      setMessages([]); // Clear messages when switching users
     } else {
       setMessages([]);
     }
@@ -138,7 +138,7 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
       <div className="flex flex-col space-y-4 overflow-y-auto flex-grow">
         {/* Show loading spinner if either query is loading */}
         {(isSenderLoading || isReceiverLoading) && (
-          <Loading/>
+          <Loading />
         )}
         {/* Group messages by date */}
         {!isSenderLoading && !isReceiverLoading && groupMessagesByDate([...senderChatHistory, ...receiverChatHistory, ...messages]).map((group, index) => (
