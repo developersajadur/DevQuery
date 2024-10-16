@@ -39,9 +39,9 @@ const Contact = () => {
     // const templateId = process.env.NEXT_TEMPLATE_ID
 
     const contactInfo = {
-      service_id: process.env.NEXT_PUBLIC_SERVICE_ID, // Updated
-      template_id: process.env.NEXT_PUBLIC_TEMPLATE_ID, // Updated
-      user_id: process.env.NEXT_PUBLIC_KEY, // Already correct
+      service_id: process.env.NEXT_PUBLIC_EMAIL_JS_SERVICE_ID, // Updated
+      template_id: process.env.NEXT_PUBLIC_EMAIL_JS_TEMPLATE_ID, // Updated
+      user_id: process.env.NEXT_PUBLIC_EMAIL_JS_USER_ID, // Already correct
       template_params: { // Ensure this structure as previously discussed
         from_name: name,
         from_email: email,
