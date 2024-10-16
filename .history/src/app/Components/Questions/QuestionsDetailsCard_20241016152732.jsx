@@ -76,15 +76,32 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     enabled: !!questionDetails._id, // Enable the query only if questionDetails._id is available
   });
 
-  const handleLikeToggle = () => {
-    setLiked(!liked);
-    if (disliked) setDisliked(false);
+  const handleLikeToggle = async (answerId) => {
+    try {
+      const response = await axios.post('/questions/api/like', { answerId, userId: currentUserEmail });
+      if (response.data.success) {
+        toast.success("You liked the answer!");
+        refetch(); // Refresh answers after liking
+      }
+    } catch (error) {
+      console.error("Error liking answer:", error);
+      toast.error("An error occurred while liking the answer.");
+    }
   };
-
-  const handleUnlikeToggle = () => {
-    setDisliked(!disliked);
-    if (liked) setLiked(false);
+  
+  const handleUnlikeToggle = async (answerId) => {
+    try {
+      const response = await axios.post('/questions/api/unlike', { answerId, userId: currentUserEmail });
+      if (response.data.success) {
+        toast.success("You unliked the answer!");
+        refetch(); // Refresh answers after unliking
+      }
+    } catch (error) {
+      console.error("Error unliking answer:", error);
+      toast.error("An error occurred while unliking the answer.");
+    }
   };
+  
 
   const handleAnswerSubmit = async () => {
     const plainTextAnswer = stripHtml(answer);
@@ -230,23 +247,20 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
               </div>
 
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-4">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => handleLikeToggle(answer._id)}
-                    className={`flex items-center text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:opacity-80 focus:ring-4 focus:ring-blue-300 rounded-full px-4 py-2 text-sm transition-opacity
-                      ${answer.liked ? 'opacity-100' : 'opacity-60'}`}
-                  >
-                    <AiOutlineLike className="mr-2" /> {answer.likes} Like
-                  </button>
-
-                  <button
-                    onClick={() => handleUnlikeToggle(answer._id)}
-                    className={`flex items-center text-white bg-gradient-to-r from-pink-500 to-orange-400 hover:opacity-80 focus:ring-4 focus:ring-pink-300 rounded-full px-4 py-2 text-sm transition-opacity
-                      ${answer.unliked ? 'opacity-100' : 'opacity-60'}`}
-                  >
-                    <AiOutlineDislike className="mr-2" /> {answer.unlikes} Dislike
-                  </button>
-                </div>
+              <div>
+  <Button
+    onClick={() => handleLikeToggle(answer._id)}
+    className={`mb-2 ${answer.liked ? "text-blue-500" : "text-gray-500"}`}
+  >
+    <AiOutlineLike /> Like ({answer.likes})
+  </Button>
+  <Button
+    onClick={() => handleUnlikeToggle(answer._id)}
+    className={`mb-2 ${answer.disliked ? "text-red-500" : "text-gray-500"}`}
+  >
+    <AiOutlineDislike /> Unlike ({answer.unlikes})
+  </Button>
+</div>
               </div>
 
               {/* Add Comment Section */}

@@ -57,7 +57,7 @@ const CommentCard = ({ answerId, referrer }) => {
     <div className="max-w-[90%] mx-auto">
       {comments.length > 0 ? (
         comments.map((comment) => (
-          <div className="relative p-6 py-8 w-full bg-white border-b border-gray-300 " key={comment._id}>
+          <div className="relative p-6 py-8 w-full bg-white border-b border-gray-300 mb-4 rounded-lg" key={comment._id}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
               <Avatar img={comment.image || "https://randomuser.me/api/portraits/men/3.jpg"} />
@@ -67,7 +67,7 @@ const CommentCard = ({ answerId, referrer }) => {
               </div>
             </div>
 
-            <p className="text-gray-700 mb-4"><span className="text-xl font-bold">Comment: </span><span className="text-lg font-semibold text-gray">{comment.comment}</span></p>
+            <p className="text-gray-700 mb-4">{comment.comment}</p>
 
             <div className="absolute bottom-2 right-2 text-sm text-blue-500">
               {getTimeAgo(comment.createdAt)}

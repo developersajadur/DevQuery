@@ -67,7 +67,7 @@ const CommentCard = ({ answerId, referrer }) => {
               </div>
             </div>
 
-            <p className="text-gray-700 mb-4"><span className="text-xl font-bold">Comment: </span><span className="text-lg font-semibold text-gray">{comment.comment}</span></p>
+            <p className="text-gray-700 mb-4">{comment.comment}</p>
 
             <div className="absolute bottom-2 right-2 text-sm text-blue-500">
               {getTimeAgo(comment.createdAt)}

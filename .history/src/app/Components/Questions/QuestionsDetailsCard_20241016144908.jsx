@@ -76,12 +76,12 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     enabled: !!questionDetails._id, // Enable the query only if questionDetails._id is available
   });
 
-  const handleLikeToggle = () => {
+  const handleLike = () => {
     setLiked(!liked);
     if (disliked) setDisliked(false);
   };
 
-  const handleUnlikeToggle = () => {
+  const handleDislike = () => {
     setDisliked(!disliked);
     if (liked) setLiked(false);
   };
