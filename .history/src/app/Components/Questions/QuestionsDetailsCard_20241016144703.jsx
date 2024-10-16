@@ -76,12 +76,12 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     enabled: !!questionDetails._id, // Enable the query only if questionDetails._id is available
   });
 
-  const handleLikeToggle = () => {
+  const handleLike = () => {
     setLiked(!liked);
     if (disliked) setDisliked(false);
   };
 
-  const handleUnlikeToggle = () => {
+  const handleDislike = () => {
     setDisliked(!disliked);
     if (liked) setLiked(false);
   };
@@ -140,65 +140,48 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
 
   return (
     <div>
-     <Card className="mb-6">
-  <div className="flex items-start">
-    {loadingUser ? (
-      <Loading />
-    ) : (
-      <Link href={`/users/${postUser?._id}`}>
-        <Avatar img={postUser?.image} />
-      </Link>
-    )}
-    <div className="ml-4 w-full">
-      <h2 className="text-xl font-semibold">{title}</h2>
-      <div className="flex items-center space-x-2 mb-2">
-        {tags?.map((tag, index) => (
-          <Badge className="mr-2" key={index} color="info">
-            #{tag}
-          </Badge>
-        ))}
-      </div>
-      <p className="text-gray-600 mb-4">{description}</p>
+      <Card className="mb-6">
+        <div className="flex items-start">
+          {loadingUser ? <Loading /> :<Link href={`/users/${postUser?._id}`}> <Avatar img={postUser?.image} /> </Link>}
+          <div className="ml-4 w-full">
+            <h2 className="text-xl font-semibold">{title}</h2>
+            <div className="flex items-center space-x-2 mb-2">
+              {tags?.map((tag, index) => (
+                <Badge className="mr-2" key={index} color="info">#{tag}</Badge>
+              ))}
+            </div>
+            <p className="text-gray-600 mb-4">{description}</p>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+              <p className="text-gray-500 my-2 text-sm">Posted: {timeAgo}</p>
+              <div className="flex items-center">
+                <Button.Group>
+                  <Button color="light" onClick={handleLike}>
+                    <AiOutlineLike size={20} className={`${liked ? "text-blue-500" : ""}`} /> Like
+                  </Button>
+                  <Button color="light" onClick={handleDislike}>
+                    <AiOutlineDislike size={20} className={`${disliked ? "text-red-500" : ""}`} /> Dislike
+                  </Button>
+                </Button.Group>
+              </div>
+            </div>
 
-      {/* Post time and like/dislike counts */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-        <p className="text-gray-500 my-2 text-sm">Posted: {timeAgo}</p>
-
-        {/* Like/Dislike Count */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center">
-            <AiOutlineLike size={20} className="text-blue-500" />
-            <span className="ml-1 text-sm">{likes} Likes</span>
-          </div>
-          <div className="flex items-center">
-            <AiOutlineDislike size={20} className="text-red-500" />
-            <span className="ml-1 text-sm">{unlikes} Dislikes</span>
+            {/* Add Answer Section */}
+            <div className="mt-4 my-4">
+              <ReactQuill
+                value={answer}
+                onChange={setAnswer}
+                placeholder="Write your answer here..."
+                theme="snow"
+                className="mb-4 p-2 my-2 custom-quill"
+                style={{ height: '150px' }}
+              />
+              <Button className="bg-blue-600 mt-4 text-white w-full" onClick={handleAnswerSubmit}>
+                Submit Answer
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Add Answer Section */}
-      <div className="mt-4 my-4">
-        <ReactQuill
-          value={answer}
-          onChange={setAnswer}
-          placeholder="Write your answer here..."
-          theme="snow"
-          className="mb-4 p-2 my-2 custom-quill"
-          style={{ height: '150px' }}
-        />
-        {/* Gradient Blue Submit Button */}
-        <Button
-          className="bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l text-white w-full mt-4"
-          onClick={handleAnswerSubmit}
-        >
-          Submit Answer
-        </Button>
-      </div>
-    </div>
-  </div>
-</Card>
-
+      </Card>
 
       <div className="mb-6">
         <h3 className="text-xl font-semibold mb-6 text-gray-800">Answers</h3>

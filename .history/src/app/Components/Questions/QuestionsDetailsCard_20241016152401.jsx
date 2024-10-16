@@ -231,21 +231,18 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
 
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-4">
                 <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => handleLikeToggle(answer._id)}
-                    className={`flex items-center text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:opacity-80 focus:ring-4 focus:ring-blue-300 rounded-full px-4 py-2 text-sm transition-opacity
-                      ${answer.liked ? 'opacity-100' : 'opacity-60'}`}
-                  >
-                    <AiOutlineLike className="mr-2" /> {answer.likes} Like
-                  </button>
-
-                  <button
-                    onClick={() => handleUnlikeToggle(answer._id)}
-                    className={`flex items-center text-white bg-gradient-to-r from-pink-500 to-orange-400 hover:opacity-80 focus:ring-4 focus:ring-pink-300 rounded-full px-4 py-2 text-sm transition-opacity
-                      ${answer.unliked ? 'opacity-100' : 'opacity-60'}`}
-                  >
-                    <AiOutlineDislike className="mr-2" /> {answer.unlikes} Dislike
-                  </button>
+                <Button
+  onClick={() => handleLikeToggle(answer._id)}
+  className={`mb-2 ${answer.liked ? "text-blue-500" : "text-gray-500"}`}
+>
+  <AiOutlineLike />
+</Button>
+<Button
+  onClick={() => handleUnlikeToggle(answer._id)}
+  className={`mb-2 ${answer.disliked ? "text-red-500" : "text-gray-500"}`}
+>
+  <AiOutlineDislike />
+</Button>
                 </div>
               </div>
 

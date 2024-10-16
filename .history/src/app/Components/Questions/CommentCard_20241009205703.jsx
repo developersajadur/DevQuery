@@ -1,18 +1,25 @@
 "use client";
 import axios from 'axios';
-import { Avatar, Card } from 'flowbite-react';
+import { Avatar, Button, Card } from 'flowbite-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
 import Loading from '../Loading/Loading';
+;
 
-const CommentCard = ({ answerId, referrer }) => {
+ 
+
+const CommentCard = ({ answerId , referrer}) => {
   const [comments, setComments] = useState([]); // Store comments from the backend
   const [loading, setLoading] = useState(true);
+ 
+   
+
 
   // Function to calculate time ago from a date
   const getTimeAgo = (createdAt) => {
     const now = new Date();
-    const createdDate = new Date(createdAt);
+    const createdDate = new Date(createdAt); // Use the createdAt parameter
     const differenceInMs = now - createdDate;
 
     const minutes = Math.floor(differenceInMs / (1000 * 60));
@@ -32,8 +39,11 @@ const CommentCard = ({ answerId, referrer }) => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
+        // Fetch comments using GET and pass the answerId as a query parameter
         const response = await axios.get(`/questions/api/getcomments?answerId=${answerId}`);
+        // Assuming you updated the API route
         setComments(response.data.comments); // Update the state with fetched comments
+       
       } catch (error) {
         console.error("Error fetching comments:", error);
       } finally {
@@ -50,44 +60,45 @@ const CommentCard = ({ answerId, referrer }) => {
 
   // Loading state
   if (loading) {
-    return <Loading />;
+    return (
+        <Loading></Loading>
+    );
   }
 
   return (
-    <div className="max-w-[90%] mx-auto">
+    <div className='max-w-[90%] mx-auto'>
       {comments.length > 0 ? (
         comments.map((comment) => (
-          <div className="relative p-6 py-8 w-full bg-white border-b border-gray-300 " key={comment._id}>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
+          <Card className="mb-4" key={comment._id}>
+            <div className="flex items-start">
               <Avatar img={comment.image || "https://randomuser.me/api/portraits/men/3.jpg"} />
-                <div className="ml-3">
-                  <h4 className="text-lg font-semibold text-blue-500">{comment.user}</h4>
+              <div className="ml-4 w-full">
+                <h4 className="font-medium">{comment.user}</h4>
+                <p className="text-gray-600 mt-1 mb-2">{comment.comment}</p>
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                  <p className="text-gray-500 text-sm">Commented {getTimeAgo(comment.createdAt)}</p>
+                  <div className="flex items-center">
+                    <Button.Group>
+                      <Button color="light">
+                        <AiOutlineLike size={20} /> {comment.likes} Like
+                      </Button>
+                      <Button color="light">
+                        <AiOutlineDislike size={20} /> {comment.unlikes} Dislike
+                      </Button>
+                    </Button.Group>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <p className="text-gray-700 mb-4"><span className="text-xl font-bold">Comment: </span><span className="text-lg font-semibold text-gray">{comment.comment}</span></p>
-
-            <div className="absolute bottom-2 right-2 text-sm text-blue-500">
-              {getTimeAgo(comment.createdAt)}
-            </div>
-          </div>
+          </Card>
         ))
       ) : (
         <p className="text-gray-500">No comments yet.</p>
       )}
 
-      {referrer ? (
-        <div className="my-6">
-          <Link
-            className="border rounded-md px-4 py-2 text-xl font-semibold bg-blue-400 hover:bg-blue-600 cursor-pointer"
-            href={referrer}
-          >
-            Back
-          </Link>
-        </div>
-      ) : null}
+       <div className='my-6'>
+        <Link className='border rounded-md px-4 py-2 text-xl font-semibold bg-blue-400 hover:bg-blue-600 cursor-pointer ' href={referrer}>Back</Link>
+       </div>
     </div>
   );
 };
