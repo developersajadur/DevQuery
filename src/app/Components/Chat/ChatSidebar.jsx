@@ -45,7 +45,7 @@ export default function ChatSidebar({ handleJoinRoom }) {
   );
 
   return (
-    <div className="w-1/4 bg-gray-100 p-4 flex flex-col h-full">
+    <div className="w-1/3 bg-gray-100 p-4 flex flex-col h-full">
       <div className="mb-4">
         <input
           type="text"
@@ -62,13 +62,13 @@ export default function ChatSidebar({ handleJoinRoom }) {
           filteredUsers.map((user, idx) => (
             <div 
               key={idx} 
-              className={`flex items-center mb-4 p-2 cursor-pointer ${user?.active ? 'bg-blue-100' : ''}`} 
-              onClick={() => handleJoinRoom(user._id, user.name)}
+              className={`flex items-center mb-4 p-2 cursor-pointer border-b-[1px] ${user?.active ? 'bg-blue-100' : ''}`} 
+              onClick={() => handleJoinRoom(user._id, user.name, user?.image)}
             >
               <Avatar img={user?.image || "/default-avatar.png"} rounded={true} size="md" />
               <div className="ml-3">
                 <p className="font-bold">{user?.name || "Unknown"}</p>
-                <p className="text-sm text-gray-500">{user?.lastMessage || "No recent messages"}</p>
+                {/* <p className="text-sm text-gray-500">{user?.lastMessage || "No recent messages"}</p> */}
               </div>
             </div>
           ))

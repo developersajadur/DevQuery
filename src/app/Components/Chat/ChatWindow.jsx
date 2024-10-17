@@ -5,13 +5,15 @@ import io from "socket.io-client";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../Loading/Loading";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 let socket;
 
 const WEB_SOCKET_API_URL = process.env.NEXT_PUBLIC_WEB_SOCKET_API_URL;
 const NEXT_PUBLIC_WEB_URL = process.env.NEXT_PUBLIC_WEB_URL;
 
-export default function ChatWindow({ currentUserID, targetUserName, targetUserID }) {
+export default function ChatWindow({ currentUserID, targetUserName, targetUserID, targetUserImage }) {
   const [room, setRoom] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -38,7 +40,6 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
 
     // Listen for incoming messages
     socket.on("message", (msgData) => {
-      // Only add if it's not already present
       setMessages((prevMessages) => {
         if (!prevMessages.some(msg => msg.time === msgData.time && msg.text === msgData.text)) {
           return [...prevMessages, msgData];
@@ -90,14 +91,13 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
       const msgData = {
         room,
         text: message,
-        time: new Date().toISOString(), // Use ISO format for better comparison
+        time: new Date().toISOString(),
         sender: currentUserID,
         userId: currentUserID,
         participantId: targetUserID,
       };
 
       socket.emit("message", msgData);
-      // Add the message to local state immediately
       setMessages((prevMessages) => [...prevMessages, msgData]);
       setMessage(""); // Clear the input field
     }
@@ -131,24 +131,29 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
   };
 
   return (
-    <div className="w-3/4 bg-white p-6 flex flex-col justify-between">
+    <div className="w-full bg-white p-6 flex flex-col justify-between">
       <div className="mb-4">
         <h2 className="text-xl font-semibold">Chat with {targetUserName || "Select a user to chat"}</h2>
       </div>
       <div className="flex flex-col space-y-4 overflow-y-auto flex-grow">
-        {/* Show loading spinner if either query is loading */}
-        {(isSenderLoading || isReceiverLoading) && (
-          <Loading />
-        )}
-        {/* Group messages by date */}
-        {!isSenderLoading && !isReceiverLoading && groupMessagesByDate([...senderChatHistory, ...receiverChatHistory, ...messages]).map((group, index) => (
-          <div key={index}>
-            <p className="text-center text-gray-500 my-2">{formatDate(group.date)}</p>
-            {group.messages.map((msg, idx) => (
-              <UserMessage key={`msg-${idx}`} msg={msg} currentUserID={currentUserID} />
-            ))}
-          </div>
-        ))}
+        {(isSenderLoading || isReceiverLoading) && <Loading />}
+        {!isSenderLoading && !isReceiverLoading &&
+          groupMessagesByDate([...senderChatHistory, ...receiverChatHistory, ...messages]).map((group, index) => (
+            <div key={index}>
+              <p className="text-center text-gray-500 my-2">{formatDate(group.date)}</p>
+              {group.messages.map((msg, idx) => (
+                <UserMessage
+                  key={`msg-${idx}`}
+                  msg={msg}
+                  currentUserID={currentUserID}
+                  targetUserName={targetUserName}
+                  targetUserImage={targetUserImage}
+                  targetUserID={targetUserID}
+                />
+              ))}
+            </div>
+          ))
+        }
       </div>
       <form className="mt-4 flex" onSubmit={handleSendMessage}>
         <input
@@ -166,24 +171,33 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
   );
 }
 
-function UserMessage({ msg, currentUserID }) {
-  const isCurrentUser = msg.sender === currentUserID; // Check if the sender is the current user
+function UserMessage({ msg, currentUserID, targetUserName, targetUserImage, targetUserID }) {
+  const { data: session } = useSession();
+  const currentUserImage = session?.user?.image || "/default-avatar.png";
+  const url = process.env.NEXT_PUBLIC_WEB_URL;
+  const isCurrentUser = msg.sender === currentUserID;
+  const displayName = isCurrentUser ? "You" : targetUserName || "Unknown";
+  const userImage = isCurrentUser ? currentUserImage : targetUserImage || "/default-avatar.png";
+  const userLink = isCurrentUser ? `${url}/users/${currentUserID}` : `${url}/users/${targetUserID}`;
 
   return (
     <div className={`flex items-start ${isCurrentUser ? "justify-end" : "justify-start"}`}>
-      {/* Render the avatar only for the other user */}
-      {!isCurrentUser && <Avatar img={msg.image || "/default-avatar.png"} rounded={true} size="md" />}
+      {!isCurrentUser && <Avatar img={userImage} rounded={true} size="md" />}
       <div className={`ml-4 ${isCurrentUser ? "text-right" : ""}`}>
         <div className="flex flex-col gap-1">
-          <p className="font-bold">{isCurrentUser ? "You" : msg.name || "Unknown"}</p>
-          <span className="text-xs text-gray-500">{new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+          <Link href={userLink}>
+            <p className="font-bold">{displayName}</p>
+          </Link>
+          <span className="text-xs text-gray-500">
+            {new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
         </div>
         <p className={`text-lg ${isCurrentUser ? "bg-blue-500 text-white" : "bg-gray-200"} p-2 rounded-lg`}>
           {msg.text}
         </p>
       </div>
-      {/* Render the avatar for the current user */}
-      {isCurrentUser && <Avatar img={msg.image || "/default-avatar.png"} rounded={true} size="md" />}
+      {isCurrentUser && <Avatar img={userImage} rounded={true} size="md" />}
     </div>
   );
 }
+

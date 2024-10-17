@@ -13,28 +13,31 @@ export default function Chat() {
     room: "",
     targetUserID: "",
     targetUserName: "",
+    targetUserImage: "", // Include targetUserImage in the state
   });
 
-  const handleJoinRoom = (targetUserID, targetUserName) => {
+  const handleJoinRoom = (targetUserID, targetUserName, targetUserImage) => {
     if (userID && targetUserID) {
       const newRoom = [userID, targetUserID].sort().join("-");
       setChatDetails({
         room: newRoom,
         targetUserID,
         targetUserName,
+        targetUserImage, // Set targetUserImage in the state
       });
     }
   };
 
   return (
     <div className="h-screen flex">
-      <ChatSidebar handleJoinRoom={handleJoinRoom} />
+      <ChatSidebar handleJoinRoom={handleJoinRoom} className="" />
       {chatDetails.room ? (
         <ChatWindow
           room={chatDetails.room}
           currentUserID={userID}
           currentUser={user}
           targetUserName={chatDetails.targetUserName}
+          targetUserImage={chatDetails.targetUserImage} // Pass targetUserImage to ChatWindow
           targetUserID={chatDetails.targetUserID}
         />
       ) : (
