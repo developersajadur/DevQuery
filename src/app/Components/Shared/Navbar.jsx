@@ -1,10 +1,10 @@
 "use client";
-import { Avatar, Button, Drawer, Sidebar, TextInput } from "flowbite-react";
+import { Avatar, Button, Drawer, Sidebar } from "flowbite-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { IoMenu, IoNotificationsOutline, IoSearch } from "react-icons/io5";
+import { IoMenu, IoNotificationsOutline } from "react-icons/io5";
 import { UserNavLinks, AdminNavLinks } from "./NavigationLinks";
 import { TiMessages } from "react-icons/ti";
 
@@ -22,7 +22,9 @@ const Navbar = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim() !== "") {
-      router.push(`/?search=${searchQuery}`);
+      if (pathname === "/" || pathname === "/questions") {
+        router.push(`${pathname}?search=${searchQuery}`);
+      }
       handleClose();
     }
   };
@@ -50,16 +52,6 @@ const Navbar = () => {
     }
   }, [user, status]);
 
-  useEffect(() => {
-    if (searchQuery.trim() !== "") {
-      const delayDebounceFn = setTimeout(() => {
-        router.push(`/?search=${searchQuery}`);
-      }, 500);
-
-      return () => clearTimeout(delayDebounceFn);
-    }
-  }, [searchQuery, router]);
-
   if (status === "loading") {
     return <div>Loading...</div>;
   }
@@ -67,7 +59,7 @@ const Navbar = () => {
   return (
     <div>
       {/* Desktop & Tablet Navbar */}
-      <div className="hidden md:flex justify-between items-center py-3 px-2 h-20 bg-gray-800">
+      <div className="hidden md:flex justify-between items-center py-3 px-2 lg:ml-8 h-20 bg-gray-800">
         <Link href="/" className="text-2xl font-bold text-white hover:text-gray-200 transition duration-300">
           DevQuery
         </Link>
@@ -82,20 +74,29 @@ const Navbar = () => {
             Blogs
           </Link>
           <Link href="/contact" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/contact" ? "text-blue-400" : ""}`}>
-          Contact Us
+            Contact Us
           </Link>
         </div>
         <div className="flex items-center gap-6">
-          <form onSubmit={handleSearchSubmit} className="flex items-center">
-            <TextInput
-              id="search"
-              className="w-64 bg-white text-black border-2 border-purple-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent shadow-md"
-              type="text"
-              icon={IoSearch}
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+     <form onSubmit={handleSearchSubmit} className="max-w-md mx-auto">
+            <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                </svg>
+              </div>
+              <input
+                type="search"
+                id="default-search"
+                className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                required
+              />
+              <button type="submit" className="text-white absolute inset-y-0 end-0 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg lg:rounded-l-none text-sm px-4 py-2">Search</button>
+            </div>
           </form>
           <div className="flex items-center gap-4">
             {user ? (
@@ -158,7 +159,7 @@ const Navbar = () => {
             )}
           </div>
         </div>
-        
+
         <Drawer open={isOpen} onClose={handleClose}>
           <Drawer.Header title="MENU" />
           <Drawer.Items>
@@ -181,7 +182,7 @@ const Navbar = () => {
                     </div>
                     <div className="flex justify-start mt-2 px-5">
                       <Button onClick={toggleView} className="bg-blue-500 text-white hover:bg-blue-600 transition duration-300">
-                        {showAdminLinks ? "Switch to User" : "Switch to Admin"}
+                        {showAdminLinks ? "User View" : "Admin View"}
                       </Button>
                     </div>
                   </Sidebar.ItemGroup>
@@ -191,18 +192,23 @@ const Navbar = () => {
           </Drawer.Items>
         </Drawer>
 
-        <form onSubmit={handleSearchSubmit} className="mt-2">
-          <TextInput
-            id="search"
-            type="text"
-            icon={IoSearch}
-            placeholder="Search..."
-            required
-            className="border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </form>
+        <div className="mt-3">
+          <form onSubmit={handleSearchSubmit} className="max-w-md mx-auto">
+            <label htmlFor="mobile-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+            <div className="relative">
+              <input
+                type="search"
+                id="mobile-search"
+                className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search Mockups, Logos..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                required
+              />
+              <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

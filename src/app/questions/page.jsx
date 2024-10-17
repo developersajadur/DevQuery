@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Loading from '../Components/Loading/Loading';
 import QuestionsCard from '../Components/Questions/QuestionsCard';
+import { useRouter, useSearchParams } from "next/navigation";
 
 const Page = () => {
   const [filterQuery, setFilterQuery] = useState("show_all");
@@ -12,22 +13,32 @@ const Page = () => {
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10; // Number of items per page
 
+  // Get search parameters from the URL
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get('search') || ''; // Get the search query from the URL
+
   const fetchQuestions = async () => {
     try {
-      const response = await axios.get(`/questions/api/allquestion?filter=${filterQuery}&page=${currentPage}&limit=${limit}`);
+      const url = searchQuery
+        ? `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?search=${searchQuery}&filter=${filterQuery}&page=${currentPage}`
+        : `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/get?filter=${filterQuery}&page=${currentPage}`;
+
+      const response = await axios.get(url);
+      
       if (response.status === 200) {
         setTotalPages(response.data.totalPages);
         return response.data.questions;
       } else {
-        console.log('Error fetching questions');
+        console.error('Error fetching questions');
       }
     } catch (error) {
       console.error('Error:', error);
+      throw new Error('Failed to fetch questions');
     }
   };
 
   const { data: questions, isLoading, error } = useQuery({
-    queryKey: ['questions', filterQuery, currentPage],
+    queryKey: ['questions', filterQuery, currentPage, searchQuery],
     queryFn: fetchQuestions
   });
 
@@ -41,15 +52,15 @@ const Page = () => {
   };
 
   if (isLoading) return <Loading />;
-  if (error) return <p>Error loading questions.</p>;
+  if (error) return <p className="text-red-500 text-center">Failed to load questions. Please try again later.</p>;
 
   return (
-    <div>
+    <div className="px-4 py-6 min-h-screen">
       {/* Tab Filter Section */}
       <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200">
         <ul className="flex flex-wrap -mb-px">
-          {["show_all","newest",  "oldest", "most_liked", "most_unliked"].map((filter) => (
-            <li className="me-2 " key={filter}>
+          {["newest", "show_all", "oldest", "most_liked", "most_unliked"].map((filter) => (
+            <li className="me-2" key={filter}>
               <button
                 onClick={() => handleFilterChange(filter)}
                 className={`inline-block p-4 border-b-2 rounded-t-lg font-bold transition duration-300 ease-in-out ${
@@ -65,17 +76,22 @@ const Page = () => {
           ))}
         </ul>
       </div>
-      {questions?.length > 0 ? (
-        questions.map((question, index) => (
-          <QuestionsCard key={index} question={question} />
-        ))
-      ) : (
-        <p>No questions available</p>
-      )}
+
+      {/* Loading and Error Handling */}
+      {isLoading && <Loading />}
+      {error && <p className="text-red-500 text-center">Failed to load questions. Please try again later.</p>}
+
+      {/* Questions List */}
+      <div className="grid grid-cols-1 w-full">
+        {!isLoading && !error && questions.map((question) => (
+          <QuestionsCard key={question._id} question={question} />
+        ))}
+      </div>
 
       {/* Enhanced Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center space-x-4 mt-8 animate-fade-in">
+          {/* Previous Button */}
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
@@ -85,6 +101,7 @@ const Page = () => {
             Previous
           </button>
 
+          {/* Page Numbers */}
           {Array.from({ length: totalPages }, (_, i) => i + 1)
             .slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2))
             .map((page) => (
@@ -98,6 +115,7 @@ const Page = () => {
               </button>
             ))}
 
+          {/* Next Button */}
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
