@@ -1,60 +1,54 @@
 import { ConnectDB } from "@/lib/ConnectDB";
 import { NextResponse } from "next/server";
 
-export const GET = async (request) => {
+export const GET = async (req) => {
+  const db = await ConnectDB();
+  const questionsCollection = db.collection("questions");
+
+  const url = new URL(req.url);
+  const search = url.searchParams.get("search");
+  const filter = url.searchParams.get("filter"); // Get filter from query params
+  const page = parseInt(url.searchParams.get("page")) || 1; // Current page (default to 1)
+  const limit = parseInt(url.searchParams.get("limit")) || 10; // Items per page (default to 10)
+
+  const skip = (page - 1) * limit; // Calculate how many records to skip
+
+  let query = {};
+  let sortOption = {};
+
+  // Search query logic
+  if (search) {
+    query = {
+      title: { $regex: search, $options: "i" }, // Case-insensitive title search
+    };
+  }
+
+  // Filter options logic
+  if (filter === "most_liked") {
+    sortOption = { likes: -1 };
+  } else if (filter === "most_unliked") {
+    sortOption = { unlikes: -1 };
+  } else if (filter === "newest") {
+    sortOption = { createdAt: -1 };
+  } else if (filter === "oldest") {
+    sortOption = { createdAt: 1 };
+  } else if (filter === "show_all") {
+    sortOption = {};
+  } else {
+    sortOption = { createdAt: -1 };
+  }
+
   try {
-    const db = await ConnectDB();
-    const questionCollection = await db.collection('questions');
-
-    // Extract query parameters from the request URL
-    const url = new URL(request.url);
-    const filter = url.searchParams.get('filter'); // e.g., "newest", "most_liked", etc.
-    const page = parseInt(url.searchParams.get('page')) || 1; // default to page 1
-    const limit = parseInt(url.searchParams.get('limit')) || 10; // default limit of 10
-
-    // Set up sorting and filtering logic
-    let sortOption = {};
-    if (filter === "most_liked") {
-      sortOption = { likes: -1 };
-    } else if (filter === "most_unliked") {
-      sortOption = { unlikes: -1 };
-    } else if (filter === "newest") {
-      sortOption = { createdAt: -1 };
-    } else if (filter === "oldest") {
-      sortOption = { createdAt: 1 };
-    } else if (filter === "show_all") {
-      sortOption = {};
-    } else {
-      sortOption = { createdAt: -1 };
-    }
-
-    // Fetch filtered and paginated questions from the database
-    const questions = await questionCollection
-      .find()
+    const totalQuestions = await questionsCollection.countDocuments(query); // Get total number of questions
+    const questions = await questionsCollection
+      .find(query)
       .sort(sortOption)
-      .skip((page - 1) * limit)
+      .skip(skip)
       .limit(limit)
       .toArray();
 
-    // Get total count for pagination
-    const totalQuestions = await questionCollection.countDocuments();
-    const totalPages = Math.ceil(totalQuestions / limit);
-
-    // Return the questions in the response along with pagination info
-    return NextResponse.json(
-      { 
-        message: "Questions retrieved successfully", 
-        questions, 
-        totalPages, 
-        currentPage: page 
-      }, 
-      { status: 200 }
-    );
+    return NextResponse.json({ questions, totalQuestions, page, totalPages: Math.ceil(totalQuestions / limit) });
   } catch (error) {
-    console.error("Error fetching questions:", error);
-    return NextResponse.json(
-      { message: "Error fetching questions from the server" }, 
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Questions not found", error });
   }
 };
