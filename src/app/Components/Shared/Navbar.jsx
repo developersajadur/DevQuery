@@ -67,7 +67,7 @@ const Navbar = () => {
   return (
     <div>
       {/* Desktop & Tablet Navbar */}
-      <div className="hidden md:flex justify-between items-center py-3 px-2 h-20 bg-gray-800">
+      <div className="hidden md:flex justify-between items-center py-3 px-2  lg:ml-8 h-20 bg-gray-800">
         <Link href="/" className="text-2xl font-bold text-white hover:text-gray-200 transition duration-300">
           DevQuery
         </Link>
