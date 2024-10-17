@@ -189,7 +189,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
         />
         {/* Gradient Blue Submit Button */}
         <Button
-          className="bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l text-white w-full mt-4"
+          className="bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l text-white w-full mt-16"
           onClick={handleAnswerSubmit}
         >
           Submit Answer
@@ -233,16 +233,16 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleLikeToggle(answer._id)}
-                    className={`flex items-center text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:opacity-80 focus:ring-4 focus:ring-blue-300 rounded-full px-4 py-2 text-sm transition-opacity
-                      ${answer.liked ? 'opacity-100' : 'opacity-60'}`}
+                    className={`flex items-center text-white bg-gradient-to-r from-blue-500 to-blue-600  focus:ring-4 focus:ring-blue-300 rounded-xl px-4 py-2 text-sm transition-opacity
+                      ${answer.liked ? '' : ''}`}
                   >
                     <AiOutlineLike className="mr-2" /> {answer.likes} Like
                   </button>
 
                   <button
                     onClick={() => handleUnlikeToggle(answer._id)}
-                    className={`flex items-center text-white bg-gradient-to-r from-pink-500 to-orange-400 hover:opacity-80 focus:ring-4 focus:ring-pink-300 rounded-full px-4 py-2 text-sm transition-opacity
-                      ${answer.unliked ? 'opacity-100' : 'opacity-60'}`}
+                    className={`flex items-center text-white bg-gradient-to-r from-red-500 to-red-600 focus:ring-4 focus:ring-pink-300 rounded-xl px-4 py-2 text-sm transition-opacity
+                      ${answer.unliked ? '' : ''}`}
                   >
                     <AiOutlineDislike className="mr-2" /> {answer.unlikes} Dislike
                   </button>
@@ -258,16 +258,16 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
                     rows={2}
                     className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
                   />
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between ">
                     <button
                       type="submit"
-                      className="text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full px-6 py-2 text-sm"
+                      className="text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full px-6 py-2 text-sm"
                     >
                       Submit Comment
                     </button>
                     <Link
                       href={{ pathname: `/allcomments/${answer._id}`, query: { ref: url } }}
-                      className="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-lime-200 font-medium rounded-full px-6 py-2 text-sm"
+                      className="text-gray-900 bg-gradient-to-r from-purple-400 to-blue-600 hover:bg-gradient-to-l focus:ring-4 focus:outline-blue focus:ring-blue -200 font-medium rounded-full px-6 py-2 text-sm"
                     >
                       All Comments
                     </Link>

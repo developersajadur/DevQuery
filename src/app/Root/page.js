@@ -50,46 +50,39 @@ const Root = ({ children }) => {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100">
+        <div className="flex flex-col min-h-screen bg-gray-200">
             {/* Header (Navbar) */}
             <header className="border-b bg-gray-800 shadow-sm w-full z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="container mx-auto px-4">
                     <Navbar />
                 </div>
             </header>
 
             {/* Full-width Banner */}
-            <div className="mt-0 w-full bg-gradient-to-r from-[rgb(58,190,249)] to-[rgb(167,230,255)]">
+            <div className="w-full bg-gradient-to-r from-[rgb(58,190,249)] to-[rgb(167,230,255)]">
                 <Bannar />
             </div>
 
             {/* Main Wrapper */}
-            <div className="flex flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Sidebar (will be sticky or fixed when scrolling only on large screens) */}
+            <div className="container flex flex-1 mx-auto px-4">
+                {/* Sidebar (sticky or fixed when scrolling on large screens) */}
                 <aside
-                    className={`hidden lg:block lg:w-64 text-white border-r-2 border-gray-200`}
-                    style={{
-                        position: isSidebarFixed ? "fixed" : "sticky",
-                        top: "0", // Set to 0 for sticky behavior
-                        height: "100vh", // Ensure the sidebar is full height
-                    }}
+                    className={`hidden lg:block lg:w-64 text-white border-r-2 border-gray-200 ${
+                        isSidebarFixed ? "fixed top-0 h-full" : "sticky top-0"
+                    }`}
                 >
                     <NavigationLinks className="flex flex-col space-y-2 p-4" />
                 </aside>
 
                 {/* Main Content */}
-                <main
-                    className={`flex-1 p-4 md:p-8 bg-gray-50 min-h-screen ${
-                        isSidebarFixed ? "lg:ml-64" : ""
-                    }`}
-                >
+                <main className={`flex-1 p-4 md:p-8 bg-gray-50 min-h-screen ${isSidebarFixed ? "lg:ml-64" : ""}`}>
                     <section className="w-full h-full">{children}</section>
                 </main>
             </div>
 
             {/* Footer */}
             <footer className="bg-gray-800 text-white shadow-sm mt-auto z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="container mx-auto px-4">
                     <Footer />
                 </div>
             </footer>

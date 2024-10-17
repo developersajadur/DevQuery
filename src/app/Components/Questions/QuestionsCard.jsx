@@ -163,7 +163,7 @@ const QuestionsCard = ({ question }) => {
           <div className="flex gap-5 items-center">
             <button
               onClick={handleLikeToggle}
-              className={`flex items-center justify-center bg-blue-500 text-white rounded-lg px-4 py-2 transition-transform duration-300 ease-in-out 
+              className={`flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg px-4 py-2 transition-transform duration-300 ease-in-out 
                 ${liked ? 'opacity-100' : 'hover:opacity-80'}`}>
               {liked ? <AiFillLike className="mr-1" /> : <AiOutlineLike className="mr-1" />}
               <span className="font-semibold">{likesCount}</span>
@@ -171,13 +171,13 @@ const QuestionsCard = ({ question }) => {
 
             <button
               onClick={handleUnlikeToggle}
-              className={`flex items-center justify-center bg-red-500 text-white rounded-lg px-4 py-2 transition-transform duration-300 ease-in-out 
+              className={`flex items-center justify-center bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg px-4 py-2 transition-transform duration-300 ease-in-out 
                 ${unliked ? 'opacity-100' : 'hover:opacity-80'}`}>
               {unliked ? <AiFillDislike className="mr-1" /> : <AiOutlineDislike className="mr-1" />}
               <span className="font-semibold">{unlikesCount}</span>
             </button>
           </div>
-          <p className="text-sm text-blue-500 flex items-center"> 
+          <p className="text-sm text-blue-600 flex items-center"> 
                 <AiOutlineEye className="mr-1 text-2xl text-blue" /> {viewCount} Views
               </p> {/* Added eye icon next to view count */}
         </div>
