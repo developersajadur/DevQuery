@@ -9,7 +9,7 @@ import Loading from '../Components/Loading/Loading';
 import { IoMdHome } from 'react-icons/io';
 
 export const getBlogsDetails = async (id) =>{
-    const fetchURL = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/getBlogs/${id}`
+    const fetchURL = `${process.env.NEXT_PUBLIC_WEB_URL}/blogs/api/getBlogs/${id}`
     try {
         const response = await axios.get(fetchURL)
         const details = response.data.blog;
@@ -27,7 +27,7 @@ const Blogs = () => {
     const [error, setError] = useState(null); // Error state
 
     // Renamed to avoid conflict and use relative path
-const apiEndpoint = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/getBlogs`;
+const apiEndpoint = `${process.env.NEXT_PUBLIC_WEB_URL}/blogs/api/getBlogs`;
 
     useEffect(() => {
         const fetchData = async () => {
