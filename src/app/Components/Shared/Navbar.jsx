@@ -59,11 +59,11 @@ const Navbar = () => {
   return (
     <div>
       {/* Desktop & Tablet Navbar */}
-      <div className="hidden md:flex justify-between items-center py-3 px-2 lg:ml-8 h-20 bg-gray-800">
+      <div className="hidden md:flex justify-between items-center py-3 px-10 relative h-20 bg-gray-800">
         <Link href="/" className="text-2xl font-bold text-white hover:text-gray-200 transition duration-300">
           DevQuery
         </Link>
-        <div className="hidden lg:flex items-center gap-6 text-lg text-white">
+        <div className="hidden lg:flex items-center gap-6  absolute  left-[20%] text-lg text-white">
           <Link href="/" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/" ? "text-blue-400" : ""}`}>
             Home
           </Link>
@@ -80,7 +80,7 @@ const Navbar = () => {
         <div className="flex items-center gap-6">
      <form onSubmit={handleSearchSubmit} className="max-w-md mx-auto">
             <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-            <div className="relative">
+            <div className="relative lg:w-60">
               <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                   <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
