@@ -10,7 +10,6 @@ import { Button } from "flowbite-react";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import React, { useEffect, useState } from 'react';
-import { TiDelete } from "react-icons/ti";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 
@@ -19,8 +18,6 @@ const ProfilePage = ({ params }) => {
   const sessionEmail = session?.user?.email;
   const [data, setData] = useState([]);
   const bookUser = session?.user;
-  // console.log(bookUser.id);
-  
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -63,13 +60,10 @@ const ProfilePage = ({ params }) => {
     return <div>Error loading user data.</div>;
   }
 
-  const handleForDelete = async (id) =>{
-    // NEXT_PUBLIC_WEB_URL
-    // const confirmed = window.confirm("Are you sure you want to delete this bookmark?");
-    // if (!confirmed) return;
+  const handleForDelete = async (id) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "Are you want to delete this bookmark?",
+      text: "Are you sure you want to delete this bookmark?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -77,33 +71,26 @@ const ProfilePage = ({ params }) => {
       confirmButtonText: "Yes, delete it!"
     }).then(async (result) => {
       if (result.isConfirmed) {
-        
         try {
           const response = await axios.delete(`${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/bookmarks/${id}`);
-    
           if (response.status === 200) {
             toast.success(response.data.message);
-            // Remove the deleted bookmark from the state to update the UI
             setData((prevBookmarks) => prevBookmarks.filter((data) => data._id !== id));
           } else {
             toast.error(`Error: ${response.data.message}`);
           }
         } catch (error) {
           if (error.response) {
-            // Server responded with a status other than 2xx
             toast.error(`Error: ${error.response.data.message || "Something went wrong."}`);
           } else {
-            // Network or other errors
             console.error("Error deleting bookmark:", error);
             toast.error("An unexpected error occurred.");
           }
         }
       }
     });
-
   }
-  
-  
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center">
       <div className="bg-white shadow-lg w-full lg:w-full p-8 rounded-lg my-8 mx-auto">
@@ -141,7 +128,19 @@ const ProfilePage = ({ params }) => {
             <p className="text-xl font-semibold">Gold: 3, Silver: 7, Bronze: 10</p>
           </div>
           <div>
-            <Link href="#" className="border-2 border-blue-600 rounded-xl px-6 py-3 font-semibold text-xl text-blue-600 transition-colors hover:bg-blue-600 hover:text-white">Message</Link>
+            <Link
+              href={{
+                pathname: "/chat",
+                query: {
+                  targetUserID: user._id,
+                  targetUserName: user.name,
+                  targetUserImage: user.image || "/default-avatar.png", // Use a default avatar if no image
+                },
+              }}
+              className="border-2 border-blue-600 rounded-xl px-6 py-3 font-semibold text-xl text-blue-600 transition-colors hover:bg-blue-600 hover:text-white"
+            >
+              Message
+            </Link>
           </div>
         </div>
         {sessionEmail && user?.email && sessionEmail === user?.email && (
@@ -209,8 +208,11 @@ const ProfilePage = ({ params }) => {
                         <Link href={`/questions/${dt.questionId}`}>
                           <Button className="bg-blue-500 text-white hover:bg-blue-600 transition">View</Button>
                         </Link>
-                        <Button onClick={() => handleForDelete(dt._id)} className="bg-red-600 text-white hover:bg-red-700 transition flex items-center">
-                           Delete
+                        <Button
+                          onClick={() => handleForDelete(dt._id)}
+                          className="bg-red-500 text-white hover:bg-red-600 transition"
+                        >
+                          Delete
                         </Button>
                       </td>
                     </tr>

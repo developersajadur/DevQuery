@@ -1,4 +1,4 @@
-"use client"
+"use client"; // Indicates this is a client component
 import { Avatar } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -12,6 +12,7 @@ export default function ChatSidebar({ handleJoinRoom }) {
     error: null,
   });
 
+  // Fetch users from the API on component mount
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -33,6 +34,7 @@ export default function ChatSidebar({ handleJoinRoom }) {
     fetchUsers();
   }, []);
 
+  // Handle input changes for the search bar
   const handleSearchChange = (e) => {
     setState((prevState) => ({
       ...prevState,
@@ -40,6 +42,7 @@ export default function ChatSidebar({ handleJoinRoom }) {
     }));
   };
 
+  // Filter users based on the search term
   const filteredUsers = state.users.filter(user =>
     user.name?.toLowerCase().includes(state.searchTerm.toLowerCase())
   );
@@ -55,7 +58,7 @@ export default function ChatSidebar({ handleJoinRoom }) {
           className="border rounded-lg p-2 w-full"
         />
       </div>
-      {state.loading && <Loading/>}
+      {state.loading && <Loading />}
       {state.error && <p className="text-red-500">{state.error}</p>}
       <div className="flex-grow overflow-y-auto">
         {filteredUsers.length > 0 ? (
@@ -68,6 +71,7 @@ export default function ChatSidebar({ handleJoinRoom }) {
               <Avatar img={user?.image || "/default-avatar.png"} rounded={true} size="md" />
               <div className="ml-3">
                 <p className="font-bold">{user?.name || "Unknown"}</p>
+                {/* Optionally display last message or any other user information */}
                 {/* <p className="text-sm text-gray-500">{user?.lastMessage || "No recent messages"}</p> */}
               </div>
             </div>
@@ -79,3 +83,6 @@ export default function ChatSidebar({ handleJoinRoom }) {
     </div>
   );
 }
+
+// Setting a display name for easier debugging
+ChatSidebar.displayName = "ChatSidebar";
