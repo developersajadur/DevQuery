@@ -1,12 +1,13 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Avatar } from "flowbite-react";
 import io from "socket.io-client";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../Loading/Loading";
-import Link from "next/link";
 import { useSession } from "next-auth/react";
+
+let socket;
 
 const WEB_SOCKET_API_URL = process.env.NEXT_PUBLIC_WEB_SOCKET_API_URL;
 const NEXT_PUBLIC_WEB_URL = process.env.NEXT_PUBLIC_WEB_URL;
@@ -15,13 +16,14 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
   const [room, setRoom] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const socketRef = useRef();
 
   useEffect(() => {
     if (targetUserID) {
       const newRoom = generateRoomID(currentUserID, targetUserID);
       setRoom(newRoom);
       setMessages([]); // Clear messages when switching users
+    } else {
+      setMessages([]);
     }
   }, [currentUserID, targetUserID]);
 
@@ -29,11 +31,14 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
     if (!room) return;
 
     // Initialize socket connection
-    socketRef.current = io(WEB_SOCKET_API_URL, { path: "/socket.io" });
-    socketRef.current.emit("joinRoom", room);
+    socket = io(WEB_SOCKET_API_URL, {
+      path: "/socket.io",
+    });
+
+    socket.emit("joinRoom", room);
 
     // Listen for incoming messages
-    socketRef.current.on("message", (msgData) => {
+    socket.on("message", (msgData) => {
       setMessages((prevMessages) => {
         if (!prevMessages.some(msg => msg.time === msgData.time && msg.text === msgData.text)) {
           return [...prevMessages, msgData];
@@ -43,30 +48,38 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
     });
 
     return () => {
-      socketRef.current.emit("leaveRoom", room); // Emit leaveRoom event
-      socketRef.current.disconnect();
-      socketRef.current = null; // Clear the socket reference
+      socket.disconnect();
     };
   }, [room]);
 
-  // Fetch chat history
-  const { data: chatHistory = [], isLoading, error } = useQuery({
-    queryKey: ["chatHistory", room],
+  // Fetch sender chat history
+  const { data: senderChatHistory = [], isLoading: isSenderLoading } = useQuery({
+    queryKey: ["senderChatHistory", room],
     queryFn: async () => {
       if (!room) return [];
-      const senderResponse = await axios.get(`${NEXT_PUBLIC_WEB_URL}/chat/api/get/sender-messages`, {
+      const response = await axios.get(`${NEXT_PUBLIC_WEB_URL}/chat/api/get/sender-messages`, {
         params: {
           userId: currentUserID,
           participantId: targetUserID,
         },
       });
-      const receiverResponse = await axios.get(`${NEXT_PUBLIC_WEB_URL}/chat/api/get/receiver-messages`, {
+      return response.data.messages;
+    },
+    enabled: !!room,
+  });
+
+  // Fetch receiver chat history
+  const { data: receiverChatHistory = [], isLoading: isReceiverLoading } = useQuery({
+    queryKey: ["receiverChatHistory", room],
+    queryFn: async () => {
+      if (!room) return [];
+      const response = await axios.get(`${NEXT_PUBLIC_WEB_URL}/chat/api/get/receiver-messages`, {
         params: {
           participantId: currentUserID,
           userId: targetUserID,
         },
       });
-      return [...senderResponse.data.messages, ...receiverResponse.data.messages];
+      return response.data.messages;
     },
     enabled: !!room,
   });
@@ -83,7 +96,7 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
         participantId: targetUserID,
       };
 
-      socketRef.current.emit("message", msgData);
+      socket.emit("message", msgData);
       setMessages((prevMessages) => [...prevMessages, msgData]);
       setMessage(""); // Clear the input field
     }
@@ -122,13 +135,9 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
         <h2 className="text-xl font-semibold">Chat with {targetUserName || "Select a user to chat"}</h2>
       </div>
       <div className="flex flex-col space-y-4 overflow-y-auto flex-grow">
-        {isLoading && <Loading />}
-        {error && <p className="text-red-500">Error loading chat history. Please try again later.</p>}
-        {!isLoading && !error && messages.length === 0 && (
-          <p className="text-gray-500 text-center">No messages yet. Start the conversation!</p>
-        )}
-        {!isLoading && !error &&
-          groupMessagesByDate(chatHistory).map((group, index) => (
+        {(isSenderLoading || isReceiverLoading) && <Loading />}
+        {!isSenderLoading && !isReceiverLoading &&
+          groupMessagesByDate([...senderChatHistory, ...receiverChatHistory, ...messages]).map((group, index) => (
             <div key={index}>
               <p className="text-center text-gray-500 my-2">{formatDate(group.date)}</p>
               {group.messages.map((msg, idx) => (
@@ -138,7 +147,6 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
                   currentUserID={currentUserID}
                   targetUserName={targetUserName}
                   targetUserImage={targetUserImage}
-                  targetUserID={targetUserID}
                 />
               ))}
             </div>
@@ -161,27 +169,20 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
   );
 }
 
-// UserMessage component for displaying individual messages
-function UserMessage({ msg, currentUserID, targetUserName, targetUserImage, targetUserID }) {
-  const { data: session } = useSession();
-  const currentUserImage = session?.user?.image || "/default-avatar.png";
-  const url = process.env.NEXT_PUBLIC_WEB_URL;
+function UserMessage({ msg, currentUserID, targetUserName, targetUserImage }) {
+  const {data: session} = useSession()
+  const currentUserImage = session.user.image
   const isCurrentUser = msg.sender === currentUserID;
   const displayName = isCurrentUser ? "You" : targetUserName || "Unknown";
-  const userImage = isCurrentUser ? currentUserImage : targetUserImage || "/default-avatar.png";
-  const userLink = isCurrentUser ? `${url}/users/${currentUserID}` : `${url}/users/${targetUserID}`;
+  const userImage = isCurrentUser ? (currentUserImage) : (targetUserImage);
 
   return (
     <div className={`flex items-start ${isCurrentUser ? "justify-end" : "justify-start"}`}>
       {!isCurrentUser && <Avatar img={userImage} rounded={true} size="md" />}
       <div className={`ml-4 ${isCurrentUser ? "text-right" : ""}`}>
         <div className="flex flex-col gap-1">
-          <Link href={userLink}>
-            <p className="font-bold">{displayName}</p>
-          </Link>
-          <span className="text-xs text-gray-500">
-            {new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </span>
+          <p className="font-bold">{displayName}</p>
+          <span className="text-xs text-gray-500">{new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
         <p className={`text-lg ${isCurrentUser ? "bg-blue-500 text-white" : "bg-gray-200"} p-2 rounded-lg`}>
           {msg.text}
@@ -191,7 +192,3 @@ function UserMessage({ msg, currentUserID, targetUserName, targetUserImage, targ
     </div>
   );
 }
-
-// Set a display name for easier debugging
-ChatWindow.displayName = "ChatWindow";
-UserMessage.displayName = "UserMessage";

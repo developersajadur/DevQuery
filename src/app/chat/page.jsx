@@ -25,7 +25,7 @@ export default function Chat() {
     if (userID && targetUserID) {
       handleJoinRoom(targetUserID, targetUserName, targetUserImage);
     }
-  }, [userID, targetUserID, targetUserName, targetUserImage]); // Ensure userID is also a dependency
+  }, [userID, targetUserID, targetUserName, targetUserImage]);
 
   const handleJoinRoom = (targetUserID, targetUserName, targetUserImage) => {
     const newRoom = [userID, targetUserID].sort().join("-");
