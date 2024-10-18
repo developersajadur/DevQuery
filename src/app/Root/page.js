@@ -6,6 +6,8 @@ import Navbar from "../Components/Shared/Navbar";
 import NavigationLinks from "../Components/Shared/NavigationLinks";
 import Loading from "../Components/Loading/Loading";
 import Bannar from "../Components/Bannar/page.jsx";
+import Image from "next/image";
+import Link from "next/link";
 
 const Root = ({ children }) => {
     const { status } = useSession();
@@ -86,6 +88,21 @@ const Root = ({ children }) => {
                     <Footer />
                 </div>
             </footer>
+
+
+<Link
+  href="/zini"
+  className="fixed z-20 bottom-10 right-10 w-20 h-20 rounded-full vibrate"
+>
+  <Image
+    width={200}
+    height={400}
+    alt="zini image"
+    src="/zini.png"
+  />
+</Link>
+
+
         </div>
     );
 };

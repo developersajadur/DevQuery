@@ -27,4 +27,22 @@
     box-shadow: inset 8px 8px 16px #bebebe, inset -8px -8px 16px #ffffff;
     color: #333;
   }
+
+/* Add this to your global styles (e.g., globals.css) */
+@keyframes vibrate {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+.vibrate {
+  animation: vibrate 0.8s infinite; 
+}
+
   
