@@ -1,7 +1,6 @@
 "use client";
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useState } from 'react';
-import Swal from 'sweetalert2'; // Import SweetAlert2
 
 const CheckoutForm = () => {
     const stripe = useStripe();
@@ -23,20 +22,6 @@ const CheckoutForm = () => {
                 return_url: `${process.env.NEXT_PUBLIC_WEB_URL}/payments/payment-success/`,
             },
         });
-
-        // if (error) {
-        //     setPaymentError(error.message);
-        //     setPaymentProcessing(false);
-        // } else {
-        //     setPaymentProcessing(false);
-        //     // Show SweetAlert notification on successful payment
-        //     Swal.fire({
-        //         icon: 'success',
-        //         title: 'Payment Successful!',
-        //         text: 'Thank you for your purchase.',
-        //         confirmButtonText: 'OK',
-        //     });
-        // }
     };
 
     return (

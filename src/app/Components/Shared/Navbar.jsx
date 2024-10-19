@@ -76,7 +76,7 @@ const Navbar = () => {
           <Link href="/contact" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/contact" ? "text-blue-400" : ""}`}>
             Contact Us
           </Link>
-          <Link href="/payments" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/contact" ? "text-blue-400" : ""}`}>
+          <Link href="/subscription" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/contact" ? "text-blue-400" : ""}`}>
             Query Pro
           </Link>
         </div>
