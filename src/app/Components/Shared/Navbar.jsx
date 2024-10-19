@@ -53,7 +53,7 @@ const Navbar = () => {
   }, [user, status]);
 
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; 
   }
 
   return (
@@ -75,6 +75,9 @@ const Navbar = () => {
           </Link>
           <Link href="/contact" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/contact" ? "text-blue-400" : ""}`}>
             Contact Us
+          </Link>
+          <Link href="/payments" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/contact" ? "text-blue-400" : ""}`}>
+            Query Pro
           </Link>
         </div>
         <div className="flex items-center gap-6">
