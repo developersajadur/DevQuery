@@ -31,7 +31,6 @@ const Payments = ({ params }) => {
             amount: price * 100, // Convert price to cents
             currency: 'usd',
             userId: session?.user?.id,
-            date: new Date(),
             plan: plan.toLowerCase(),
         };
 

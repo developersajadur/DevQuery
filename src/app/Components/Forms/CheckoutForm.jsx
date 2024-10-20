@@ -15,7 +15,6 @@ const CheckoutForm = () => {
 
         setPaymentProcessing(true);
         setPaymentError(null);
-
         const { error } = await stripe.confirmPayment({
             elements,
             confirmParams: {
