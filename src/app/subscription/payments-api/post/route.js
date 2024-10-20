@@ -5,15 +5,12 @@ const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
 
 export const POST = async (req) => {
     try {
-        // Parse request JSON
-        const { amount, currency, userId, plan } = await req.json();
+        const { amount, currency} = await req.json();
 
-        // Log the received data for debugging
-        console.log('Received data:', { amount, currency, userId, plan });
+        // console.log('Received data:', { amount, currency});
 
-        // Check for missing fields
-        if (!amount || !currency || !userId || !plan) {
-            console.error('Missing required fields:', { amount, currency, userId, plan });
+        if (!amount || !currency) {
+            console.error('Missing required fields:', { amount, currency });
             return NextResponse.json({ error: 'Required fields are missing' }, { status: 400 });
         }
 
@@ -21,10 +18,6 @@ export const POST = async (req) => {
             amount,
             currency,
             payment_method_types: ['card', 'klarna', 'afterpay_clearpay', 'affirm'],
-            metadata: {
-                userId: userId,
-                plan: plan.toLowerCase(),
-            },
         });
 
         return NextResponse.json({ clientSecret: paymentIntent.client_secret }, { status: 200 });

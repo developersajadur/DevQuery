@@ -1,10 +1,13 @@
 "use client";
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useState } from 'react';
+import axios from 'axios';
+import { useRouter } from 'next/navigation'; 
 
-const CheckoutForm = () => {
+const CheckoutForm = ({ userId, amount, currency, date, plan }) => {
     const stripe = useStripe();
     const elements = useElements();
+    const router = useRouter(); 
     const [paymentProcessing, setPaymentProcessing] = useState(false);
     const [paymentError, setPaymentError] = useState(null);
 
@@ -15,12 +18,37 @@ const CheckoutForm = () => {
 
         setPaymentProcessing(true);
         setPaymentError(null);
-        const { error } = await stripe.confirmPayment({
+
+        const { error, paymentIntent } = await stripe.confirmPayment({
             elements,
-            confirmParams: {
-                return_url: `${process.env.NEXT_PUBLIC_WEB_URL}/payments/payment-success/`,
-            },
+            redirect: "if_required" 
         });
+
+        if (error) {
+            setPaymentError(error.message);
+            setPaymentProcessing(false);
+            return;
+        }
+
+        if (paymentIntent.status === "succeeded") {
+            try {
+                await axios.post(`${process.env.NEXT_PUBLIC_WEB_URL}/subscription/payments-api/store-payments`, {
+                    amount,
+                    currency,
+                    userId,
+                    date,
+                    plan,
+                    paymentIntentId: paymentIntent.id, 
+                });
+        
+                router.push("/subscription/payment-success");
+            } catch (apiError) {
+                console.error('Error storing payment data:', apiError);
+                setPaymentError('Failed to save payment information.');
+            } finally {
+                setPaymentProcessing(false);
+            }
+        }
     };
 
     return (

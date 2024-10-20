@@ -48,7 +48,6 @@ const SubscriptionPage = () => {
     ];
 
     const handlePlanSelection = (plan) => {
-        // Navigate to the payment page for the selected plan
         router.push(`/subscription/${plan.name.toLowerCase()}/payments`);
     };
 

@@ -11,7 +11,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 const Payments = ({ params }) => {
     const { data: session } = useSession();
     const [clientSecret, setClientSecret] = useState('');
-    const [price, setPrice] = useState(null); // Set initial state to null
+    const [price, setPrice] = useState(null);
     const { plan } = params;
 
     useEffect(() => {
@@ -22,7 +22,7 @@ const Payments = ({ params }) => {
         } else if (plan === "premium") {
             setPrice(120);
         }
-    }, [plan]); 
+    }, [plan]);
 
     useEffect(() => {
         if (!plan || !session || !price) return;
@@ -30,14 +30,12 @@ const Payments = ({ params }) => {
         const dataToSend = {
             amount: price * 100, // Convert price to cents
             currency: 'usd',
-            userId: session?.user?.id,
-            plan: plan.toLowerCase(),
         };
 
         axios.post('/subscription/payments-api/post', dataToSend)
             .then(response => setClientSecret(response.data.clientSecret))
             .catch(error => console.error('Error fetching client secret:', error));
-    }, [plan, session, price]); // Run this effect whenever plan, session, or price changes
+    }, [plan, session, price]);
 
     const options = { clientSecret };
 
@@ -45,7 +43,13 @@ const Payments = ({ params }) => {
         <div className="container mx-auto p-4">
             {clientSecret && (
                 <Elements stripe={stripePromise} options={options}>
-                    <CheckoutForm />
+                    <CheckoutForm 
+                        userId={session?.user?.id}
+                        amount={price * 100}
+                        currency="usd"
+                        date={new Date()}
+                        plan={plan.toLowerCase()}
+                    />
                 </Elements>
             )}
         </div>
