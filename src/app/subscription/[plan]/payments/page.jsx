@@ -11,24 +11,34 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 const Payments = ({ params }) => {
     const { data: session } = useSession();
     const [clientSecret, setClientSecret] = useState('');
-    const { plan } = params; // Get the plan name from route parameters
-    
+    const [price, setPrice] = useState(null); // Set initial state to null
+    const { plan } = params;
 
- useEffect(() => {
-    if (!plan || !session) return;
+    useEffect(() => {
+        if (plan === "basic") {
+            setPrice(20);
+        } else if (plan === "standard") {
+            setPrice(80);
+        } else if (plan === "premium") {
+            setPrice(120);
+        }
+    }, [plan]); 
 
-    const dataToSend = {
-        amount: 5000, // You can dynamically set the amount based on the plan
-        currency: 'usd',
-        userId: session?.user?.id,
-        date: new Date(),
-        plan: plan.toUpperCase(), // Use the plan from the route parameters
-    };
+    useEffect(() => {
+        if (!plan || !session || !price) return;
 
-    axios.post('/subscription/payments-api/post', dataToSend) // Send dataToSend directly
-        .then(response => setClientSecret(response.data.clientSecret))
-        .catch(error => console.error('Error fetching client secret:', error));
-}, [plan, session]);
+        const dataToSend = {
+            amount: price * 100, // Convert price to cents
+            currency: 'usd',
+            userId: session?.user?.id,
+            date: new Date(),
+            plan: plan.toLowerCase(),
+        };
+
+        axios.post('/subscription/payments-api/post', dataToSend)
+            .then(response => setClientSecret(response.data.clientSecret))
+            .catch(error => console.error('Error fetching client secret:', error));
+    }, [plan, session, price]); // Run this effect whenever plan, session, or price changes
 
     const options = { clientSecret };
 

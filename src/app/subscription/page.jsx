@@ -8,7 +8,7 @@ const SubscriptionPage = () => {
     const plans = [
         {
             name: "BASIC",
-            price: 10,
+            price: 20,
             period: "Per Month",
             features: [
                 "Solve Questions By Zini Ai",
@@ -65,7 +65,7 @@ const SubscriptionPage = () => {
                 {plans.map((plan, index) => (
                     <div key={index} className="bg-white shadow-lg rounded-lg p-6 text-center">
                         <h3 className="text-xl font-semibold text-gray-800 mb-4">{plan.name}</h3>
-                        <div className="text-4xl font-bold text-blue-600 mb-2">{plan.price}</div>
+                        <div className="text-4xl font-bold text-blue-600 mb-2">${plan.price}</div>
                         <div className="text-gray-500 mb-4">{plan.period}</div>
                         <ul className="mb-6">
                             {plan.features.map((feature, i) => (
