@@ -3,7 +3,6 @@ import { Button } from 'flowbite-react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-
 const SocialSignIn = () => {
     const router = useRouter();
     const handleSocialSignIn = async (provider) => {

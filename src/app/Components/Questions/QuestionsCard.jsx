@@ -2,7 +2,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike, AiOutlineEye } from "react-icons/ai"; // Importing the eye icon
+import { AiFillDislike, AiFillLike, AiOutlineDislike, AiOutlineLike, AiOutlineEye } from "react-icons/ai";
 import Image from "next/image";
 import Link from "next/link";
 import Loading from "../Loading/Loading";
@@ -28,7 +28,7 @@ const getTimeAgo = (createdAt) => {
 
 const QuestionsCard = ({ question }) => {
   const { data: session, status } = useSession();
-  const user = session?.user;
+  const userEmail = session?.user?.email;
   const questionId = question._id;
 
   const [liked, setLiked] = useState(false);
@@ -37,19 +37,19 @@ const QuestionsCard = ({ question }) => {
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
   const [viewCount, setViewCount] = useState(question?.views || 0);
 
+  // Fetch user by email
   const { data: user2 } = useQuery({
-    queryKey: ['user', question.userId],
-    queryFn: () => axios.get(`/users/api/get-one?userId=${question?.userId}`).then(res => res.data.user),
-    enabled: !!question.userId
+    queryKey: ['user', question.userEmail],
+    queryFn: () => axios.get(`/users/api/get-one?email=${question?.userEmail}`).then(res => res.data.user),
+    enabled: !!question.userEmail
   });
 
   useEffect(() => {
-    if (session?.user) {
-      const userEmail = session?.user?.email;
+    if (session?.user) { 
       setLiked(question?.likedBy?.includes(userEmail));
       setUnliked(question?.unlikedBy?.includes(userEmail));
     }
-  }, [session?.user, question]);
+  }, [session?.user, question, userEmail]);
 
   const handleLikeToggle = async () => {
     const isCurrentlyLiked = liked;
@@ -103,8 +103,7 @@ const QuestionsCard = ({ question }) => {
   const buttonForBookmark = async () => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
     const bookMark = {
-      email: user.email,
-      userId: user.id,
+      email: userEmail,
       questionId: question?._id,
       title: question?.title,
     };
@@ -121,7 +120,7 @@ const QuestionsCard = ({ question }) => {
         } else if (error.response.status === 400) {
           toast.error("Please try again");
         } else {
-          toast.success("Added to the bookmark");
+          toast.error("Error adding bookmark");
         }
       }
     }
@@ -130,7 +129,7 @@ const QuestionsCard = ({ question }) => {
   return (
     <div className="flex justify-center ">
       <div className="relative p-6 py-16 w-full bg-white border-b border-gray-300">
-        <div className="flex items-center justify-between  mb-4">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
             <Image
               className="w-12 h-12 rounded-full border-2 border-blue-500"
@@ -178,8 +177,8 @@ const QuestionsCard = ({ question }) => {
             </button>
           </div>
           <p className="text-sm text-blue-600 flex items-center"> 
-                <AiOutlineEye className="mr-1 text-2xl text-blue" /> {viewCount} Views
-              </p> {/* Added eye icon next to view count */}
+            <AiOutlineEye className="mr-1 text-2xl text-blue" /> {viewCount} Views
+          </p>
         </div>
       </div>
     </div>

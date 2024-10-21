@@ -10,7 +10,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 const Root = ({ children }) => {
-    const { status } = useSession();
+    const { status, data: session } = useSession();
+    console.log(session);
+    
     const [isSidebarFixed, setIsSidebarFixed] = useState(false);
 
     // Function to check if the screen is large
