@@ -75,15 +75,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     enabled: !!questionDetails._id
   });
 
-  const handleLikeToggle = () => {
-    setLiked(!liked);
-    if (disliked) setDisliked(false);
-  };
-
-  const handleUnlikeToggle = () => {
-    setDisliked(!disliked);
-    if (liked) setLiked(false);
-  };
+  
 
   const handleAnswerSubmit = async () => {
     const plainTextAnswer = stripHtml(answer);
@@ -136,12 +128,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     const formData = new FormData(e.target);
     const comment = formData.get('comment');
 
-    const com = {
-      comment,
-      userEmail: currentUserEmail,
-      image: currentUserImage,
-      answerId
-    };
+    const com = { comment, user, image, answerId }; 
 
     try {
       const response = await axios.post('/questions/api/addcomments', com);
@@ -225,58 +212,56 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
         {answers.length > 0 ? (
           answers.map((answer) => (
             <Card
-              className="mb-6 p-6 w-full bg-white shadow-lg border border-gray-200 rounded-lg"
-              key={answer._id}
-            >
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start w-full">
-                <div className="flex items-start w-full sm:w-auto">
-                  <Avatar
-                    img={answer.image || "https://randomuser.me/api/portraits/women/2.jpg"}
-                    className="w-14 h-14 "
-                  />
-                  <div className="ml-5 w-full">
-                    <h4 className="font-medium text-blue-600 text-lg">{answer.userEmail}</h4>
-                    <p className="text-gray-700 mb-4"><span className="text-xl font-bold">Answer: </span><span className="text-lg font-semibold text-gray">{answer.answer}</span></p>
-                  </div>
-                </div>
-                <div className="sm:ml-auto mt-4 pt-4 sm:mt-0">
-                  <p className="text-gray-500 text-sm">
-                    Answered on {getTimeAgo(answer.createdAt)}
-                  </p>
-                </div>
-              </div>
+            className="mb-6 p-6 w-full bg-white shadow-lg border border-gray-200 rounded-lg"
+           key={answer._id}
+         >
+           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start w-full">
+             {/* Avatar and User Info */}
+             <div className="flex items-start w-full sm:w-auto">
+               <Avatar
+                 img={answer.image || "https://randomuser.me/api/portraits/women/2.jpg"}
+                 className="w-14 h-14 "
+               />
+               <div className="ml-5 w-full">
+                 <h4 className="font-medium text-blue-600 text-lg">{answer.user}</h4>
+                 <p className="text-gray-700 mb-4"><span className="text-xl font-bold">Answer: </span><span className="text-lg font-semibold text-gray">{answer.answer}</span></p>
+               </div>
+             </div>
 
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between mt-4">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => handleLikeToggle(answer._id)}
-                    className={`flex items-center ${liked ? "text-blue-500" : "text-gray-500"} `}
-                  >
-                    <AiOutlineLike className="mr-1" size={20} />
-                    <span>{answer.likes?.length || 0}</span>
-                  </button>
-                  <button
-                    onClick={() => handleUnlikeToggle(answer._id)}
-                    className={`flex items-center ${disliked ? "text-red-500" : "text-gray-500"} `}
-                  >
-                    <AiOutlineDislike className="mr-1" size={20} />
-                    <span>{answer.unlikes?.length || 0}</span>
-                  </button>
-                </div>
-              </div>
+             {/* Answered Time on Top Right */}
+             <div className="sm:ml-auto mt-4 pt-4 sm:mt-0">
+               <p className="text-gray-500 text-sm">
+                 Answered on {getTimeAgo(answer.createdAt)}
+               </p>
+             </div>
+           </div>
 
-              <div className="border-t pt-4 mt-4">
-                <form onSubmit={(e) => handleCommentSubmit(e, answer._id)} className="space-y-2">
-                  <Textarea
-                    name="comment"
-                    placeholder="Add a comment..."
-                    required
-                    rows={2}
-                  />
-                  <Button type="submit" className="bg-blue-500 text-white">Submit Comment</Button>
-                </form>
-              </div>
-            </Card>
+           {/* Add Comment Section */}
+           <div className="mt-6">
+             <form onSubmit={(e) => handleCommentSubmit(e, answer._id)}>
+               <Textarea
+                 name="comment"
+                 placeholder="Write your comment here..."
+                 rows={2}
+                 className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
+               />
+               <div className="flex items-center justify-between ">
+                 <button
+                   type="submit"
+                   className="text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full px-6 py-2 text-sm"
+                 >
+                   Submit Comment
+                 </button>
+                 <Link
+                   href={{ pathname: `/allcomments/${answer._id}`, query: { ref: url } }}
+                   className="text-gray-900 bg-gradient-to-r from-blue-500 to-blue-600 hover:bg-gradient-to-l focus:ring-4 focus:outline-blue focus:ring-blue -200 font-medium rounded-full px-6 py-2 text-sm"
+                 >
+                   All Comments
+                 </Link>
+               </div>
+             </form>
+           </div>
+         </Card>
           ))
         ) : (
           <p>No answers yet.</p>
