@@ -6,6 +6,8 @@ import { BsPatchQuestionFill } from "react-icons/bs";
 import { MdOutlineCardTravel, MdOutlineDashboard } from "react-icons/md";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "react-query"; // Import useQuery from react-query
+import axios from "axios"; // Ensure axios is imported
 
 export const UserNavLinks = [
   {
@@ -55,8 +57,15 @@ export const AdminNavLinks = [
 
 const NavigationLinks = () => {
   const { data: session } = useSession();
-  const userRole = session?.user?.role || "user"; // Default to "user" if role is not present
+  const userEmail = session?.user?.email;
   const router = useRouter();
+
+  // Fetch user by email using react-query
+  const { data: user, isLoading } = useQuery({
+    queryKey: ['user', userEmail],
+    queryFn: () => axios.get(`/users/api/get-one?email=${userEmail}`).then(res => res.data.user),
+    enabled: !!userEmail,
+  });
 
   // Get initial state from localStorage (persist toggle)
   const [showAdminLinks, setShowAdminLinks] = useState(() => {
@@ -84,7 +93,7 @@ const NavigationLinks = () => {
   };
 
   const renderNavLinks = () => {
-    const navLinks = userRole === "admin" && showAdminLinks ? AdminNavLinks : UserNavLinks;
+    const navLinks = user?.role === "admin" && showAdminLinks ? AdminNavLinks : UserNavLinks;
 
     return navLinks.map((item) => (
       <Link href={item.path} key={item.path} className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-200 transition-all duration-300">
@@ -101,7 +110,7 @@ const NavigationLinks = () => {
       </div>
 
       {/* Toggle Button */}
-      {userRole === "admin" && (
+      {user?.role === "admin" && (
         <button
           onClick={handleToggle}
           className="mt-10 ml-3 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
