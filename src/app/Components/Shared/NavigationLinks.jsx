@@ -6,8 +6,8 @@ import { BsPatchQuestionFill } from "react-icons/bs";
 import { MdOutlineCardTravel, MdOutlineDashboard } from "react-icons/md";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "react-query"; // Import useQuery from react-query
 import axios from "axios"; // Ensure axios is imported
+import { useQuery } from "@tanstack/react-query";
 
 export const UserNavLinks = [
   {
