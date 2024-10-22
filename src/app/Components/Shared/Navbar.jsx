@@ -156,17 +156,19 @@ const Navbar = () => {
                        ) : error ? (
                          <p className="text-sm text-red-500">Error loading notifications.</p>
                        ) : notifications?.length > 0 ? (
-                         notifications?.map((notification, index) => (
-                           <div key={index} className="flex items-start space-x-3 hover:bg-[#F4F6FF] p-2 border-b last:border-none">
-                             <Link href={`${process.env.NEXT_PUBLIC_WEB_URL}/${notification?.questionLink}`} className="flex-1">
-                               <p className="text-sm font-semibold text-gray-700">{notification.content}</p>
-                               <p className="text-xs text-gray-500">
-                                 {new Date(notification.date).toLocaleString()}
-                               </p>
-                             </Link>
-                           </div>
-                         ))
-                       ) : (
+                        notifications
+                          ?.sort((a, b) => new Date(b.date) - new Date(a.date))
+                          .map((notification, index) => (
+                            <div key={index} className="flex items-start space-x-3 hover:bg-[#F4F6FF] p-2 border-b last:border-none">
+                              <Link href={`${process.env.NEXT_PUBLIC_WEB_URL}/${notification?.questionLink}`} className="flex-1">
+                                <p className="text-sm font-semibold text-gray-700">{notification.content}</p>
+                                <p className="text-xs text-gray-500">
+                                  {new Date(notification.date).toLocaleString()}
+                                </p>
+                              </Link>
+                            </div>
+                          ))
+                      )  : (
                          <p className="text-sm text-gray-500">No notifications.</p>
                        )}
                      </div>

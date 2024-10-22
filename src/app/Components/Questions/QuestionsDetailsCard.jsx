@@ -97,25 +97,26 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   
     try {
       const postAnswer = await axios.post('/questions/api/answeradd', answerData);
-      
-      const sentToData = {
-        questionUserEmail: questionDetails.userEmail,
-        type: "answer",
-        answerBy: currentUserEmail,
-        date: new Date().toISOString(),  
-        content: `${currentUserName} Answered Your Question`,
-        questionLink: `/questions/${questionDetails._id}`
-      };
-  
-      // Post the notification
-      const postNotification = await axios.post("/users/api/notifications/post", sentToData);
-      console.log(postNotification);
-      
-      if (postNotification.status === 200) {
-        refetch();  // Refresh the answers list
-        toast.success("Answer Successfully Submitted!");
-        setAnswer('');  // Clear the answer input
-      }
+      if (postAnswer.status === 200) {
+        const sentToData = {
+          questionUserEmail: questionDetails.userEmail,
+          type: "answer",
+          answerBy: currentUserEmail,
+          date: new Date().toISOString(),  
+          content: `${currentUserName} Answered Your Question`,
+          questionLink: `/questions/${questionDetails._id}` 
+        };
+    
+        // Post the notification
+        const postNotification = await axios.post("/users/api/notifications/post", sentToData);
+        console.log(postNotification);
+        
+        if (postNotification.status === 200) {
+          refetch();  // Refresh the answers list
+          toast.success("Answer Successfully Submitted!");
+          setAnswer('');  // Clear the answer input
+        }
+      }      
   
     } catch (error) {
       console.error("Error submitting answer:", error);
@@ -128,15 +129,30 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     const formData = new FormData(e.target);
     const comment = formData.get('comment');
 
-    const com = { comment, user, image, answerId }; 
+    const sendCommentData = { comment, currentUserEmail, answerId }; 
 
     try {
-      const response = await axios.post('/questions/api/addcomments', com);
+      const response = await axios.post('/questions/api/addcomments', sendCommentData);
       if (response.status === 201) {
+        const sentToData = {
+          questionUserEmail: questionDetails.userEmail,
+          type: "comment",
+          answerBy: currentUserEmail,
+          date: new Date().toISOString(),  
+          content: `${currentUserName} Comment Your Question`,
+          questionLink: `/questions/${questionDetails._id}`
+        };
+    
+        // Post the notification
+        const postNotification = await axios.post("/users/api/notifications/post", sentToData);
+        
+        if (postNotification.status === 200) {
+          refetch();  
         toast.success("Comment added successfully!");
         e.target.reset();
         setLoading(false);
-      }
+        }
+      }  
     } catch (error) {
       console.error("Error submitting comment:", error);
       toast.error("Something went wrong!");
