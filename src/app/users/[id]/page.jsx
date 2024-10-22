@@ -10,7 +10,6 @@ import { Button } from "flowbite-react";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import React, { useEffect, useState } from 'react';
-import { TiDelete } from "react-icons/ti";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 
@@ -19,8 +18,6 @@ const ProfilePage = ({ params }) => {
   const sessionEmail = session?.user?.email;
   const [data, setData] = useState([]);
   const bookUser = session?.user;
-  // console.log(bookUser.id);
-  
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -63,13 +60,10 @@ const ProfilePage = ({ params }) => {
     return <div>Error loading user data.</div>;
   }
 
-  const handleForDelete = async (id) =>{
-    // NEXT_PUBLIC_WEB_URL
-    // const confirmed = window.confirm("Are you sure you want to delete this bookmark?");
-    // if (!confirmed) return;
+  const handleForDelete = async (id) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "Are you want to delete this bookmark?",
+      text: "Are you sure you want to delete this bookmark?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -77,36 +71,29 @@ const ProfilePage = ({ params }) => {
       confirmButtonText: "Yes, delete it!"
     }).then(async (result) => {
       if (result.isConfirmed) {
-        
         try {
           const response = await axios.delete(`${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/bookmarks/${id}`);
-    
           if (response.status === 200) {
             toast.success(response.data.message);
-            // Remove the deleted bookmark from the state to update the UI
             setData((prevBookmarks) => prevBookmarks.filter((data) => data._id !== id));
           } else {
             toast.error(`Error: ${response.data.message}`);
           }
         } catch (error) {
           if (error.response) {
-            // Server responded with a status other than 2xx
             toast.error(`Error: ${error.response.data.message || "Something went wrong."}`);
           } else {
-            // Network or other errors
             console.error("Error deleting bookmark:", error);
             toast.error("An unexpected error occurred.");
           }
         }
       }
     });
-
   }
-  
-  
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center">
-      <div className="bg-white shadow-md w-full md:w-3/4 lg:w-1/2 p-6 rounded-lg my-8">
+      <div className="bg-white shadow-lg w-full lg:w-full p-8 rounded-lg my-8 mx-auto">
         <div className="flex items-center space-x-6">
           {user?.image ? (
             <Image
@@ -117,19 +104,21 @@ const ProfilePage = ({ params }) => {
               src={user?.image}
             />
           ) : (
-            <div className="rounded-full bg-gray-300" style={{ height: 100, width: 100 }}></div>
+            <div className="rounded-full bg-gray-300 h-24 w-24 flex items-center justify-center">
+              <span className="text-gray-500">No Image</span>
+            </div>
           )}
           <div>
-            <h1 className="text-2xl font-bold">{user?.name}</h1>
-            <p className="flex items-center text-gray-400 mt-2">
+            <h1 className="text-4xl font-bold text-gray-800">{user?.name}</h1>
+            <p className="flex items-center text-gray-600 mt-2 text-lg">
               <FiMail className="mr-2" /> {user?.email}
             </p>
           </div>
         </div>
-        <div className="">
-          <button className="bg-blue-500 rounded-xl px-4 py-2 font-semibold text-xl text-white">Follow</button>
+        <div className="mt-4">
+          <button className="bg-blue-600 rounded-xl px-6 py-3 font-semibold text-xl text-white transition-transform transform hover:scale-105">Follow</button>
         </div>
-        <div className="flex items-center mt-4 space-x-4">
+        <div className="flex items-center mt-6 space-x-4">
           <div>
             <p className="text-gray-500">Reputation</p>
             <p className="text-xl font-semibold">1,250</p>
@@ -138,100 +127,99 @@ const ProfilePage = ({ params }) => {
             <p className="text-gray-500">Badges</p>
             <p className="text-xl font-semibold">Gold: 3, Silver: 7, Bronze: 10</p>
           </div>
-          <div className="">
-            <Link href="#" className="border-[2px] border-blue-500 rounded-xl px-4 py-2 font-semibold text-xl text-blue-500">Message</Link>
+          <div>
+            <Link
+              href={{
+                pathname: "/chat",
+                query: {
+                  targetUserID: user._id,
+                  targetUserName: user.name,
+                  targetUserImage: user.image || "/default-avatar.png", // Use a default avatar if no image
+                },
+              }}
+              className="border-2 border-blue-600 rounded-xl px-6 py-3 font-semibold text-xl text-blue-600 transition-colors hover:bg-blue-600 hover:text-white"
+            >
+              Message
+            </Link>
           </div>
         </div>
         {sessionEmail && user?.email && sessionEmail === user?.email && (
-          <div className="flex gap-5 items-center">
-            <div className="mt-6">
-              <Link
-                href={`/users/edit/${user._id}`}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-              >
-                Update Profile
-              </Link>
-            </div>
-            <Button onClick={() => signOut({ callbackUrl: "/login" })} className="mt-6">
+          <div className="flex gap-5 items-center mt-6">
+            <Link
+              href={`/users/edit/${user._id}`}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+            >
+              Update Profile
+            </Link>
+            <Button onClick={() => signOut({ callbackUrl: "/login" })} className=" bg-red-600 px-6 py-1 ">
               LogOut
             </Button>
           </div>
         )}
       </div>
 
-      <Tabs>
-        <div className="w-full">
-          <TabList className="flex justify-between gap-8 content-center mb-9">
-            <Tab><button>Questions</button></Tab>
-            <Tab><button className="text-gray-500">Answers</button></Tab>
-            <Tab><button className="text-gray-500">Bookmarks</button></Tab>
-          </TabList>
-        </div>
+      <Tabs className="w-full lg:w-full mt-6">
+        <TabList className="flex justify-between gap-8 content-center mb-4">
+          <Tab><button className="text-blue-600 font-semibold text-lg">Questions</button></Tab>
+          <Tab><button className="text-gray-500 font-semibold text-lg">Answers</button></Tab>
+          <Tab><button className="text-gray-500 font-semibold text-lg">Bookmarks</button></Tab>
+        </TabList>
 
         <TabPanel>
-          <div className="bg-white shadow-md w-full md:w-3/4 lg:w-full p-6 rounded-lg mt-6">
-            <h2 className="text-xl font-semibold">Recent Activity</h2>
+          <div className="bg-white shadow-lg w-full p-6 rounded-lg mt-6">
+            <h2 className="text-2xl font-semibold">Recent Activity</h2>
             <div className="mt-4 space-y-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold">What is the difference between JavaScript and TypeScript?</h3>
+              <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                <h3 className="font-semibold text-lg">What is the difference between JavaScript and TypeScript?</h3>
                 <p className="text-sm text-gray-500">Asked on September 22, 2024</p>
               </div>
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold">How to implement authentication in Next.js?</h3>
+              <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                <h3 className="font-semibold text-lg">How to implement authentication in Next.js?</h3>
                 <p className="text-sm text-gray-500">Answered on September 20, 2024</p>
               </div>
             </div>
           </div>
         </TabPanel>
         <TabPanel>
-          <div className="bg-white shadow-md w-full md:w-3/4 lg:w-full p-6 rounded-lg mt-6">
-            <h2 className="text-xl font-semibold">Answers</h2>
+          <div className="bg-white shadow-lg w-full p-6 rounded-lg mt-6">
+            <h2 className="text-2xl font-semibold">Answers</h2>
             {/* Add content for answers here */}
           </div>
         </TabPanel>
         <TabPanel>
-          <div className="bg-white shadow-md w-full md:w-3/4 lg:w-full p-6 rounded-lg mt-6">
-            <div className=" sm:p-4 dark:text-gray-800">
-	<h2 className="text-2xl font-semibold text-center"><em>Bookmark</em></h2>
-  <p className="text-center font-semibold"><em>Here are the questions you bookmarked</em></p>
-			
-			<thead className="dark:bg-gray-300">
-				<tr className="text-left">
-					<th className="p-3 ">Title</th>
-					<th className="p-3"></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr className="border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
-
-			{
-        data.map(dt=>
-      <div key={dt._id} className='flex justify-between item-center hover:border-pink-600 border-[1px] border-sky-600 rounded-md bg-gray-50 my-1'>
-
-        <div className="w-96 ">
-        <td className="p-3">
-            
-						<p className="text-xl font-bold">{dt.title}</p>
-					</td>
-        </div>
-              
-					<div className="my-2">
-          <td className="p-3">
-						<Link href={`/questions/${dt.questionId}`}><button className="bg-blue-600 text-white hover:bg-sky-900 font-bold rounded-md hover:rounded-lg border-2 p-2">Details</button></Link>
-          <button onClick={()=>handleForDelete(dt._id)} className="text-xl"><TiDelete /></button>
-					</td>
-          </div>
-
-        </div>
-
-        )
-      }	
-
-				</tr>
-			</tbody>
-	
-	
-</div>
+          <div className="bg-white shadow-lg w-full p-6 rounded-lg mt-6">
+            <h2 className="text-2xl font-semibold text-center"><em>Bookmark</em></h2>
+            <p className="text-center font-semibold"><em>Here are the questions you bookmarked</em></p>
+            <div className="mt-4">
+              <table className="min-w-full">
+                <thead className="bg-gray-200">
+                  <tr className="text-left">
+                    <th className="p-3 text-lg">Title</th>
+                    <th className="p-3 text-lg"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map(dt => (
+                    <tr key={dt._id} className='border-b border-opacity-20 hover:bg-gray-100'>
+                      <td className="p-3 w-3/4">
+                        <p className="text-xl font-bold">{dt.title}</p>
+                      </td>
+                      <td className="p-3 flex justify-end items-center space-x-2">
+                        <Link href={`/questions/${dt.questionId}`}>
+                          <Button className="bg-blue-500 text-white hover:bg-blue-600 transition">View</Button>
+                        </Link>
+                        <Button
+                          onClick={() => handleForDelete(dt._id)}
+                          className="bg-red-500 text-white hover:bg-red-600 transition"
+                        >
+                          Delete
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </TabPanel>
       </Tabs>

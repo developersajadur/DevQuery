@@ -11,7 +11,7 @@ const Page = () => {
   const [error, setError] = useState(null);  // Error state added
   
   const { data: session } = useSession();
-  const userId = session?.user.id;
+  const userEmail = session?.user.email;
 
   // Initialize react-hook-form
   const {
@@ -30,7 +30,7 @@ const Page = () => {
     }
 
     const { title, description } = data; // Get data from react-hook-form
-    const addQuestion = { title, description, userId, tags };
+    const addQuestion = { title, description, userEmail, tags };
 
     try {
       const response = await axios.post('/ask-question/api/post', addQuestion);

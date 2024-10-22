@@ -8,7 +8,7 @@ export const getQuestions = async () => {
     const questions = response?.data?.questions;
     return questions;
   } catch (error) {
-    console.error("Error details:", error); // Log the error details
+    console.error("Error details:", error); // Log the error details 
     return [];
   } 
 };

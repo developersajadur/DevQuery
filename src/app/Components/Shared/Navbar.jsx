@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { IoMenu, IoNotificationsOutline, IoSearch } from "react-icons/io5";
+import { IoMenu, IoNotificationsOutline } from "react-icons/io5";
 import { UserNavLinks, AdminNavLinks } from "./NavigationLinks";
 import { TiMessages } from "react-icons/ti";
 
@@ -22,7 +22,9 @@ const Navbar = () => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim() !== "") {
-      router.push(`/?search=${searchQuery}`);
+      if (pathname === "/" || pathname === "/questions") {
+        router.push(`${pathname}?search=${searchQuery}`);
+      }
       handleClose();
     }
   };
@@ -50,24 +52,14 @@ const Navbar = () => {
     }
   }, [user, status]);
 
-  useEffect(() => {
-    if (searchQuery.trim() !== "") {
-      const delayDebounceFn = setTimeout(() => {
-        router.push(`/?search=${searchQuery}`);
-      }, 500);
-
-      return () => clearTimeout(delayDebounceFn);
-    }
-  }, [searchQuery, router]);
-
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; 
   }
 
   return (
     <div>
       {/* Desktop & Tablet Navbar */}
-      <div className="hidden md:flex justify-between items-center py-3 px-2 h-20 bg-gray-800">
+      <div className="hidden md:flex justify-between items-center py-3 px-10 relative h-20 bg-gray-800">
         <Link href="/" className="text-2xl font-bold text-white hover:text-gray-200 transition duration-300">
           DevQuery
         </Link>
@@ -158,7 +150,7 @@ const Navbar = () => {
             )}
           </div>
         </div>
-        
+
         <Drawer open={isOpen} onClose={handleClose}>
           <Drawer.Header title="MENU" />
           <Drawer.Items>
@@ -181,7 +173,7 @@ const Navbar = () => {
                     </div>
                     <div className="flex justify-start mt-2 px-5">
                       <Button onClick={toggleView} className="bg-blue-500 text-white hover:bg-blue-600 transition duration-300">
-                        {showAdminLinks ? "Switch to User" : "Switch to Admin"}
+                        {showAdminLinks ? "User View" : "Admin View"}
                       </Button>
                     </div>
                   </Sidebar.ItemGroup>
@@ -191,18 +183,23 @@ const Navbar = () => {
           </Drawer.Items>
         </Drawer>
 
-        <form onSubmit={handleSearchSubmit} className="mt-2">
-          <TextInput
-            id="search"
-            type="text"
-            icon={IoSearch}
-            placeholder="Search..."
-            required
-            className="border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </form>
+        <div className="mt-3">
+          <form onSubmit={handleSearchSubmit} className="max-w-md mx-auto">
+            <label htmlFor="mobile-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+            <div className="relative">
+              <input
+                type="search"
+                id="mobile-search"
+                className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search Mockups, Logos..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                required
+              />
+              <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -49,21 +49,21 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   const url = usePathname();
 
   const timeAgo = getTimeAgo(questionDetails?.createdAt);
-  const { title, description, tags,likes,unlikes } = questionDetails;
+  const { title, description, tags, likes, unlikes } = questionDetails;
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Fetch post user details
+  // Fetch post user details by email
   const { data: postUser, isLoading: loadingUser, error: userError } = useQuery({
-    queryKey: ['user', questionDetails?.userId], // Fixed reference to questionDetails
+    queryKey: ['user', questionDetails?.userEmail],
     queryFn: async () => {
-      if (!questionDetails?.userId) return null; // Avoid unnecessary API call
-      const response = await axios.get(`/users/api/get-one?userId=${questionDetails?.userId}`);
+      if (!questionDetails?.userEmail) return null;
+      const response = await axios.get(`/users/api/get-one?email=${questionDetails?.userEmail}`);
       return response.data.user;
     },
-    enabled: !!questionDetails?.userId // Only fetch if userId is available
+    enabled: !!questionDetails?.userEmail
   });
 
   // Fetch answers for the question
@@ -73,7 +73,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
       const response = await axios.get(`/questions/api/getanswer?question_id=${questionDetails._id}`);
       return response.data.answers;
     },
-    enabled: !!questionDetails._id, // Enable the query only if questionDetails._id is available
+    enabled: !!questionDetails._id
   });
 
   const handleLikeToggle = () => {
@@ -88,7 +88,12 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
 
   const handleAnswerSubmit = async () => {
     const plainTextAnswer = stripHtml(answer);
-    const answerData = { ans: plainTextAnswer, question_id: questionDetails._id, user: currentUserEmail, image: currentUserImage };
+    const answerData = {
+      ans: plainTextAnswer,
+      question_id: questionDetails._id,
+      userEmail: currentUserEmail,
+      image: currentUserImage
+    };
 
     if (!session?.user) {
       return router.push('/login');
@@ -101,7 +106,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
 
     try {
       await axios.post('/questions/api/answeradd', answerData);
-      refetch(); 
+      refetch();
       toast.success("Your answer has been successfully submitted!");
       setAnswer('');
     } catch (error) {
@@ -115,13 +120,18 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     const formData = new FormData(e.target);
     const comment = formData.get('comment');
 
-    const com = { comment, user, image, answerId }; 
+    const com = {
+      comment,
+      userEmail: currentUserEmail,
+      image: currentUserImage,
+      answerId
+    };
 
     try {
       const response = await axios.post('/questions/api/addcomments', com);
       if (response.status === 201) {
         toast.success("Comment added successfully!");
-        e.target.reset(); 
+        e.target.reset();
         setLoading(false);
       }
     } catch (error) {
@@ -140,88 +150,79 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
 
   return (
     <div>
-     <Card className="mb-6">
-  <div className="flex items-start">
-    {loadingUser ? (
-      <Loading />
-    ) : (
-      <Link href={`/users/${postUser?._id}`}>
-        <Avatar img={postUser?.image} />
-      </Link>
-    )}
-    <div className="ml-4 w-full">
-      <h2 className="text-xl font-semibold">{title}</h2>
-      <div className="flex items-center space-x-2 mb-2">
-        {tags?.map((tag, index) => (
-          <Badge className="mr-2" key={index} color="info">
-            #{tag}
-          </Badge>
-        ))}
-      </div>
-      <p className="text-gray-600 mb-4">{description}</p>
+      <Card className="mb-6">
+        <div className="flex items-start">
+          {loadingUser ? (
+            <Loading />
+          ) : (
+            <Link href={`/users/${postUser?.email}`}>
+              <Avatar img={postUser?.image} />
+            </Link>
+          )}
+          <div className="ml-4 w-full">
+            <h2 className="text-xl font-semibold">{title}</h2>
+            <div className="flex items-center space-x-2 mb-2">
+              {tags?.map((tag, index) => (
+                <Badge className="mr-2" key={index} color="info">
+                  #{tag}
+                </Badge>
+              ))}
+            </div>
+            <p className="text-gray-600 mb-4">{description}</p>
 
-      {/* Post time and like/dislike counts */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-        <p className="text-gray-500 my-2 text-sm">Posted: {timeAgo}</p>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+              <p className="text-gray-500 my-2 text-sm">Posted: {timeAgo}</p>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <AiOutlineLike size={20} className="text-blue-500" />
+                  <span className="ml-1 text-sm">{likes} Likes</span>
+                </div>
+                <div className="flex items-center">
+                  <AiOutlineDislike size={20} className="text-red-500" />
+                  <span className="ml-1 text-sm">{unlikes} Dislikes</span>
+                </div>
+              </div>
+            </div>
 
-        {/* Like/Dislike Count */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center">
-            <AiOutlineLike size={20} className="text-blue-500" />
-            <span className="ml-1 text-sm">{likes} Likes</span>
-          </div>
-          <div className="flex items-center">
-            <AiOutlineDislike size={20} className="text-red-500" />
-            <span className="ml-1 text-sm">{unlikes} Dislikes</span>
+            <div className="mt-4 my-4">
+              <ReactQuill
+                value={answer}
+                onChange={setAnswer}
+                placeholder="Write your answer here..."
+                theme="snow"
+                className="mb-4 p-2 my-2 custom-quill"
+                style={{ height: '150px' }}
+              />
+              <Button
+                className="bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l text-white w-full mt-16"
+                onClick={handleAnswerSubmit}
+              >
+                Submit Answer
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Add Answer Section */}
-      <div className="mt-4 my-4">
-        <ReactQuill
-          value={answer}
-          onChange={setAnswer}
-          placeholder="Write your answer here..."
-          theme="snow"
-          className="mb-4 p-2 my-2 custom-quill"
-          style={{ height: '150px' }}
-        />
-        {/* Gradient Blue Submit Button */}
-        <Button
-          className="bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l text-white w-full mt-4"
-          onClick={handleAnswerSubmit}
-        >
-          Submit Answer
-        </Button>
-      </div>
-    </div>
-  </div>
-</Card>
-
+      </Card>
 
       <div className="mb-6">
         <h3 className="text-xl font-semibold mb-6 text-gray-800">Answers</h3>
         {answers.length > 0 ? (
           answers.map((answer) => (
             <Card
-               className="mb-6 p-6 w-full bg-white shadow-lg border border-gray-200 rounded-lg"
+              className="mb-6 p-6 w-full bg-white shadow-lg border border-gray-200 rounded-lg"
               key={answer._id}
             >
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start w-full">
-                {/* Avatar and User Info */}
                 <div className="flex items-start w-full sm:w-auto">
                   <Avatar
                     img={answer.image || "https://randomuser.me/api/portraits/women/2.jpg"}
                     className="w-14 h-14 "
                   />
                   <div className="ml-5 w-full">
-                    <h4 className="font-medium text-blue-600 text-lg">{answer.user}</h4>
+                    <h4 className="font-medium text-blue-600 text-lg">{answer.userEmail}</h4>
                     <p className="text-gray-700 mb-4"><span className="text-xl font-bold">Answer: </span><span className="text-lg font-semibold text-gray">{answer.answer}</span></p>
                   </div>
                 </div>
-
-                {/* Answered Time on Top Right */}
                 <div className="sm:ml-auto mt-4 pt-4 sm:mt-0">
                   <p className="text-gray-500 text-sm">
                     Answered on {getTimeAgo(answer.createdAt)}
@@ -233,54 +234,39 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleLikeToggle(answer._id)}
-                    className={`flex items-center text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:opacity-80 focus:ring-4 focus:ring-blue-300 rounded-full px-4 py-2 text-sm transition-opacity
-                      ${answer.liked ? 'opacity-100' : 'opacity-60'}`}
+                    className={`flex items-center ${liked ? "text-blue-500" : "text-gray-500"} `}
                   >
-                    <AiOutlineLike className="mr-2" /> {answer.likes} Like
+                    <AiOutlineLike className="mr-1" size={20} />
+                    <span>{answer.likes?.length || 0}</span>
                   </button>
-
                   <button
                     onClick={() => handleUnlikeToggle(answer._id)}
-                    className={`flex items-center text-white bg-gradient-to-r from-pink-500 to-orange-400 hover:opacity-80 focus:ring-4 focus:ring-pink-300 rounded-full px-4 py-2 text-sm transition-opacity
-                      ${answer.unliked ? 'opacity-100' : 'opacity-60'}`}
+                    className={`flex items-center ${disliked ? "text-red-500" : "text-gray-500"} `}
                   >
-                    <AiOutlineDislike className="mr-2" /> {answer.unlikes} Dislike
+                    <AiOutlineDislike className="mr-1" size={20} />
+                    <span>{answer.unlikes?.length || 0}</span>
                   </button>
                 </div>
               </div>
 
-              {/* Add Comment Section */}
-              <div className="mt-6">
-                <form onSubmit={(e) => handleCommentSubmit(e, answer._id)}>
+              <div className="border-t pt-4 mt-4">
+                <form onSubmit={(e) => handleCommentSubmit(e, answer._id)} className="space-y-2">
                   <Textarea
                     name="comment"
-                    placeholder="Write your comment here..."
+                    placeholder="Add a comment..."
+                    required
                     rows={2}
-                    className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
                   />
-                  <div className="flex items-center justify-between">
-                    <button
-                      type="submit"
-                      className="text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full px-6 py-2 text-sm"
-                    >
-                      Submit Comment
-                    </button>
-                    <Link
-                      href={{ pathname: `/allcomments/${answer._id}`, query: { ref: url } }}
-                      className="text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-lime-200 font-medium rounded-full px-6 py-2 text-sm"
-                    >
-                      All Comments
-                    </Link>
-                  </div>
+                  <Button type="submit" className="bg-blue-500 text-white">Submit Comment</Button>
                 </form>
               </div>
             </Card>
           ))
         ) : (
-          <p className="text-gray-500">No answers yet.</p>
+          <p>No answers yet.</p>
         )}
       </div>
-  </div>
+    </div>
   );
 };
 
