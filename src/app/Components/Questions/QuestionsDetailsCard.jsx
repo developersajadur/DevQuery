@@ -43,8 +43,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   const { data: session } = useSession();
   const currentUserEmail = session?.user?.email || "";
   const currentUserImage = session?.user?.image || "";
-  const user = session?.user.email;
-  const image = session?.user?.image;
+  const currentUserName = session?.user?.name || "";
 
   const url = usePathname();
 
@@ -94,21 +93,38 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
       userEmail: currentUserEmail,
       image: currentUserImage
     };
-
+  
     if (!session?.user) {
       return router.push('/login');
     }
-
+  
     if (plainTextAnswer.trim() === "") {
       toast.error("Please write an answer before submitting.");
       return;
     }
-
+  
     try {
-      await axios.post('/questions/api/answeradd', answerData);
-      refetch();
-      toast.success("Your answer has been successfully submitted!");
-      setAnswer('');
+      const postAnswer = await axios.post('/questions/api/answeradd', answerData);
+      
+      const sentToData = {
+        questionUserEmail: questionDetails.userEmail,
+        type: "answer",
+        answerBy: currentUserEmail,
+        date: new Date().toISOString(),  
+        content: `${currentUserName} Answered Your Question`,
+        questionLink: `/questions/${questionDetails._id}`
+      };
+  
+      // Post the notification
+      const postNotification = await axios.post("/users/api/notifications/post", sentToData);
+      console.log(postNotification);
+      
+      if (postNotification.status === 200) {
+        refetch();  // Refresh the answers list
+        toast.success("Answer Successfully Submitted!");
+        setAnswer('');  // Clear the answer input
+      }
+  
     } catch (error) {
       console.error("Error submitting answer:", error);
       toast.error("An error occurred while submitting your answer.");
