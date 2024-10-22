@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { IoMenu, IoNotificationsOutline } from "react-icons/io5";
 import { UserNavLinks, AdminNavLinks } from "./NavigationLinks";
 import { TiMessages } from "react-icons/ti";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const Navbar = () => {
   const router = useRouter();
@@ -14,17 +16,24 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { data: session, status } = useSession();
-  const user = session?.user;
+  const userEmail = session?.user?.email;
   const [showAdminLinks, setShowAdminLinks] = useState(false);
+
+  // Fetch user by email
+  const { data: user } = useQuery({
+    queryKey: ["user", userEmail],
+    queryFn: () =>
+      axios.get(`/users/api/get-one?email=${userEmail}`).then((res) => res.data.user),
+    enabled: !!userEmail,
+  });
 
   const handleClose = () => setIsOpen(false);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim() !== "") {
-      if (pathname === "/" || pathname === "/questions") {
-        router.push(`${pathname}?search=${searchQuery}`);
-      }
+      const targetPath = pathname === "/" || pathname === "/questions" ? `${pathname}?search=${searchQuery}` : "/";
+      router.push(targetPath);
       handleClose();
     }
   };
@@ -33,12 +42,7 @@ const Navbar = () => {
     const newView = !showAdminLinks;
     setShowAdminLinks(newView);
     localStorage.setItem("showAdminLinks", JSON.stringify(newView));
-
-    if (newView) {
-      router.push("/dashboard");
-    } else {
-      router.push("/");
-    }
+    router.push(newView ? "/dashboard" : "/");
   };
 
   useEffect(() => {
@@ -53,7 +57,7 @@ const Navbar = () => {
   }, [user, status]);
 
   if (status === "loading") {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   return (
@@ -63,32 +67,22 @@ const Navbar = () => {
         <Link href="/" className="text-2xl font-bold text-white hover:text-gray-200 transition duration-300">
           DevQuery
         </Link>
-        <div className="hidden lg:flex items-center gap-6  absolute  left-[20%] text-lg text-white">
-          <Link href="/" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/" ? "text-blue-400" : ""}`}>
-            Home
-          </Link>
-          <Link href="/about" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/about" ? "text-blue-400" : ""}`}>
-            About Us
-          </Link>
-          <Link href="/blogs" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/blogs" ? "text-blue-400" : ""}`}>
-            Blogs
-          </Link>
-          <Link href="/contact" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/contact" ? "text-blue-400" : ""}`}>
-            Contact Us
-          </Link>
-          <Link href="/subscription" className={`hover:text-gray-200 font-bold transition duration-300 ${pathname === "/contact" ? "text-blue-400" : ""}`}>
-            Query Pro
-          </Link>
+        <div className="hidden lg:flex items-center gap-6 absolute left-[20%] text-lg text-white">
+          {["/", "/about", "/blogs", "/contact", "/subscription"].map((path, index) => (
+            <Link
+              href={path}
+              key={index}
+              className={`hover:text-gray-200 font-bold transition duration-300 ${
+                pathname === path ? "text-blue-400" : ""
+              }`}
+            >
+              {path === "/" ? "Home" : path.substring(1).charAt(0).toUpperCase() + path.substring(2)}
+            </Link>
+          ))}
         </div>
         <div className="flex items-center gap-6">
-     <form onSubmit={handleSearchSubmit} className="max-w-md mx-auto">
-            <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+          <form onSubmit={handleSearchSubmit} className="max-w-md mx-auto">
             <div className="relative lg:w-60">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                </svg>
-              </div>
               <input
                 type="search"
                 id="default-search"
@@ -98,7 +92,12 @@ const Navbar = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 required
               />
-              <button type="submit" className="text-white absolute inset-y-0 end-0 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg lg:rounded-l-none text-sm px-4 py-2">Search</button>
+              <button
+                type="submit"
+                className="text-white absolute inset-y-0 end-0 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg lg:rounded-l-none text-sm px-4 py-2"
+              >
+                Search
+              </button>
             </div>
           </form>
           <div className="flex items-center gap-4">
@@ -110,7 +109,7 @@ const Navbar = () => {
                 <button className="hover:bg-gray-200 rounded-full p-1 transition duration-300">
                   <IoNotificationsOutline className="text-2xl text-white hover:text-gray-200 transition duration-300" />
                 </button>
-                <Link href={`/users/${user.id}`} className="flex">
+                <Link href={`/users/${user._id}`}>
                   <Avatar img={user?.image || "/default-avatar.png"} />
                 </Link>
               </div>
@@ -118,7 +117,7 @@ const Navbar = () => {
               <Link href="/login">
                 <button
                   type="button"
-                  className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                  className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5"
                 >
                   Login
                 </button>
@@ -140,7 +139,7 @@ const Navbar = () => {
           <div className="flex items-center">
             {user ? (
               <div className="flex items-center gap-3">
-                <Link href={`/users/${user.id}`} className="flex">
+                <Link href={`/users/${user._id}`}>
                   <Avatar img={user?.image || "/default-avatar.png"} />
                 </Link>
                 <button className="hover:bg-gray-200 rounded-full p-1 transition duration-300">
@@ -154,7 +153,7 @@ const Navbar = () => {
               <Link href="/login">
                 <button
                   type="button"
-                  className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+                  className="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5"
                 >
                   Login
                 </button>
@@ -176,7 +175,9 @@ const Navbar = () => {
                           href={item.path}
                           key={item.path}
                           onClick={handleClose}
-                          className={`flex items-center gap-2 text-black hover:bg-blue-100 transition duration-300 p-2 rounded-lg ${pathname === item.path ? "bg-blue-100" : ""}`}
+                          className={`flex items-center gap-2 text-black hover:bg-blue-100 transition duration-300 p-2 rounded-lg ${
+                            pathname === item.path ? "bg-blue-100" : ""
+                          }`}
                         >
                           {item.icon && <span>{item.icon}</span>}
                           {item.title}
@@ -184,7 +185,10 @@ const Navbar = () => {
                       ))}
                     </div>
                     <div className="flex justify-start mt-2 px-5">
-                      <Button onClick={toggleView} className="bg-blue-500 text-white hover:bg-blue-600 transition duration-300">
+                      <Button
+                        onClick={toggleView}
+                        className="bg-blue-500 text-white hover:bg-blue-600 transition duration-300"
+                      >
                         {showAdminLinks ? "User View" : "Admin View"}
                       </Button>
                     </div>
@@ -197,7 +201,6 @@ const Navbar = () => {
 
         <div className="mt-3">
           <form onSubmit={handleSearchSubmit} className="max-w-md mx-auto">
-            <label htmlFor="mobile-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
             <div className="relative">
               <input
                 type="search"
@@ -208,7 +211,12 @@ const Navbar = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 required
               />
-              <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+              <button
+                type="submit"
+                className="text-white absolute inset-y-0 end-0 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2"
+              >
+                Search
+              </button>
             </div>
           </form>
         </div>

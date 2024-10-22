@@ -30,7 +30,7 @@ const QuestionsCard = ({ question }) => {
   const { data: session, status } = useSession();
   const userEmail = session?.user?.email;
   const questionId = question._id;
-
+ 
   const [liked, setLiked] = useState(false);
   const [unliked, setUnliked] = useState(false);
   const [likesCount, setLikesCount] = useState(question?.likes || 0);
@@ -38,7 +38,7 @@ const QuestionsCard = ({ question }) => {
   const [viewCount, setViewCount] = useState(question?.views || 0);
 
   // Fetch user by email
-  const { data: user2 } = useQuery({
+  const { data: user2, isLoading } = useQuery({
     queryKey: ['user', question.userEmail],
     queryFn: () => axios.get(`/users/api/get-one?email=${question?.userEmail}`).then(res => res.data.user),
     enabled: !!question.userEmail
@@ -91,7 +91,7 @@ const QuestionsCard = ({ question }) => {
     }
   };
 
-  if (status === "loading") {
+  if (status === "loading" || isLoading) {
     return <Loading />;
   }
 

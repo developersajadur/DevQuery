@@ -7,47 +7,44 @@ import { useRouter } from "next/navigation";
 
 export default function Chat() {
   const { data: session } = useSession();
-  const userID = session?.user?.id;
+  const userEmail = session?.user?.email; // Use email for identification
   const user = session?.user;
   const router = useRouter();
 
   // Destructure and provide default values for query parameters
   const { targetUserID = "", targetUserName = "", targetUserImage = "" } = router.query || {};
 
-  const [chatDetails, setChatDetails] = useState({
-    room: "",
-    targetUserID: "",
-    targetUserName: "",
-    targetUserImage: "",
+  // State for chat details
+  const [room, setRoom] = useState("");
+  const [targetUser, setTargetUser] = useState({
+    id: targetUserID,
+    name: targetUserName,
+    image: targetUserImage,
   });
 
   useEffect(() => {
-    if (userID && targetUserID) {
-      handleJoinRoom(targetUserID, targetUserName, targetUserImage);
+    if (userEmail && targetUserID) {
+      const newRoom = [userEmail, targetUserID].sort().join("-"); // Room is created using email
+      setRoom(newRoom);
+      setTargetUser({ id: targetUserID, name: targetUserName, image: targetUserImage });
     }
-  }, [userID, targetUserID, targetUserName, targetUserImage]);
-
-  const handleJoinRoom = (targetUserID, targetUserName, targetUserImage) => {
-    const newRoom = [userID, targetUserID].sort().join("-");
-    setChatDetails({
-      room: newRoom,
-      targetUserID,
-      targetUserName,
-      targetUserImage,
-    });
-  };
+  }, [userEmail, targetUserID, targetUserName, targetUserImage]);
 
   return (
     <div className="h-screen flex">
-      <ChatSidebar handleJoinRoom={handleJoinRoom} />
-      {chatDetails.room ? (
+      <ChatSidebar handleJoinRoom={(id, name, image) => {
+        const newRoom = [userEmail, id].sort().join("-"); // Room created on user email
+        setRoom(newRoom);
+        setTargetUser({ id, name, image });
+      }} />
+      {room ? (
         <ChatWindow
-          room={chatDetails.room}
-          currentUserID={userID}
+          room={room}
+          currentUserEmail={userEmail} // Pass email instead of ID
           currentUser={user}
-          targetUserName={chatDetails.targetUserName}
-          targetUserImage={chatDetails.targetUserImage}
-          targetUserID={chatDetails.targetUserID}
+          targetUserName={targetUser.name}
+          targetUserImage={targetUser.image}
+          targetUserID={targetUser.id}
         />
       ) : (
         <div className="w-3/4 flex items-center justify-center">
