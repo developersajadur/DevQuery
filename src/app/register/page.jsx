@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Button, FileInput } from "flowbite-react";
+import { Button } from "flowbite-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
@@ -11,12 +11,10 @@ import SocialSignIn from "../Components/Others/SocialSignIn";
 const Register = () => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [showPassword, setShowPassword] = useState(false);
-  const [imageFile, setImageFile] = useState(null); // State for image file
   const router = useRouter();
 
-  const imageHostingKey = process.env.NEXT_PUBLIC_IMAGE_HOSTING_KEY;
-  const imageHostingAPIUrl = `https://api.imgbb.com/1/upload?key=${imageHostingKey}`;
   const fetchUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/register/api/post`;
+  const defaultAvatar = "https://utfs.io/f/hl2tjro0eLTjUOYjocZdrVH9uezq0pt8Dgh6JUfQFEbXyNi4";
 
   // Password validation function
   const validatePassword = (password) => {
@@ -32,41 +30,33 @@ const Register = () => {
       return;
     }
 
-    // If no image is uploaded
-    if (!imageFile) {
-      toast.error("Profile image is required.");
-      return;
-    }
-
     try {
-      // Upload image to ImgBB
-      const formData = new FormData();
-      formData.append('image', imageFile); // Pass the selected image file
+      // Submit the form data
+      const userInfo = {
+        email: data.email,
+        name: data.name,
+        password: data.password,
+        createdAt: new Date(),
+        image:defaultAvatar,
+        role: "user",
+        status: "active",
+        country: "",
+        city: "",
+        phone: "",
+        gender: "",
+        website: "",
+        facebook: "",
+        github: "",
+        linkedin: "",
+        bio: "",
+      };
 
-      const imgRes = await axios.post(imageHostingAPIUrl, formData);
+      const res = await axios.post(fetchUrl, userInfo);
 
-      if (imgRes.data.success) {
-        const imageUrl = imgRes.data.data.url; // Get the image URL
-
-        // Submit the form with image URL
-        const userInfo = {
-          email: data.email,
-          name: data.name,
-          image: imageUrl, // Append image URL to data
-          password: data.password,
-          createdAt: new Date(),
-          role: "user",
-          status: "active",
-          chats: [],
-        };
-
-        const res = await axios.post(fetchUrl, userInfo);
-
-        if (res.status === 200) {
-          toast.success("Successfully registered!");
-          reset();
-          router.push("/login");
-        }
+      if (res.status === 200) {
+        toast.success("Successfully registered!");
+        reset();
+        router.push("/login");
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -110,19 +100,6 @@ const Register = () => {
               {...register('email', { required: true })}
             />
             {errors.email && <p className="text-red-500 text-xs mt-1">Email is required</p>}
-          </div>
-
-          {/* Image Upload Input */}
-          <div>
-            <label htmlFor="image" className="block mb-2 text-sm font-medium text-gray-900">
-              Profile Image
-            </label>
-            <FileInput
-              id="file-upload-helper-text"
-              helperText="Support PNG, JPG, and JPEG Files"
-              onChange={(e) => setImageFile(e.target.files[0])} // Set the selected image file
-            />
-            {errors.image && <p className="text-red-500 text-xs mt-1">Image is required</p>}
           </div>
 
           {/* Password Input */}
