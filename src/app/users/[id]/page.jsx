@@ -12,14 +12,13 @@ import 'react-tabs/style/react-tabs.css';
 import React, { useEffect, useState } from 'react';
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import { TiDelete } from "react-icons/ti";
 
 const ProfilePage = ({ params }) => {
   const { data: session } = useSession();
   const sessionEmail = session?.user?.email;
   const [data, setData] = useState([]);
   const bookUser = session?.user;
-  // console.log(bookUser.id);
-
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -39,6 +38,7 @@ const ProfilePage = ({ params }) => {
 
     fetchBook();
   }, [bookUser]);
+
 
   const {
     data: user,

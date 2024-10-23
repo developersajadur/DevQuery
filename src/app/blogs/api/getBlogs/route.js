@@ -1,4 +1,3 @@
-// app/api/blogs/getBlogs/route.js
 import { ConnectDB } from "@/lib/ConnectDB";
 import { NextResponse } from "next/server";
 
