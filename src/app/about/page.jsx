@@ -63,7 +63,7 @@ const AboutUs = () => {
       ];
 
   return (
-    <section className="bg-gray-100 text-gray-900 py-16">
+    <section className="bg-gray-100 text-gray-900 py-16"> 
       <div className="container mx-auto px-8 text-center">
         {/* About Us Section */}
         <div className="mb-16">

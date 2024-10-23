@@ -2,7 +2,7 @@ import { ConnectDB } from "@/lib/ConnectDB";
 import { NextResponse } from "next/server";
 
 // Change to GET to handle requests that fetch user data
-export const GET = async (request) => { 
+export const GET = async (request) => {  
   // Extract email from the query parameters
   const { searchParams } = new URL(request.url);
   const userEmail = searchParams.get("email"); // Get email from query parameters

@@ -1,6 +1,4 @@
 "use client";
-import { EmailJSResponseStatus } from '@emailjs/browser';
-import emailjs from '@emailjs/browser';
 import axios from 'axios';
 import Link from 'next/link';
 import React, { useState } from 'react';
