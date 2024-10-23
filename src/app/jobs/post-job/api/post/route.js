@@ -1,6 +1,6 @@
 import { ConnectDB } from "@/lib/ConnectDB"
 import { NextResponse } from "next/server";
-
+ 
 export const POST = async(request) => {
     const newJob = await request.json();
     const db = await ConnectDB();

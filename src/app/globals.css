@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 @import 'flowbite';
+@import "@uploadthing/react/styles.css";
+
 
 
 .custom-quill {
