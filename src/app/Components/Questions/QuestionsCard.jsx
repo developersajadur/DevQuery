@@ -28,6 +28,7 @@ const getTimeAgo = (createdAt) => {
 
 const QuestionsCard = ({ question }) => {
   const { data: session, status } = useSession();
+  const userId = session?.user?.id
   const userEmail = session?.user?.email;
   const questionId = question._id;
 
@@ -103,6 +104,7 @@ const QuestionsCard = ({ question }) => {
   const buttonForBookmark = async () => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
     const bookMark = {
+      userId,
       email: userEmail,
       questionId: question?._id,
       title: question?.title,

@@ -1,4 +1,3 @@
-// components/Blogs.jsx
 "use client"
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -78,29 +77,26 @@ const apiEndpoint = `${process.env.NEXT_PUBLIC_WEB_URL}/blogs/api/getBlogs`;
       <hr />            
             <div  className='space-y-6 mt-5'>
                 {blogs.map((blog) => (
-                   <div key={blog._id}>
-                    <div className=' px-8 my-2 border-b-2 pb-4 rounded-b w-full'>
-                        <h1 className='text-xl font-bold text-center'>{blog.title}</h1>
-                       <p className='text-xl text-center font-semibold text-blue-600 my-4'>{blog.author}</p>
-                        <Image src={blog?.image || "Not support"} 
-                        className='text-center'
-                          alt="Description of the image"
-                          width={700}
-                          height={475}
-                          style={{ width: '100%',}} // Replace with the actual height of the image
-                        />
-                        <p className='mt-4'>{blog.description}</p>
-                        <Link href={`/blogs/${blog._id}`}><button className='hover:underline'>Read more</button></Link>
-                        {/* <div className='flex items-center gap-4'> */}
-                            {/* {blog.tags.map((tag,index)=>
-                            (
-                               <Badge key={index}>#{tag}</Badge>
-                            )
-                            )} */}
-                        {/* </div> */}
+                    <div key={blog._id} className='border-b-2 border-blue-500 pb-4'>
+                    <Image
+                      src={blog?.image || "/placeholder.jpg"} // Use a placeholder image if none provided
+                      className='w-full h-64 object-cover mb-4' // Increased height of the image
+                      alt="Description of the image"
+                      width={700}
+                      height={475}
+                    />
+                    <h2 className='text-2xl font-bold mb-2'>{blog.title}</h2>
+                    <p className='text-gray-600 font-semibold mb-4'>{blog.author}</p>
+                    <p className='text-gray-700 mb-4'>{blog.description}</p>
+                    <Link href={`/blogs/${blog._id}`}>
+                      <button className='text-blue-500 underline'>Read more</button>
+                    </Link>
+                    <div className='flex flex-wrap gap-2 mt-4'>
+                      {blog.tags.map((tag, index) => (
+                        <Badge key={index} color="info">#{tag}</Badge>
+                      ))}
                     </div>
-                    {/* <hr /> */}
-                   </div>
+                  </div>
                 ))}
             </div>
 

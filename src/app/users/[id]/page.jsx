@@ -18,6 +18,8 @@ const ProfilePage = ({ params }) => {
   const sessionEmail = session?.user?.email;
   const [data, setData] = useState([]);
   const bookUser = session?.user;
+  // console.log(bookUser?.email);
+  
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -37,6 +39,7 @@ const ProfilePage = ({ params }) => {
 
     fetchBook();
   }, [bookUser]);
+
 
   const {
     data: user,
