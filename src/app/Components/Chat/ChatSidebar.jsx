@@ -1,34 +1,28 @@
 "use client"; // Indicates this is a client component
 import { Avatar } from 'flowbite-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import Loading from '../Loading/Loading';
 
+const DEFAULT_AVATAR = "/default-avatar.png";
+
 export default function ChatSidebar({ handleJoinRoom }) {
-  const [state, setState] = useState({
-    users: [],
-    searchTerm: "",
-    loading: true,
-    error: null,
-  });
+  const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Fetch users from the API on component mount
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB_URL}/users/api/get`);
-        setState((prevState) => ({
-          ...prevState,
-          users: response.data.users,
-          loading: false,
-        }));
+        setUsers(response.data.users);
       } catch (err) {
         console.error("Error fetching users:", err);
-        setState((prevState) => ({
-          ...prevState,
-          error: "Failed to fetch users.",
-          loading: false,
-        }));
+        setError("Failed to fetch users.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchUsers();
@@ -36,16 +30,15 @@ export default function ChatSidebar({ handleJoinRoom }) {
 
   // Handle input changes for the search bar
   const handleSearchChange = (e) => {
-    setState((prevState) => ({
-      ...prevState,
-      searchTerm: e.target.value,
-    }));
+    setSearchTerm(e.target.value);
   };
 
-  // Filter users based on the search term
-  const filteredUsers = state.users.filter(user =>
-    user.name?.toLowerCase().includes(state.searchTerm.toLowerCase())
-  );
+  // Filter users based on the search term using useMemo
+  const filteredUsers = useMemo(() => {
+    return users.filter(user =>
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [users, searchTerm]);
 
   return (
     <div className="w-1/3 bg-gray-100 p-4 flex flex-col h-full">
@@ -53,31 +46,29 @@ export default function ChatSidebar({ handleJoinRoom }) {
         <input
           type="text"
           placeholder="Search Users"
-          value={state.searchTerm}
+          value={searchTerm}
           onChange={handleSearchChange}
           className="border rounded-lg p-2 w-full"
         />
       </div>
-      {state.loading && <Loading />}
-      {state.error && <p className="text-red-500">{state.error}</p>}
+      {loading && <Loading />}
+      {error && <p className="text-red-500">{error}</p>}
       <div className="flex-grow overflow-y-auto">
         {filteredUsers.length > 0 ? (
-          filteredUsers.map((user, idx) => (
+          filteredUsers.map((user) => (
             <div 
-              key={idx} 
+              key={user.email}  // Use user email as key for better performance
               className={`flex items-center mb-4 p-2 cursor-pointer border-b-[1px] ${user?.active ? 'bg-blue-100' : ''}`} 
-              onClick={() => handleJoinRoom(user._id, user.name, user?.image)}
+              onClick={() => handleJoinRoom(user.email, user.name, user?.image)} // Pass email instead of ID
             >
-              <Avatar img={user?.image || "/default-avatar.png"} rounded={true} size="md" />
+              <Avatar img={user?.image || DEFAULT_AVATAR} rounded={true} size="md" />
               <div className="ml-3">
                 <p className="font-bold">{user?.name || "Unknown"}</p>
-                {/* Optionally display last message or any other user information */}
-                {/* <p className="text-sm text-gray-500">{user?.lastMessage || "No recent messages"}</p> */}
               </div>
             </div>
           ))
         ) : (
-          !state.loading && <p>No users found.</p>
+          !loading && <p>No users found.</p>
         )}
       </div>
     </div>

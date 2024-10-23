@@ -35,7 +35,7 @@ export const authOptions = {
         if (!bcryptPasswordMatch) {
           throw new Error("Wrong Password");
         }
-        if(currentUser.status === "blocked"){
+        if (currentUser.status === "blocked") {
           throw new Error("Your account is blocked");
         }
 
@@ -52,23 +52,14 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    // Modify the jwt callback to include the user role in the token
+    // Remove the user ID and role from the token
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user._id;
-        token.role = user.role; // Add the role to the token
-      }
-      return token;
+      // If the user object is present, you can store any other data you want in the token if needed
+      return token; // Return token without user ID and role
     },
-    // Include the role in the session
+    // Include the session data without the role
     async session({ session, token }) {
-      if (token?.id) {
-        session.user.id = token.id;
-      }
-      if (token?.role) {
-        session.user.role = token.role; // Add the role to the session
-      }
-      return session;
+      return session; // Return session without modifications
     },
     async signIn({ user, account }) {
       if (account.provider === "google" || account.provider === "github") {

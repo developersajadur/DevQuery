@@ -28,7 +28,7 @@ export const POST = async (request) => {
   const { userId, questionId } = bookMark;
 
   // Validate incoming data
-  if (!userId || !questionId) {
+  if (!questionId) {
     return NextResponse.json(
       { message: "userId and questionId are required." },
       { status: 400 } // Bad Request

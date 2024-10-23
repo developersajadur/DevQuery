@@ -4,7 +4,7 @@ import { Avatar, Button, Card, Textarea } from 'flowbite-react';
 import { useEffect, useState } from 'react';
 import { AiOutlineDislike, AiOutlineLike } from 'react-icons/ai';
 
-const AnswerCard = ({ questionDetails }) => {
+const AnswerCard = ({ questionDetails }) => {  
   const [comment, setComment] = useState("");
   const [answers, setAnswers] = useState([]); // Store answers
 
@@ -37,7 +37,7 @@ const AnswerCard = ({ questionDetails }) => {
 
   const handleCommentSubmit = () => {
     // console.log("Submitted Comment:", comment);
-    setComment(""); // Clear input after submission
+    setComment("");
   };
 
   return (

@@ -5,27 +5,26 @@ import io from "socket.io-client";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../Loading/Loading";
-import { useSession } from "next-auth/react";
 
 let socket;
 
 const WEB_SOCKET_API_URL = process.env.NEXT_PUBLIC_WEB_SOCKET_API_URL;
 const NEXT_PUBLIC_WEB_URL = process.env.NEXT_PUBLIC_WEB_URL;
 
-export default function ChatWindow({ currentUserID, targetUserName, targetUserID, targetUserImage }) {
+export default function ChatWindow({ currentUserEmail, targetUserName, targetUserID, targetUserImage }) {
   const [room, setRoom] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     if (targetUserID) {
-      const newRoom = generateRoomID(currentUserID, targetUserID);
+      const newRoom = generateRoomID(currentUserEmail, targetUserID);
       setRoom(newRoom);
       setMessages([]); // Clear messages when switching users
     } else {
       setMessages([]);
     }
-  }, [currentUserID, targetUserID]);
+  }, [currentUserEmail, targetUserID]);
 
   useEffect(() => {
     if (!room) return;
@@ -41,7 +40,7 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
     socket.on("message", (msgData) => {
       setMessages((prevMessages) => {
         if (!prevMessages.some(msg => msg.time === msgData.time && msg.text === msgData.text)) {
-          return [...prevMessages, msgData];
+          return [...prevMessages, msgData].sort((a, b) => new Date(a.time) - new Date(b.time)); // Sort messages by time
         }
         return prevMessages;
       });
@@ -59,8 +58,8 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
       if (!room) return [];
       const response = await axios.get(`${NEXT_PUBLIC_WEB_URL}/chat/api/get/sender-messages`, {
         params: {
-          userId: currentUserID,
-          participantId: targetUserID,
+          userEmail: currentUserEmail,
+          participantEmail: targetUserID,
         },
       });
       return response.data.messages;
@@ -75,8 +74,8 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
       if (!room) return [];
       const response = await axios.get(`${NEXT_PUBLIC_WEB_URL}/chat/api/get/receiver-messages`, {
         params: {
-          participantId: currentUserID,
-          userId: targetUserID,
+          participantEmail: currentUserEmail,
+          userEmail: targetUserID,
         },
       });
       return response.data.messages;
@@ -84,38 +83,45 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
     enabled: !!room,
   });
 
+  // Combine and sort sender and receiver chat histories
+  useEffect(() => {
+    if (!isSenderLoading && !isReceiverLoading) {
+      const combinedMessages = [...senderChatHistory, ...receiverChatHistory].sort((a, b) => new Date(a.time) - new Date(b.time));
+      setMessages(combinedMessages); // Set the combined and sorted messages
+    }
+  }, [senderChatHistory, receiverChatHistory, isSenderLoading, isReceiverLoading]);
+
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (message.trim() && room) {
       const msgData = {
         room,
+        userEmail: currentUserEmail,
+        participantEmail: targetUserID,
         text: message,
         time: new Date().toISOString(),
-        sender: currentUserID,
-        userId: currentUserID,
-        participantId: targetUserID,
       };
 
       socket.emit("message", msgData);
-      setMessages((prevMessages) => [...prevMessages, msgData]);
+      setMessages((prevMessages) => [...prevMessages, msgData].sort((a, b) => new Date(a.time) - new Date(b.time)));
       setMessage(""); // Clear the input field
     }
   };
 
-  const generateRoomID = (userID1, userID2) => {
-    return [userID1, userID2].sort().join("_");
+  const generateRoomID = (userEmail1, userEmail2) => {
+    return [userEmail1, userEmail2].sort().join("_");
   };
 
-  // Function to format date
+  // Format date
   const formatDate = (date) => {
-    return new Intl.DateTimeFormat('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     }).format(new Date(date));
   };
 
-  // Function to group messages by date
+  // Group messages by date
   const groupMessagesByDate = (messages) => {
     const groups = messages.reduce((acc, msg) => {
       const messageDate = new Date(msg.time).toDateString();
@@ -137,14 +143,14 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
       <div className="flex flex-col space-y-4 overflow-y-auto flex-grow">
         {(isSenderLoading || isReceiverLoading) && <Loading />}
         {!isSenderLoading && !isReceiverLoading &&
-          groupMessagesByDate([...senderChatHistory, ...receiverChatHistory, ...messages]).map((group, index) => (
+          groupMessagesByDate(messages).map((group, index) => (
             <div key={index}>
               <p className="text-center text-gray-500 my-2">{formatDate(group.date)}</p>
               {group.messages.map((msg, idx) => (
                 <UserMessage
                   key={`msg-${idx}`}
                   msg={msg}
-                  currentUserID={currentUserID}
+                  currentUserEmail={currentUserEmail}
                   targetUserName={targetUserName}
                   targetUserImage={targetUserImage}
                 />
@@ -169,12 +175,10 @@ export default function ChatWindow({ currentUserID, targetUserName, targetUserID
   );
 }
 
-function UserMessage({ msg, currentUserID, targetUserName, targetUserImage }) {
-  const {data: session} = useSession()
-  const currentUserImage = session.user.image
-  const isCurrentUser = msg.sender === currentUserID;
+function UserMessage({ msg, currentUserEmail, targetUserName, targetUserImage }) {
+  const isCurrentUser = msg.userEmail === currentUserEmail;
   const displayName = isCurrentUser ? "You" : targetUserName || "Unknown";
-  const userImage = isCurrentUser ? (currentUserImage) : (targetUserImage);
+  const userImage = targetUserImage;
 
   return (
     <div className={`flex items-start ${isCurrentUser ? "justify-end" : "justify-start"}`}>
