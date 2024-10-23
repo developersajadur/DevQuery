@@ -43,27 +43,26 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   const { data: session } = useSession();
   const currentUserEmail = session?.user?.email || "";
   const currentUserImage = session?.user?.image || "";
-  const user = session?.user.email;
-  const image = session?.user?.image;
+  const currentUserName = session?.user?.name || "";
 
   const url = usePathname();
 
   const timeAgo = getTimeAgo(questionDetails?.createdAt);
-  const { title, description, tags } = questionDetails;
+  const { title, description, tags, likes, unlikes } = questionDetails;
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Fetch post user details
+  // Fetch post user details by email
   const { data: postUser, isLoading: loadingUser, error: userError } = useQuery({
-    queryKey: ['user', questionDetails?.userId], // Fixed reference to questionDetails
+    queryKey: ['user', questionDetails?.userEmail],
     queryFn: async () => {
-      if (!questionDetails?.userId) return null; // Avoid unnecessary API call
-      const response = await axios.get(`/users/api/get-one?userId=${questionDetails?.userId}`);
+      if (!questionDetails?.userEmail) return null;
+      const response = await axios.get(`/users/api/get-one?email=${questionDetails?.userEmail}`);
       return response.data.user;
     },
-    enabled: !!questionDetails?.userId // Only fetch if userId is available
+    enabled: !!questionDetails?.userEmail
   });
 
   // Fetch answers for the question
@@ -73,37 +72,52 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
       const response = await axios.get(`/questions/api/getanswer?question_id=${questionDetails._id}`);
       return response.data.answers;
     },
-    enabled: !!questionDetails._id, // Enable the query only if questionDetails._id is available
+    enabled: !!questionDetails._id
   });
 
-  const handleLike = () => {
-    setLiked(!liked);
-    if (disliked) setDisliked(false);
-  };
-
-  const handleDislike = () => {
-    setDisliked(!disliked);
-    if (liked) setLiked(false);
-  };
+  
 
   const handleAnswerSubmit = async () => {
     const plainTextAnswer = stripHtml(answer);
-    const answerData = { ans: plainTextAnswer, question_id: questionDetails._id, user: currentUserEmail, image: currentUserImage };
-
+    const answerData = {
+      ans: plainTextAnswer,
+      question_id: questionDetails._id,
+      userEmail: currentUserEmail,
+      image: currentUserImage
+    };
+  
     if (!session?.user) {
       return router.push('/login');
     }
-
+  
     if (plainTextAnswer.trim() === "") {
       toast.error("Please write an answer before submitting.");
       return;
     }
-
+  
     try {
-      await axios.post('/questions/api/answeradd', answerData);
-      refetch(); 
-      toast.success("Your answer has been successfully submitted!");
-      setAnswer('');
+      const postAnswer = await axios.post('/questions/api/answeradd', answerData);
+      if (postAnswer.status === 200) {
+        const sentToData = {
+          questionUserEmail: questionDetails.userEmail,
+          type: "answer",
+          answerBy: currentUserEmail,
+          date: new Date().toISOString(),  
+          content: `${currentUserName} Answered Your Question`,
+          questionLink: `/questions/${questionDetails._id}` 
+        };
+    
+        // Post the notification
+        const postNotification = await axios.post("/users/api/notifications/post", sentToData);
+        console.log(postNotification);
+        
+        if (postNotification.status === 200) {
+          refetch();  // Refresh the answers list
+          toast.success("Answer Successfully Submitted!");
+          setAnswer('');  // Clear the answer input
+        }
+      }      
+  
     } catch (error) {
       console.error("Error submitting answer:", error);
       toast.error("An error occurred while submitting your answer.");
@@ -115,15 +129,30 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     const formData = new FormData(e.target);
     const comment = formData.get('comment');
 
-    const com = { comment, user, image, answerId }; 
+    const sendCommentData = { comment, currentUserEmail, answerId }; 
 
     try {
-      const response = await axios.post('/questions/api/addcomments', com);
+      const response = await axios.post('/questions/api/addcomments', sendCommentData);
       if (response.status === 201) {
+        const sentToData = {
+          questionUserEmail: questionDetails.userEmail,
+          type: "comment",
+          answerBy: currentUserEmail,
+          date: new Date().toISOString(),  
+          content: `${currentUserName} Comment Your Question`,
+          questionLink: `/questions/${questionDetails._id}`
+        };
+    
+        // Post the notification
+        const postNotification = await axios.post("/users/api/notifications/post", sentToData);
+        
+        if (postNotification.status === 200) {
+          refetch();  
         toast.success("Comment added successfully!");
-        e.target.reset(); 
+        e.target.reset();
         setLoading(false);
-      }
+        }
+      }  
     } catch (error) {
       console.error("Error submitting comment:", error);
       toast.error("Something went wrong!");
@@ -142,30 +171,38 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
     <div>
       <Card className="mb-6">
         <div className="flex items-start">
-          {loadingUser ? <Loading /> :<Link href={`/users/${postUser?._id}`}> <Avatar img={postUser?.image} /> </Link>}
+          {loadingUser ? (
+            <Loading />
+          ) : (
+            <Link href={`/users/${postUser?.email}`}>
+              <Avatar img={postUser?.image} />
+            </Link>
+          )}
           <div className="ml-4 w-full">
             <h2 className="text-xl font-semibold">{title}</h2>
             <div className="flex items-center space-x-2 mb-2">
               {tags?.map((tag, index) => (
-                <Badge className="mr-2" key={index} color="info">#{tag}</Badge>
+                <Badge className="mr-2" key={index} color="info">
+                  #{tag}
+                </Badge>
               ))}
             </div>
             <p className="text-gray-600 mb-4">{description}</p>
+
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
               <p className="text-gray-500 my-2 text-sm">Posted: {timeAgo}</p>
-              <div className="flex items-center">
-                <Button.Group>
-                  <Button color="light" onClick={handleLike}>
-                    <AiOutlineLike size={20} className={`${liked ? "text-blue-500" : ""}`} /> Like
-                  </Button>
-                  <Button color="light" onClick={handleDislike}>
-                    <AiOutlineDislike size={20} className={`${disliked ? "text-red-500" : ""}`} /> Dislike
-                  </Button>
-                </Button.Group>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <AiOutlineLike size={20} className="text-blue-500" />
+                  <span className="ml-1 text-sm">{likes} Likes</span>
+                </div>
+                <div className="flex items-center">
+                  <AiOutlineDislike size={20} className="text-red-500" />
+                  <span className="ml-1 text-sm">{unlikes} Dislikes</span>
+                </div>
               </div>
             </div>
 
-            {/* Add Answer Section */}
             <div className="mt-4 my-4">
               <ReactQuill
                 value={answer}
@@ -175,7 +212,10 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
                 className="mb-4 p-2 my-2 custom-quill"
                 style={{ height: '150px' }}
               />
-              <Button className="bg-blue-600 mt-4 text-white w-full" onClick={handleAnswerSubmit}>
+              <Button
+                className="bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l text-white w-full mt-16"
+                onClick={handleAnswerSubmit}
+              >
                 Submit Answer
               </Button>
             </div>
@@ -183,61 +223,65 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
         </div>
       </Card>
 
-      <div>
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-4">Answers</h3>
-          {answers.length > 0 ? (
-            answers.map((answer) => (
-              <Card className="mb-4" key={answer._id}>
-                <div className="flex items-start">
-                  <Avatar img={answer.image || "https://randomuser.me/api/portraits/women/2.jpg"} />
-                  <div className="ml-4 w-full">
-                    <h4 className="font-medium">{answer.user}</h4>
-                    <p className="text-gray-600 mt-1 mb-2">{answer.answer}</p>
-                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-                      <p className="text-gray-500 text-sm">Answered on {getTimeAgo(answer.createdAt)}</p>
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold mb-6 text-gray-800">Answers</h3>
+        {answers.length > 0 ? (
+          answers.map((answer) => (
+            <Card
+            className="mb-6 p-6 w-full bg-white shadow-lg border border-gray-200 rounded-lg"
+           key={answer._id}
+         >
+           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start w-full">
+             {/* Avatar and User Info */}
+             <div className="flex items-start w-full sm:w-auto">
+               <Avatar
+                 img={answer.image || "https://randomuser.me/api/portraits/women/2.jpg"}
+                 className="w-14 h-14 "
+               />
+               <div className="ml-5 w-full">
+                 <h4 className="font-medium text-blue-600 text-lg">{answer.user}</h4>
+                 <p className="text-gray-700 mb-4"><span className="text-xl font-bold">Answer: </span><span className="text-lg font-semibold text-gray">{answer.answer}</span></p>
+               </div>
+             </div>
 
-                      <div className="flex items-center">
-                        <Button.Group>
-                          <Button color="light">
-                            <AiOutlineLike size={20} /> {answer.likes} Like
-                          </Button>
-                          <Button color="light">
-                            <AiOutlineDislike size={20} /> {answer.unlikes} Dislike
-                          </Button>
-                        </Button.Group>
-                      </div>
-                    </div>
+             {/* Answered Time on Top Right */}
+             <div className="sm:ml-auto mt-4 pt-4 sm:mt-0">
+               <p className="text-gray-500 text-sm">
+                 Answered on {getTimeAgo(answer.createdAt)}
+               </p>
+             </div>
+           </div>
 
-                    {/* Add Comment Section for Each Answer */}
-                    <div className="mt-4">
-                      <form onSubmit={(e) => handleCommentSubmit(e, answer._id)}>
-                        <Textarea
-                          name="comment"
-                          placeholder="Write your comment here..."
-                          rows={2}
-                          className="mb-4"
-                        />
-                        <div className='flex items-center justify-between px-2 my-3'>
-                          <Button type="submit" className="bg-blue-600 text-white">
-                            Submit Comment
-                          </Button>
-                          <Link
-                            href={{ pathname: `/allcomments/${answer._id}`, query: { ref: url } }}
-                          >
-                            <p className='underline'>All comments</p>
-                          </Link>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))
-          ) : (
-            <p>No answers yet.</p>
-          )}
-        </div>
+           {/* Add Comment Section */}
+           <div className="mt-6">
+             <form onSubmit={(e) => handleCommentSubmit(e, answer._id)}>
+               <Textarea
+                 name="comment"
+                 placeholder="Write your comment here..."
+                 rows={2}
+                 className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
+               />
+               <div className="flex items-center justify-between ">
+                 <button
+                   type="submit"
+                   className="text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full px-6 py-2 text-sm"
+                 >
+                   Submit Comment
+                 </button>
+                 <Link
+                   href={{ pathname: `/allcomments/${answer._id}`, query: { ref: url } }}
+                   className="text-gray-900 bg-gradient-to-r from-blue-500 to-blue-600 hover:bg-gradient-to-l focus:ring-4 focus:outline-blue focus:ring-blue -200 font-medium rounded-full px-6 py-2 text-sm"
+                 >
+                   All Comments
+                 </Link>
+               </div>
+             </form>
+           </div>
+         </Card>
+          ))
+        ) : (
+          <p>No answers yet.</p>
+        )}
       </div>
     </div>
   );

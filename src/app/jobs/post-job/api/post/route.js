@@ -7,7 +7,7 @@ export const POST = async(request) => {
     const jobCollections = await db.collection("jobs");
     try {
         const result = await jobCollections.insertOne(newJob);
-        return NextResponse.json({massage: "Job Post Succesfully"})
+        return NextResponse.json({massage: "Job Post Succesfully"}) 
     } catch (error) {
         console.error("Error inserting job posting:", error); 
 

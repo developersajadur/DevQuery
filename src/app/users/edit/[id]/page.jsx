@@ -6,9 +6,12 @@ import { toast } from "react-hot-toast";
 import Loading from "@/app/Components/Loading/Loading";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { FaUser } from "react-icons/fa";
+import { FaMapMarkerAlt, FaCity, FaPhone, FaGlobe, FaEnvelope } from 'react-icons/fa';
+import { FaFacebook, FaGithub, FaLinkedin } from 'react-icons/fa';
 
-const UserUpdateForm = ({params}) => {
-//   const { data: session, update } = useSession();
+const UserUpdateForm = ({ params }) => {
+  //   const { data: session, update } = useSession();
   const [imageFile, setImageFile] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
@@ -68,7 +71,7 @@ const UserUpdateForm = ({params}) => {
       };
 
       const response = await axios.patch(`/users/api/patch`, userInfo);
-      
+
       if (response.status === 200) {
         toast.success("Profile updated successfully!");
         router.push(`/users/${params.id}`); // Redirect to the user's profile page after successful update
@@ -79,7 +82,7 @@ const UserUpdateForm = ({params}) => {
       }
     } catch (error) {
       console.error(error);
-    //   toast.error("Something went wrong. Please try again.");
+      //   toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -88,6 +91,18 @@ const UserUpdateForm = ({params}) => {
       <div className="bg-white shadow-md w-full md:w-3/4 lg:w-1/2 p-6 rounded-lg my-8">
         <h1 className="text-2xl font-bold mb-4">Update Profile</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
+
+          <div>
+            <label className="block text-gray-600 mb-1">Display Name</label>
+            <div className="flex items-center border border-gray-300 rounded-md">
+              <FaUser className="text-xl w-10 text-gray-400" />
+              <input
+                type="text"
+                placeholder="First Name"
+                className="w-full p-2 outline-none rounded-r-md"
+              />
+            </div>
+          </div>
 
           {/* Profile Image Upload Input */}
           <div>
@@ -101,37 +116,118 @@ const UserUpdateForm = ({params}) => {
             />
           </div>
 
-          {/* Name Input */}
+          {/* Country Field */}
           <div>
-            <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="Your Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <label className="block text-gray-600 mb-1">Country</label>
+            <div className="flex items-center border border-gray-300 rounded-md">
+              <span className="px-3 text-gray-400">
+                <FaMapMarkerAlt />
+              </span>
+              <select className="w-full p-2 outline-none rounded-r-md">
+                <option>Select a country...</option>
+                {/* Add more country options here */}
+              </select>
+            </div>
           </div>
 
-          {/* Email Input */}
+          {/* City Field */}
           <div>
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-              placeholder="name@company.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <label className="block text-gray-600 mb-1">City</label>
+            <div className="flex items-center border border-gray-300 rounded-md">
+              <span className="px-3 text-gray-400">
+                <FaCity />
+              </span>
+              <input type="text" placeholder="City" className="w-full p-2 outline-none rounded-r-md" />
+            </div>
           </div>
 
-          {/* Password Input */}
+          {/* Phone Field */}
+          <div>
+            <label className="block text-gray-600 mb-1">Phone</label>
+            <div className="flex items-center border border-gray-300 rounded-md">
+              <span className="px-3 text-gray-400">
+                <FaPhone />
+              </span>
+              <input type="text" placeholder="Phone" className="w-full p-2 outline-none rounded-r-md" />
+            </div>
+          </div>
+
+          {/* Gender Field */}
+          <div>
+            <label className="block text-gray-600 mb-1">Gender</label>
+            <div className="flex items-center space-x-4">
+              <label className="flex items-center">
+                <input type="radio" name="gender" className="mr-2" />
+                Male
+              </label>
+              <label className="flex items-center">
+                <input type="radio" name="gender" className="mr-2" />
+                Female
+              </label>
+            </div>
+          </div>
+
+          {/* Age Field */}
+          <div>
+            <label className="block text-gray-600 mb-1">Age</label>
+            <div className="flex items-center border border-gray-300 rounded-md">
+              <span className="px-3 text-gray-400">
+                <FaGlobe />
+              </span>
+              <input type="number" placeholder="Age" className="w-full p-2 outline-none rounded-r-md" />
+            </div>
+          </div>
+
+          {/* Email Field */}
+          <div>
+            <label className="block text-gray-600 mb-1">E-Mail <span className="text-red-500">*</span></label>
+            <div className="flex items-center border border-gray-300 rounded-md">
+              <span className="px-3 text-gray-400">
+                <FaEnvelope />
+              </span>
+              <input type="email" placeholder="Email" defaultValue="theashrafulislam@gmail.com" className="w-full p-2 outline-none rounded-r-md" />
+            </div>
+          </div>
+
+          {/* Facebook Field */}
+          <div>
+            <label className="block text-gray-600 mb-1">Facebook (Put the full URL)</label>
+            <div className="flex items-center border border-gray-300 rounded-md">
+              <span className="px-3 text-gray-400">
+                <FaFacebook />
+              </span>
+              <input type="text" placeholder="https://facebook.com/your-profile" className="w-full p-2 outline-none rounded-r-md" />
+            </div>
+          </div>
+
+          {/* GitHub Field */}
+          <div>
+            <label className="block text-gray-600 mb-1">GitHub (Put the full URL)</label>
+            <div className="flex items-center border border-gray-300 rounded-md">
+              <span className="px-3 text-gray-400">
+                <FaGithub />
+              </span>
+              <input type="text" placeholder="https://github.com/your-username" className="w-full p-2 outline-none rounded-r-md" />
+            </div>
+          </div>
+
+          {/* LinkedIn Field */}
+          <div>
+            <label className="block text-gray-600 mb-1">LinkedIn (Put the full URL)</label>
+            <div className="flex items-center border border-gray-300 rounded-md">
+              <span className="px-3 text-gray-400">
+                <FaLinkedin />
+              </span>
+              <input type="text" placeholder="https://linkedin.com/in/your-profile" className="w-full p-2 outline-none rounded-r-md" />
+            </div>
+          </div>
+
+          {/* Bio Field */}
+          <div>
+            <label className="block text-gray-600 mb-1">Bio</label>
+            <textarea placeholder="Write a short bio..." className="w-full p-2 border border-gray-300 rounded-md outline-none resize-none h-24"></textarea>
+          </div>
+
           <div>
             <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">
               Password
@@ -141,7 +237,7 @@ const UserUpdateForm = ({params}) => {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                placeholder="••••••••"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -157,6 +253,23 @@ const UserUpdateForm = ({params}) => {
               Must contain 8+ characters, including at least 1 letter and 1 number.
             </p>
           </div>
+
+
+          {/* Email Input
+          <div>
+            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              placeholder="name@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div> */}
+
 
           {/* Submit Button */}
           <Button

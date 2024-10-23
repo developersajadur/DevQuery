@@ -4,10 +4,10 @@ import { NextResponse } from 'next/server';
 export const POST = async (req) => {
   try {
     // Parse the request body
-    const { comment, user, image, answerId } = await req.json();
+    const { comment, currentUserEmail, answerId } = await req.json();
 
     // Ensure required fields are present
-    if (!comment || !user || !answerId) {
+    if (!comment || !currentUserEmail || !answerId) { 
       return NextResponse.json({
         message: 'Missing required fields',
       }, { status: 400 });
@@ -22,11 +22,8 @@ export const POST = async (req) => {
     // Insert the new comment into the collection
     const result = await commentsCollection.insertOne({
       comment:comment,
-      user: user,
-      image: image || null,  
+      user: currentUserEmail,
       answer_id:answerId, 
-      likes:0,
-      unlikes:0,
       createdAt: new Date(),  // Add timestamp
     });
 

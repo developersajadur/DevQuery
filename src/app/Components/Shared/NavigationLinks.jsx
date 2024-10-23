@@ -5,29 +5,30 @@ import { FaHome, FaUsers } from "react-icons/fa";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { MdOutlineCardTravel, MdOutlineDashboard } from "react-icons/md";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { useRouter } from "next/navigation";
+import axios from "axios"; // Ensure axios is imported
+import { useQuery } from "@tanstack/react-query";
 
-// User and Admin navigation links with stickers
 export const UserNavLinks = [
   {
     title: "Home",
     path: "/",
-    icon: <FaHome className="text-xl text-blue-500" />, // Add color
+    icon: <FaHome className="text-xl text-blue-500" />,
   },
   {
     title: "Questions",
     path: "/questions",
-    icon: <BsPatchQuestionFill className="text-xl text-green-500" />, // Add color
+    icon: <BsPatchQuestionFill className="text-xl text-green-500" />,
   },
   {
     title: "Users",
     path: "/users",
-    icon: <FaUsers className="text-xl text-red-500" />, // Add color
+    icon: <FaUsers className="text-xl text-red-500" />,
   },
   {
     title: "Jobs",
     path: "/jobs",
-    icon: <MdOutlineCardTravel className="text-xl text-yellow-500" />, // Add color
+    icon: <MdOutlineCardTravel className="text-xl text-yellow-500" />,
   },
 ];
 
@@ -35,29 +36,36 @@ export const AdminNavLinks = [
   {
     title: "Dashboard",
     path: "/dashboard",
-    icon: <MdOutlineDashboard className="text-xl text-purple-500" />, // Add color
+    icon: <MdOutlineDashboard className="text-xl text-purple-500" />,
   },
   {
     title: "Manage Questions",
     path: "/manage-questions",
-    icon: <BsPatchQuestionFill className="text-xl text-green-500" />, // Add color
+    icon: <BsPatchQuestionFill className="text-xl text-green-500" />,
   },
-  { 
+  {
     title: "Manage Users",
     path: "/manage-users",
-    icon: <FaUsers className="text-xl text-red-500" />, // Add color
+    icon: <FaUsers className="text-xl text-red-500" />,
   },
   {
     title: "Manage Jobs",
     path: "/manage-jobs",
-    icon: <MdOutlineCardTravel className="text-xl text-yellow-500" />, // Add color
+    icon: <MdOutlineCardTravel className="text-xl text-yellow-500" />,
   },
 ];
 
 const NavigationLinks = () => {
   const { data: session } = useSession();
-  const user = session?.user;
-  const router = useRouter(); // Initialize the router
+  const userEmail = session?.user?.email;
+  const router = useRouter();
+
+  // Fetch user by email using react-query
+  const { data: user, isLoading } = useQuery({
+    queryKey: ['user', userEmail],
+    queryFn: () => axios.get(`/users/api/get-one?email=${userEmail}`).then(res => res.data.user),
+    enabled: !!userEmail,
+  });
 
   // Get initial state from localStorage (persist toggle)
   const [showAdminLinks, setShowAdminLinks] = useState(() => {
@@ -78,44 +86,34 @@ const NavigationLinks = () => {
     const newShowAdminLinks = !showAdminLinks;
     setShowAdminLinks(newShowAdminLinks);
     if (newShowAdminLinks) {
-      router.push("/dashboard"); // Redirect to the dashboard when switching to admin
+      router.push("/dashboard");
     } else {
-      router.push("/"); // Redirect to home when switching to user
+      router.push("/");
     }
+  };
+
+  const renderNavLinks = () => {
+    const navLinks = user?.role === "admin" && showAdminLinks ? AdminNavLinks : UserNavLinks;
+
+    return navLinks.map((item) => (
+      <Link href={item.path} key={item.path} className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-200 transition-all duration-300">
+        {item.icon && <span className="bg-white rounded-full p-2 shadow">{item.icon}</span>}
+        <span className="hover:text-blue-600">{item.title}</span>
+      </Link>
+    ));
   };
 
   return (
     <div className="p-6">
       <div className="text-black flex flex-col gap-4 text-lg font-medium mt-8">
-        {user?.role === "user" && !showAdminLinks ? (
-          UserNavLinks.map((item) => (
-            <Link href={item.path} key={item.path} className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-200 transition-all duration-300">
-              {item.icon && <span className="bg-white rounded-full p-2 shadow">{item.icon}</span>}
-              <span className="hover:text-blue-600">{item.title}</span>
-            </Link>
-          ))
-        ) : user?.role === "admin" && showAdminLinks ? (
-          AdminNavLinks.map((item) => (
-            <Link href={item.path} key={item.path} className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-200 transition-all duration-300">
-              {item.icon && <span className="bg-white rounded-full p-2 shadow">{item.icon}</span>}
-              <span className="hover:text-blue-600">{item.title}</span>
-            </Link>
-          ))
-        ) : (
-          UserNavLinks.map((item) => (
-            <Link href={item.path} key={item.path} className="flex items-center gap-3 p-2 rounded-lg hover:bg-blue-200 transition-all duration-300">
-              {item.icon && <span className="bg-white rounded-full p-2 shadow">{item.icon}</span>}
-              <span className="hover:text-blue-600">{item.title}</span>
-            </Link>
-          ))
-        )}
+        {renderNavLinks()}
       </div>
 
       {/* Toggle Button */}
       {user?.role === "admin" && (
         <button
           onClick={handleToggle}
-          className="block w-full md:w-auto px-4 py-2 mt-6 rounded-full bg-gradient-to-r from-teal-500 to-pink-500 text-white font-semibold shadow-lg hover:from-pink-500 hover:to-teal-500 transition-all duration-300"
+          className="mt-10 ml-3 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
         >
           {showAdminLinks ? "Switch to User" : "Switch to Admin"}
         </button>
