@@ -29,19 +29,18 @@ export const PATCH = async (request) => {
         // Check if the user exists by email
         const exists = await usersCollections.findOne({ email: existsEmail });
         if (!exists) {
-            return NextResponse.json({ message: "User not exists" }, { status: 404 });
+            return NextResponse.json({ message: "User does not exist" }, { status: 404 });
         }
 
         // Create an object for fields to update
         const updateFields = {
             name: name || exists.name,
-            email: email || exists.email,
             image: image || exists.image,
             country: country || exists.country,
             city: city || exists.city,
             phone: phone || exists.phone,
             gender: gender || exists.gender,
-            age: website || exists.website,
+            website: website || exists.website,
             facebook: facebook || exists.facebook,
             github: github || exists.github,
             linkedin: linkedin || exists.linkedin,
@@ -50,10 +49,8 @@ export const PATCH = async (request) => {
 
         // Hash the password if a new one is provided
         if (password) {
-            const passwordHashing = await bcrypt.hash(password, 14);
-            updateFields.password = passwordHashing;
-        } else {
-            updateFields.password = exists.password;
+            const salt = await bcrypt.genSalt(10); // Generate a salt
+            updateFields.password = await bcrypt.hash(password, salt);
         }
 
         // Update the user in the database

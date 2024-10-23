@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "flowbite-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -17,10 +17,7 @@ const UserUpdateForm = ({ params }) => {
   const router = useRouter();
 
   // Fetch user data with react-query
-  const {
-    data: user,
-    isLoading,
-  } = useQuery({
+  const { data: user, isLoading } = useQuery({
     queryKey: ["user", params.id],
     queryFn: async () => {
       const fetchUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/users/api/${params.id}`;
@@ -31,7 +28,7 @@ const UserUpdateForm = ({ params }) => {
   });
 
   // Pre-fill form when user data is loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (user) {
       setValue("name", user.name);
       setValue("email", user.email);
@@ -64,43 +61,40 @@ const UserUpdateForm = ({ params }) => {
         city: data.city,
         phone: data.phone,
         gender: data.gender,
-        age: data.website,
+        website: data.website,
         facebook: data.facebook,
         github: data.github,
         linkedin: data.linkedin,
         bio: data.bio,
       };
 
-      const response = await axios.patch(`/users/api/patch`, userInfo);
+      const response = await axios.patch(`${process.env.NEXT_PUBLIC_WEB_URL}/users/api/patch`, userInfo);
 
       if (response.status === 200) {
-        toast.success("Profile updated successfully!");
+        // toast.success("Profile updated successfully!");
         router.push(`/users/${params.id}`);
+        router.reload(); // This reloads the current page
       } else {
         toast.error(response.data.message || "Failed to update profile.");
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong. Please try again.");
+      // toast.error("Something went wrong. Please try again.");
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center">
       <div className="bg-white shadow-md w-full md:w-3/4 lg:w-1/2 p-6 rounded-lg my-8">
         <h1 className="text-2xl font-bold mb-4">Update Profile</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          
-
-          
           {/* Profile Image Upload Input */}
           <div>
             <label htmlFor="image" className="block mb-2 text-sm font-medium text-gray-900">
               Profile Image
             </label>
             <UploadDropzone
-            className="cursor-pointer"
+              className="cursor-pointer"
               endpoint="imageUploader"
               onClientUploadComplete={(res) => {
                 if (res && res.length > 0) {
@@ -113,6 +107,7 @@ const UserUpdateForm = ({ params }) => {
               }}
             />
           </div>
+
           {/* Display Name */}
           <div>
             <label className="block text-gray-600 mb-1">Display Name</label>
@@ -127,7 +122,6 @@ const UserUpdateForm = ({ params }) => {
             </div>
             {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
           </div>
-
 
           {/* Country Field */}
           <div>
@@ -227,7 +221,7 @@ const UserUpdateForm = ({ params }) => {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
@@ -235,57 +229,63 @@ const UserUpdateForm = ({ params }) => {
             {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
           </div>
 
-          {/* Social Media Links */}
+
+
+          {/* Social Links */}
+          <div className="flex flex-col space-y-4">
+                      {/* Website Field */}
           <div>
-            <label className="block text-gray-600 mb-1">Social Media</label>
-            <div className="space-y-2">
-              {/* Website */}
-              <div>
             <label className="block text-gray-600 mb-1">Website</label>
             <div className="flex items-center border border-gray-300 rounded-md">
               <span className="px-3 text-gray-400">
                 <FaGlobe />
               </span>
               <input
-                type="text"
+                type="url"
                 placeholder="Website"
                 className="w-full p-2 outline-none rounded-r-md"
                 {...register("website")}
               />
             </div>
           </div>
-              {/* Facebook */}
+          {/* facebook */}
+            <div>
+              <label className="block text-gray-600 mb-1">Facebook</label>
               <div className="flex items-center border border-gray-300 rounded-md">
                 <span className="px-3 text-gray-400">
                   <FaFacebook />
                 </span>
                 <input
-                  type="text"
-                  placeholder="Facebook URL"
+                  type="url"
+                  placeholder="Facebook Link"
                   className="w-full p-2 outline-none rounded-r-md"
                   {...register("facebook")}
                 />
               </div>
-              {/* GitHub */}
+            </div>
+            <div>
+              <label className="block text-gray-600 mb-1">GitHub</label>
               <div className="flex items-center border border-gray-300 rounded-md">
                 <span className="px-3 text-gray-400">
                   <FaGithub />
                 </span>
                 <input
-                  type="text"
-                  placeholder="GitHub URL"
+                  type="url"
+                  placeholder="GitHub Link"
                   className="w-full p-2 outline-none rounded-r-md"
                   {...register("github")}
                 />
               </div>
-              {/* LinkedIn */}
+            </div>
+            <div>
+              <label className="block text-gray-600 mb-1">LinkedIn</label>
               <div className="flex items-center border border-gray-300 rounded-md">
                 <span className="px-3 text-gray-400">
                   <FaLinkedin />
                 </span>
                 <input
-                  type="text"
-                  placeholder="LinkedIn URL"
+                  type="url"
+                  placeholder="LinkedIn Link"
                   className="w-full p-2 outline-none rounded-r-md"
                   {...register("linkedin")}
                 />
@@ -298,19 +298,14 @@ const UserUpdateForm = ({ params }) => {
             <label className="block text-gray-600 mb-1">Bio</label>
             <textarea
               placeholder="Write something about yourself..."
-              className="w-full p-2 outline-none rounded-md border border-gray-300"
-              rows="4"
+              className="w-full p-2 border border-gray-300 rounded-md"
+              rows="3"
               {...register("bio")}
             />
           </div>
 
-          <Button
-            type="submit"
-            color="primary"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-200 ease-in-out transform hover:scale-105"
-          >
-            Update Profile
-          </Button>
+          {/* Submit Button */}
+          <Button type="submit" className="w-full mt-4">Update Profile</Button>
         </form>
       </div>
     </div>
