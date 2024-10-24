@@ -83,6 +83,7 @@ const InviteMeeting = ({ params }) => {
       date: selectedDate.toLocaleDateString(),
       time: selectedTime,
       toName: user?.name || "DevQuery",
+      sendingEmail: user?.email,
     };
   
     try {
