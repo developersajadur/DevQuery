@@ -24,40 +24,7 @@ const ProfilePage = ({ params }) => {
   const [isFollowing, setIsFollowing] = useState(false);
 
 
-     // Fetch bookmarks using TanStack Query
-  const { data: bookmarks, refetch } = useQuery({
-    queryKey: ["bookmarks", sessionEmail],
-    queryFn: async () => {
-      const bookmarkUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/getBookmark?email=${sessionEmail}`;
-      const response = await axios.get(bookmarkUrl);
-      return response.data.bookmarks;
-    },
-    enabled: !!sessionEmail,
-  });
-
-
-  const { data: questions } = useQuery({
-    queryKey: ["questions", sessionEmail],
-    queryFn: async () => {
-      const questionsUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/user-get-questions?email=${sessionEmail}`;
-      const response = await axios.get(questionsUrl);
-      return response.data.questions;
-    },
-    enabled: !!sessionEmail,
-  });
-
-
-  const { data: answers } = useQuery({
-    queryKey: ["answers", sessionEmail],
-    queryFn: async () => {
-      const answersUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/user-get-answers?email=${sessionEmail}`;
-      const response = await axios.get(answersUrl);
-      return response.data.answers;
-    },
-    enabled: !!sessionEmail,
-  });
-
-
+  
   const {
     data: user,
     isLoading,
@@ -71,6 +38,42 @@ const ProfilePage = ({ params }) => {
     },
     enabled: !!params.id,
   });
+
+  const userEmail = user?.email;
+
+     // Fetch bookmarks using TanStack Query
+  const { data: bookmarks, refetch } = useQuery({
+    queryKey: ["bookmarks", userEmail],
+    queryFn: async () => {
+      const bookmarkUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/getBookmark?email=${userEmail}`;
+      const response = await axios.get(bookmarkUrl);
+      return response.data.bookmarks;
+    },
+    enabled: !!userEmail,
+  });
+
+
+  const { data: questions } = useQuery({
+    queryKey: ["questions", userEmail],
+    queryFn: async () => {
+      const questionsUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/user-get-questions?email=${userEmail}`;
+      const response = await axios.get(questionsUrl);
+      return response.data.questions;
+    },
+    enabled: !!userEmail,
+  });
+
+
+  const { data: answers } = useQuery({
+    queryKey: ["answers", userEmail],
+    queryFn: async () => {
+      const answersUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/user-get-answers?email=${userEmail}`;
+      const response = await axios.get(answersUrl);
+      return response.data.answers;
+    },
+    enabled: !!userEmail,
+  });
+
 
   useEffect(() => {
     const checkFollowingStatus = async () => {
