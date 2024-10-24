@@ -12,7 +12,9 @@ import 'react-tabs/style/react-tabs.css';
 import React, { useEffect, useState } from 'react';
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
-import { FaFacebookSquare, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaBookmark, FaFacebookSquare, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaEarthAmericas } from "react-icons/fa6";
+import { MdMenuBook, MdQuestionAnswer } from "react-icons/md";
 
 const ProfilePage = ({ params }) => {
   const { data: session } = useSession();
@@ -118,9 +120,10 @@ const ProfilePage = ({ params }) => {
               <FiMail className="mr-2" /> {user?.email}
             </p>
             <div className="flex gap-2 items-center">
-              <a href=""><FaFacebookSquare className="text-2xl" /></a>
-              <a href=""><FaLinkedin className="text-2xl" /></a>
-              <a href=""><FaGithub className="text-2xl" /></a>
+              <a href=""><FaFacebookSquare className="text-2xl text-[#1877F2]" /></a>
+              <a href=""><FaLinkedin className="text-2xl text-[#0A66C2]" /></a>
+              <a href=""><FaGithub className="text-2xl text-[#181717]" /></a>
+              <a href=""><FaEarthAmericas className="text-2xl text-[#343A40]" /></a>
             </div>
           </div>
         </div>
@@ -163,45 +166,47 @@ const ProfilePage = ({ params }) => {
 
       <div className="py-4 border-b-2 w-full px-4 grid grid-cols-2 md:grid-cols-3 gap-2">
 
-        <div class="bg-white shadow-md rounded-lg p-6 text-center">
+        <div class="bg-white shadow-md rounded-lg p-6 text-center flex items-center justify-center gap-3">
           <div class="text-blue-500 text-3xl mb-2">
-            <i class="fas fa-book"></i>
+            <MdMenuBook />
           </div>
-          <div class="text-gray-800 text-xl font-semibold">0</div>
-          <div class="text-gray-600">Questions</div>
+          <div>
+            <div class="text-gray-800 text-xl font-semibold">0</div>
+            <div class="text-gray-600">Questions</div>
+          </div>
         </div>
 
 
-        <div class="bg-white shadow-md rounded-lg p-6 text-center">
+        <div class="bg-white shadow-md rounded-lg p-6 text-center flex items-center justify-center gap-3">
           <div class="text-red-500 text-3xl mb-2">
-            <i class="fas fa-comment"></i>
+            <MdQuestionAnswer />
           </div>
-          <div class="text-gray-800 text-xl font-semibold">0</div>
-          <div class="text-gray-600">Answers</div>
+          <div>
+            <div class="text-gray-800 text-xl font-semibold">0</div>
+            <div class="text-gray-600">Answers</div>
+          </div>
         </div>
 
-        <div class="bg-white shadow-md rounded-lg p-6 text-center">
-          <div class="text-green-500 text-3xl mb-2">
-            <i class="fas fa-graduation-cap"></i>
+        <div class="bg-white shadow-md rounded-lg p-6 text-center flex items-center justify-center gap-3">
+          <div class="text-green-400 text-3xl mb-2">
+            <FaBookmark />
           </div>
-          <div class="text-gray-800 text-xl font-semibold">0</div>
-          <div class="text-gray-600">Bookmark</div>
+          <div>
+            <div class="text-gray-800 text-xl font-semibold">0</div>
+            <div class="text-gray-600">Questions</div>
+          </div>
         </div>
 
-        <div class="bg-white shadow-md rounded-lg p-6 text-center">
-          <div class="text-green-500 text-3xl mb-2">
-            <i class="fas fa-graduation-cap"></i>
+        <div class="bg-white shadow-md rounded-lg p-6 text-center flex items-center justify-center gap-3">
+          <div class="text-green-400 text-3xl mb-2">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="#28A745" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 7l-6 6-3-3 1.41-1.41L11 12.17l4.59-4.59L17 9z" />
+            </svg>
           </div>
-          <div class="text-gray-800 text-xl font-semibold">0</div>
-          <div class="text-gray-600">Reputation</div>
-        </div>
-
-        <div class="bg-white shadow-md rounded-lg p-6 text-center">
-          <div class="text-green-500 text-3xl mb-2">
-            <i class="fas fa-graduation-cap"></i>
+          <div>
+            <div class="text-gray-800 text-xl font-semibold">0</div>
+            <div class="text-gray-600">Reputation</div>
           </div>
-          <div class="text-gray-800 text-xl font-semibold">0</div>
-          <div class="text-gray-600">Badges</div>
         </div>
 
 
@@ -213,9 +218,10 @@ const ProfilePage = ({ params }) => {
           <div class="bg-gray-100 shadow-md rounded-lg p-4 w-64 h-32">
             <div class="flex items-center space-x-2 mb-2">
               <div class="bg-gray-700 text-white p-2 rounded">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 010 7.75M12 14.5c-2.5 0-4.71-1.23-6-3.09a9 9 0 0112 0c-1.29 1.86-3.5 3.09-6 3.09z" />
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="#007BFF" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 5c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14c-2.67 0-5.33-1.34-7-4 0-2.67 5.33-4 7-4s7 1.33 7 4c-1.67 2.66-4.33 4-7 4z" />
                 </svg>
+
               </div>
               <div class="text-gray-800 font-semibold text-lg">Followers</div>
             </div>
@@ -228,9 +234,10 @@ const ProfilePage = ({ params }) => {
           <div class="bg-gray-100 shadow-md rounded-lg p-4 w-64 h-32">
             <div class="flex items-center space-x-2 mb-2">
               <div class="bg-gray-700 text-white p-2 rounded">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 8a6 6 0 11-12 0 6 6 0 0112 0zM5 21h14M12 17v4" />
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="#FF9800" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                 </svg>
+
               </div>
               <div class="text-gray-800 font-semibold text-lg">Following</div>
             </div>
