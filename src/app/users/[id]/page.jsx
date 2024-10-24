@@ -163,6 +163,9 @@ const ProfilePage = ({ params }) => {
       <div className="border-y-2 border-t-0 w-full py-4">
         <p className="text-center">Bio</p>
       </div>
+      <div className="border-y-2 border-t-0 w-full py-4 px-4">
+        <p className="text-start">Address: </p>
+      </div>
 
       <div className="py-4 border-b-2 w-full px-4 grid grid-cols-2 md:grid-cols-3 gap-2">
 
