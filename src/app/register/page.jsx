@@ -54,6 +54,8 @@ const Register = () => {
         github: "",
         linkedin: "",
         bio: "",
+        plan:"free",
+        reputations: 0,
       };
 
       const res = await axios.post(fetchUrl, userInfo);

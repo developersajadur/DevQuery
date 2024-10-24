@@ -73,7 +73,20 @@ export const authOptions = {
               name,
               email,
               image,
-              role: "user", // Default role for new users
+              role: "user", 
+              createdAt: new Date(),
+              status: "active", 
+              country: "",
+              city: "",
+              phone: "",
+              gender: "",
+              website: "",
+              facebook: "",
+              github: "",
+              linkedin: "",
+              bio: "",
+              plan:"free",
+              reputations: 0,
             });
           }
           return true; 

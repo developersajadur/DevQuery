@@ -85,7 +85,7 @@ const InviteMeeting = ({ params }) => {
       toName: user?.name || "DevQuery",
       sendingEmail: user?.email,
     };
-  
+   
     try {
       // Send data to the server-side endpoint
       const res = await axios.post("/questions/invite-meeting/api/send-invitation", formData);

@@ -66,7 +66,7 @@ const UserUpdateForm = ({ params }) => {
         github: data.github,
         linkedin: data.linkedin,
         bio: data.bio,
-      };
+      }; 
 
       const response = await axios.patch(`${process.env.NEXT_PUBLIC_WEB_URL}/users/api/patch`, userInfo);
 
