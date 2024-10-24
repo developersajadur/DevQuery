@@ -39,7 +39,7 @@ const Register = () => {
         createdAt: new Date(),
         image:defaultAvatar,
         role: "user",
-        status: "active",
+        status: "active", 
         country: "",
         city: "",
         phone: "",

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Button } from 'flowbite-react';
 import { signIn } from "next-auth/react";
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import SocialSignIn from '../Components/Others/SocialSignIn';
 
@@ -12,9 +12,11 @@ const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams()
+  const path = searchParams.get('redirect');
 
   const onSubmit = async (data) => {
-    const result = await signIn("credentials", { ...data, redirect: false });
+    const result = await signIn("credentials", { ...data, redirect: true, callbackUrl:path ? path : "/", });  
 
     if (result?.error) { 
       switch (result.error) {
