@@ -21,12 +21,14 @@ const ProfilePage = ({ params }) => {
   const sessionEmail = session?.user?.email;
   const [data, setData] = useState([]);
   const bookUser = session?.user;
+  console.log(bookUser.email);
+  
 
   useEffect(() => {
     const fetchBook = async () => {
-      if (bookUser?.id) {
+      if (bookUser?.email) {
         try {
-          const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/getBook?userId=${bookUser.id}`);
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/getBook?email=${bookUser?.email}`);
           if (response.status === 200) {
             setData(response.data.books);
           } else {
@@ -276,50 +278,39 @@ const ProfilePage = ({ params }) => {
             {/* Add content for answers here */}
           </div>
         </TabPanel>
+              {/* <h2 className="text-2xl font-semibold text-center"><em>Bookmark</em></h2>
+              <p className="text-center font-semibold"><em>Here are the questions you bookmarked</em></p> */}
         <TabPanel>
-          <div className="bg-white shadow-md w-full md:w-3/4 lg:w-full p-6 rounded-lg mt-6">
-            <div className=" sm:p-4 dark:text-gray-800">
-              <h2 className="text-2xl font-semibold text-center"><em>Bookmark</em></h2>
-              <p className="text-center font-semibold"><em>Here are the questions you bookmarked</em></p>
-
-              <thead className="dark:bg-gray-300">
-                <tr className="text-left">
-                  <th className="p-3 ">Title</th>
-                  <th className="p-3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
-
-                  {
-                    data.map(dt =>
-                      <div key={dt._id} className='flex justify-between item-center hover:border-pink-600 border-[1px] border-sky-600 rounded-md bg-gray-50 my-1'>
-
-                        <div className="w-96 ">
-                          <td className="p-3">
-
-                            <p className="text-xl font-bold">{dt.title}</p>
-                          </td>
-                        </div>
-
-                        <div className="my-2">
-                          <td className="p-3">
-                            <Link href={`/questions/${dt.questionId}`}><button className="bg-blue-600 text-white hover:bg-sky-900 font-bold rounded-md hover:rounded-lg border-2 p-2">Details</button></Link>
-                            <button onClick={() => handleForDelete(dt._id)} className="text-xl"><TiDelete /></button>
-                          </td>
-                        </div>
-
-                      </div>
-
-                    )
-                  }
-
-                </tr>
-              </tbody>
-
-
-            </div>
-          </div>
+        <div>
+                        <table className="min-w-full">
+                            <thead className="bg-gray-200">
+                                <tr className="text-left">
+                                    <th className="p-3 text-lg">Title</th>
+                                    <th className="p-3 text-lg"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {data.map(bookData => (
+                                    <tr key={bookData._id} className='border-b border-opacity-20 hover:bg-gray-100'>
+                                        <td className="p-3 w-3/4">
+                                            <p className="text-xl font-bold">{bookData.title}</p>
+                                        </td>
+                                        <td className="p-3 flex justify-end items-center space-x-2">
+                                            <Link href={`/questions/${bookData._id}`}>
+                                                <Button className="bg-blue-500 text-white hover:bg-blue-600 transition">View</Button>
+                                            </Link>
+                                            <Button
+                                                onClick={() => handleForDelete(bookData._id)}
+                                                className="bg-red-500 text-white hover:bg-red-600 transition"
+                                            >
+                                                Delete
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
         </TabPanel>
       </Tabs>
     </div>

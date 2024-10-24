@@ -1,12 +1,15 @@
-"use client"
+"use client";
 import Image from "next/image";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Link from "next/link";
 import Loading from "../Components/Loading/Loading";
 
 const Users = () => {
+  const [searchQuery, setSearchQuery] = useState(""); // State for search input
+  const [filteredUsers, setFilteredUsers] = useState([]); // State for filtered users
+
   const { data: users, isLoading, error } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
@@ -18,15 +21,56 @@ const Users = () => {
         return [];
       }
     },
+    onSuccess: (usersData) => {
+      setFilteredUsers(usersData); // Set filteredUsers to all users initially
+    },
   });
 
-  if (isLoading) return <Loading/>;
+  // Ensure that users are shown by default when data is fetched
+  useEffect(() => {
+    if (users) {
+      setFilteredUsers(users); // Set filteredUsers to all users when data is fetched
+    }
+  }, [users]);
+
+  if (isLoading) return <Loading />;
   if (error) return <p>Error loading users.</p>;
+
+  // Handle search
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim() === "") {
+      setFilteredUsers(users); // Reset to show all users if search query is empty
+    } else {
+      const filtered = users?.filter((user) =>
+        user?.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }
+  };
 
   return (
     <div className="px-2 md:px-4 py-3 mt-5">
+      {/* Search Bar */}
+      <div className="mb-4 flex lg:ml-[650px]">
+        <input
+          type="text"
+          placeholder="Search by user name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
+          className="px-3 py-2 border border-gray-300 rounded-l"
+        />
+        <button
+          onClick={handleSearch}
+          className="px-4 py-2 bg-blue-600 text-white rounded-r"
+        >
+          Search
+        </button>
+      </div>
+
+      {/* User Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {users?.map((user) => (
+        {filteredUsers?.map((user) => (
           <div
             key={user._id}
             className="flex items-center space-x-4 bg-white p-4 rounded-lg shadow-md"

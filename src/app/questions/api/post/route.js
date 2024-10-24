@@ -47,7 +47,7 @@ export const POST = async (request) => {
     );
 
     // Check if the bookmark already exists
-    const isExist = await bookmarkCollection.findOne({ userId, questionId });
+    const isExist = await bookmarkCollection.findOne({ questionId });
 
     if (isExist) {
       return NextResponse.json(
@@ -60,7 +60,6 @@ export const POST = async (request) => {
     const res = await bookmarkCollection.insertOne({
       email:bookMark.email,
       title:bookMark.title,
-      userId,
       questionId,
       createdAt: new Date(), // Optional: Timestamp
     });
