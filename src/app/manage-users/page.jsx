@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { Button } from "flowbite-react";
@@ -10,6 +11,8 @@ import toast from "react-hot-toast"; // Ensure you import toast if not already
 
 const ManageUsers = () => {
   const queryClient = useQueryClient();
+  const [searchTerm, setSearchTerm] = useState(""); // State to store search input
+  const [filteredUsers, setFilteredUsers] = useState([]); // State to store filtered users
 
   const { data: users, isLoading, refetch } = useQuery({
     queryKey: ["all-users"],
@@ -22,11 +25,36 @@ const ManageUsers = () => {
         return [];
       }
     },
+    onSuccess: (usersData) => {
+      setFilteredUsers(usersData); // Set default users when data is fetched
+    },
   });
+
+  useEffect(()=>{
+   if(users){
+    setFilteredUsers(users)
+   }
+  },[users])
+
+  // Handle search functionality
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (searchTerm.trim() === "") {
+      // If search input is empty, show all users
+      setFilteredUsers(users);
+    } else {
+      // Filter users based on the search term (by name or email)
+      const filtered = users.filter(
+        (user) =>
+          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }
+  };
 
   // Toggle block/active state handler with confirmation
   const handleToggleStatus = async (userId, currentStatus) => {
-    // Show SweetAlert2 confirmation dialog
     Swal.fire({
       title: "Are you sure?",
       text: `You are about to ${currentStatus === "active" ? "block" : "activate"} this user.`,
@@ -43,7 +71,6 @@ const ManageUsers = () => {
             userId,
           });
           if (res?.status === 200) {
-            // Invalidate the query to refetch users
             refetch();
             toast.success(res.data.message);
             Swal.fire({
@@ -66,7 +93,18 @@ const ManageUsers = () => {
 
   return (
     <div className="px-2 md:px-4 py-3">
-      <h1 className="text-2xl font-bold mb-4">Manage All Users ({users?.length})</h1>
+      <h1 className="text-2xl font-bold mb-4">Manage All Users ({filteredUsers?.length})</h1>
+      <div className="mb-4 flex lg:ml-[600px]">
+        <input
+          type="text"
+          className="border py-2 px-3 rounded-l w-full"
+          placeholder="Search by name or email"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)} // Update search term
+        />
+        <button className="px-4 py-2 bg-blue-600 text-white rounded-r" onClick={handleSearch}>Search</button>
+      </div>
+
       <table className="min-w-full bg-white border border-gray-300">
         <thead>
           <tr className="bg-gray-200">
@@ -80,7 +118,7 @@ const ManageUsers = () => {
           </tr>
         </thead>
         <tbody>
-          {users?.map((user, index) => (
+          {filteredUsers?.map((user, index) => (
             <tr key={user._id} className="hover:bg-gray-100">
               <td className="py-2 px-4 border">{index + 1}</td>
               <td className="py-2 px-4 border">

@@ -52,7 +52,7 @@ const Users = () => {
   return (
     <div className="px-2 md:px-4 py-3 mt-5">
       {/* Search Bar */}
-      <div className="mb-4 flex lg:ml-[650px]">
+      <div className="mb-4 flex lg:ml-[600px]">
         <input
           type="text"
           placeholder="Search by user name"

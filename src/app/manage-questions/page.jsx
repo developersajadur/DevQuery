@@ -6,8 +6,12 @@ import Loading from "../Components/Loading/Loading";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import Swal from "sweetalert2"; // Import SweetAlert2
+import { useEffect, useState } from "react";
 
 const ManageQuestions = () => {
+  const [searchQuery , setSearchQuery] = useState('')
+  const [filteredQuestion , setFilteredQuestion] = useState([])
+
   const { data: questions, isLoading, refetch } = useQuery({
     queryKey: ["all-question"],
     queryFn: async () => {
@@ -19,7 +23,31 @@ const ManageQuestions = () => {
         return [];
       }
     },
+
+    onSuccess: (questionData) =>{
+      setFilteredQuestion(questionData)
+    }
   });
+
+  useEffect(()=>{
+     if(questions){
+      setFilteredQuestion(questions)
+     }
+  },[questions])
+     if(isLoading){return <Loading/>}
+  const handleSearch = (e) =>{
+    e.preventDefault();
+    if(searchQuery.trim() === ""){
+      setFilteredQuestion(questions)
+    }else{
+      const filtered = questions.filter(
+        (question) =>
+          question.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredQuestion(filtered)
+      // refetch()
+    }
+  }
 
   const handleDelete = async (id) => {
     // Show SweetAlert2 confirmation dialog
@@ -60,9 +88,25 @@ const ManageQuestions = () => {
 
   return (
     <div className="px-2 md:px-4 py-3">
-      <h1 className="text-2xl font-bold mb-4">
+       <div className="mb-4 flex lg:ml-[600px]">
+        <input
+          type="text"
+          placeholder="Search by title"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)} // Update search query state
+          className="px-3 py-2 border border-gray-300 rounded-l"
+        />
+        <button
+          onClick={handleSearch}
+          className="px-4 py-2 bg-blue-600 text-white rounded-r"
+        >
+          Search
+        </button>
+      </div>
+
+      {/* <h1 className="text-2xl font-bold mb-4">
         Manage All Questions ({questions?.length})
-      </h1>
+      </h1> */}
       <table className="min-w-full bg-white border border-gray-300">
         <thead>
           <tr className="bg-gray-200">
@@ -74,7 +118,7 @@ const ManageQuestions = () => {
           </tr>
         </thead>
         <tbody>
-          {questions?.map((question) => (
+          {filteredQuestion?.map((question) => (
             <tr key={question._id} className="hover:bg-gray-100">
               <td className="py-2 px-4 border">
                 <Link href={`questions/${question._id}`}>
