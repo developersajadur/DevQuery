@@ -9,14 +9,14 @@ export const GET = async (request) => {
     
     try {
         // Get the user's ID from the query parameter
-        const userId = request.nextUrl.searchParams.get("userId");
+        const email = request.nextUrl.searchParams.get("email");
 
-        if (!userId) {
+        if (!email) {
             return NextResponse.json({ message: "User ID is required" }, { status: 404 });
         }
 
         // Fetch bookmarks where the user ID matches
-        const books = await getBook.find({ userId }).toArray();
+        const books = await getBook.find({ email }).toArray();
         
         if (books.length === 0) {
             return NextResponse.json({ message: "No bookmarks found for this user" }, { status: 404 });

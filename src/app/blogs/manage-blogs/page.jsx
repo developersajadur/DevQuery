@@ -11,21 +11,22 @@ import 'react-tabs/style/react-tabs.css';
 import Swal from 'sweetalert2';
 
 const ManageBlogs = () => {
-
-    const [blogs, setBlogs] = useState([])
-    const [loading, setLoading] = useState(true); // Loading state
-    const [error, setError] = useState(null)
+    const [blogs, setBlogs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredBlogs, setFilteredBlogs] = useState([]);
     const getBlogs = `${process.env.NEXT_PUBLIC_WEB_URL}/blogs/api/getBlogs`;
 
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const response = await axios.get(getBlogs)
+                const response = await axios.get(getBlogs);
                 if (response.status === 200) {
-                    setBlogs(response.data.blogs)
-                }
-                else {
-                    console.error("Error Fetching Data")
+                    setBlogs(response.data.blogs);
+                    setFilteredBlogs(response.data.blogs); // Set filtered blogs to all blogs initially
+                } else {
+                    console.error("Error Fetching Data");
                 }
             } catch (error) {
                 console.error("Error fetching blogs:", error);
@@ -33,9 +34,9 @@ const ManageBlogs = () => {
             } finally {
                 setLoading(false);
             }
-        }
+        };
         fetchBlogs();
-    }, [getBlogs])
+    }, [getBlogs]);
 
     const handleForDelete = async (id) => {
         Swal.fire({
@@ -50,10 +51,10 @@ const ManageBlogs = () => {
             if (result.isConfirmed) {
                 try {
                     const response = await axios.delete(`${process.env.NEXT_PUBLIC_WEB_URL}/blogs/api/deleteBlogs/${id}`);
-                    console.log("Response:", response);
                     if (response.status === 200) {
                         toast.success(response.data.message);
                         setBlogs((prevBlogs) => prevBlogs.filter((data) => data._id !== id));
+                        setFilteredBlogs((prevBlogs) => prevBlogs.filter((data) => data._id !== id)); // Also update filtered blogs
                     } else {
                         toast.error(`Error: ${response.data.message}`);
                     }
@@ -65,10 +66,24 @@ const ManageBlogs = () => {
                         toast.error("An unexpected error occurred.");
                     }
                 }
-
             }
         });
-    }
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const handleSearchClick = () => {
+        if (searchQuery.trim() === '') {
+            setFilteredBlogs(blogs); // Show all blogs if the search query is empty
+        } else {
+            const results = blogs.filter(blog =>
+                blog.title.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredBlogs(results);
+        }
+    };
 
     if (loading) return <Loading />;
     if (error) return <p style={{ color: 'red' }}>{error}</p>;
@@ -84,6 +99,22 @@ const ManageBlogs = () => {
                 </TabList>
                 <TabPanel>
                     <div>
+                        <div className='flex'>
+                            <div className='flex lg:ml-[650px]'>
+                                <input
+                                    type="text"
+                                    placeholder="Search Blogs"
+                                    value={searchQuery}
+                                    onChange={handleSearchChange}
+                                    className="mb-2 p-2 border border-gray-300 h-12 w-full rounded-l px-6"
+                                />
+                            </div>
+                            <div>
+                                <button onClick={handleSearchClick} className="mb-4 rounded-r bg-blue-500 h-12 font-bold text-white w-16 hover:bg-blue-600 transition">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
                         <table className="min-w-full">
                             <thead className="bg-gray-200">
                                 <tr className="text-left">
@@ -92,7 +123,7 @@ const ManageBlogs = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {blogs.map(blog => (
+                                {(filteredBlogs.length > 0 ? filteredBlogs : blogs).map(blog => (
                                     <tr key={blog._id} className='border-b border-opacity-20 hover:bg-gray-100'>
                                         <td className="p-3 w-3/4">
                                             <p className="text-xl font-bold">{blog.title}</p>
@@ -116,11 +147,9 @@ const ManageBlogs = () => {
                 </TabPanel>
 
                 <TabPanel>
-                    <PostBlogs/>
+                    <PostBlogs />
                 </TabPanel>
             </Tabs>
-
-
         </div>
     );
 };
