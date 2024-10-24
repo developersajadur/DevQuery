@@ -8,7 +8,7 @@ import { FaMapMarkerAlt } from "react-icons/fa"; // You can install react-icons 
 
 const Jobs = () => {
   const { data: jobs, isLoading, error } = useQuery({
-    queryKey: ["jobs"],
+    queryKey: ["jobs"], 
     queryFn: async () => {
       try {
         const response = await axios.get("/jobs/api/get");

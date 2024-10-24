@@ -5,7 +5,8 @@ import { FaHome, FaUsers } from "react-icons/fa";
 import { BsPatchQuestionFill } from "react-icons/bs";
 import { MdOutlineCardTravel, MdOutlineDashboard } from "react-icons/md";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { TbLogs } from "react-icons/tb";
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import axios from "axios"; // Ensure axios is imported
 import { useQuery } from "@tanstack/react-query";
 
@@ -53,6 +54,11 @@ export const AdminNavLinks = [
     path: "/manage-jobs",
     icon: <MdOutlineCardTravel className="text-xl text-yellow-500" />,
   },
+  {
+    title: "Manage Blogs",
+    path:'/blogs/manage-blogs',
+    icon: <TbLogs/>
+  }
 ];
 
 const NavigationLinks = () => {

@@ -18,7 +18,7 @@ const CommentCard = ({ comment, referrer, time, currentUserEmail }) => {
         <div className="relative p-6 py-8 w-full bg-white border-b border-gray-300">
           <div className="flex items-center justify-between mb-4">
             <Link href={`${process.env.NEXT_PUBLIC_WEB_URL}/users/${user._id}`} className="flex items-center">
-              <Avatar img={user?.image || "https://randomuser.me/api/portraits/men/3.jpg"} />
+              <Avatar img={user?.image} />
               <div className="ml-3">
                 <h4 className="text-lg font-semibold text-blue-500">{user?.name || "Unknown User"}</h4>
               </div>
