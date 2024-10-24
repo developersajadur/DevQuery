@@ -16,7 +16,7 @@ const Login = () => {
   const path = searchParams.get('redirect');
 
   const onSubmit = async (data) => {
-    const result = await signIn("credentials", { ...data, redirect: true, callbackUrl:path ? path : "/", });  
+    const result = await signIn("credentials", { ...data, redirect: true, callbackUrl:path ? path :"/", });  
 
     if (result?.error) { 
       switch (result.error) {

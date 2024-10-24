@@ -4,17 +4,22 @@ import { Button } from "flowbite-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import SocialSignIn from "../Components/Others/SocialSignIn";
+import { signIn } from "next-auth/react";
 
 const Register = () => {
   const { register, handleSubmit, formState: { errors }, reset } = useForm();
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const fetchUrl = `${process.env.NEXT_PUBLIC_WEB_URL}/register/api/post`;
   const defaultAvatar = "https://utfs.io/f/hl2tjro0eLTjUOYjocZdrVH9uezq0pt8Dgh6JUfQFEbXyNi4";
+  
+  // Retrieve the target redirect path if it exists in the URL
+  const path = searchParams.get('callbackUrl') || "/";
 
   // Password validation function
   const validatePassword = (password) => {
@@ -37,7 +42,7 @@ const Register = () => {
         name: data.name,
         password: data.password,
         createdAt: new Date(),
-        image:defaultAvatar,
+        image: defaultAvatar,
         role: "user",
         status: "active", 
         country: "",
@@ -54,9 +59,22 @@ const Register = () => {
       const res = await axios.post(fetchUrl, userInfo);
 
       if (res.status === 200) {
-        toast.success("Successfully registered!");
-        reset();
-        router.push("/login");
+        // Auto-login the user with their credentials
+        const result = await signIn("credentials", {
+          email: data.email,
+          password: data.password,
+          redirect: false, // Handle redirect manually
+        });
+
+        if (result.ok) {
+          toast.success("Successfully registered and logged in!");
+          reset();
+          // Redirect to the desired path after successful login
+          router.push(path);
+        } else {
+          toast.error("Auto-login failed. Please try logging in manually.");
+          router.push("/login");
+        }
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {

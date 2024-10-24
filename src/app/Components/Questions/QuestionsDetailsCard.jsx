@@ -89,6 +89,15 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   });
 
   const handleAnswerSubmit = async () => {
+
+    
+    if(!session?.user){
+      toast.error("Please sign in to ask a question!");
+      router.push("/login");
+      return;  
+    }
+
+
     const plainTextAnswer = stripHtml(answer);
     const answerData = {
       ans: plainTextAnswer,
@@ -96,10 +105,6 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
       userEmail: currentUserEmail,
       image: currentUserImage,
     };
-
-    if (!session?.user) {
-      return router.push("/login");
-    }
 
     if (plainTextAnswer.trim() === "") {
       toast.error("Please write an answer before submitting.");
@@ -141,6 +146,11 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   };
 
   const handleCommentSubmit = async (e, answerId) => {
+    if(!session?.user){
+      toast.error("Please sign in to ask a question!");
+      router.push("/login");
+      return;  
+    }
     e.preventDefault();
     const formData = new FormData(e.target);
     const comment = formData.get("comment");
