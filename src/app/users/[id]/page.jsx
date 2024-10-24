@@ -12,7 +12,7 @@ import 'react-tabs/style/react-tabs.css';
 import React, { useEffect, useState } from 'react';
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
-import { TiDelete } from "react-icons/ti";
+import { FaFacebookSquare, FaGithub, FaLinkedin } from "react-icons/fa";
 
 const ProfilePage = ({ params }) => {
   const { data: session } = useSession();
@@ -101,7 +101,7 @@ const ProfilePage = ({ params }) => {
         <div className="flex items-center space-x-6">
           {user?.image ? (
             <Image
-              className="rounded-full"
+              className="rounded  -full"
               height={100}
               width={100}
               alt={user?.name || "Profile Picture"}
@@ -117,6 +117,11 @@ const ProfilePage = ({ params }) => {
             <p className="flex items-center text-gray-600 mt-2 text-lg">
               <FiMail className="mr-2" /> {user?.email}
             </p>
+            <div className="flex gap-2 items-center">
+              <a href=""><FaFacebookSquare className="text-2xl" /></a>
+              <a href=""><FaLinkedin className="text-2xl" /></a>
+              <a href=""><FaGithub className="text-2xl" /></a>
+            </div>
           </div>
         </div>
         <div className="mt-5 lg:mt-0">
@@ -152,56 +157,59 @@ const ProfilePage = ({ params }) => {
           </div>
         </div>
       </div>
+      <div className="border-y-2 border-t-0 w-full py-4">
+        <p className="text-center">Bio</p>
+      </div>
 
       <div className="py-4 border-b-2 w-full px-4 grid grid-cols-2 md:grid-cols-3 gap-2">
 
-          <div class="bg-white shadow-md rounded-lg p-6 text-center">
-            <div class="text-blue-500 text-3xl mb-2">
-              <i class="fas fa-book"></i>
-            </div>
-            <div class="text-gray-800 text-xl font-semibold">0</div>
-            <div class="text-gray-600">Questions</div>
+        <div class="bg-white shadow-md rounded-lg p-6 text-center">
+          <div class="text-blue-500 text-3xl mb-2">
+            <i class="fas fa-book"></i>
           </div>
+          <div class="text-gray-800 text-xl font-semibold">0</div>
+          <div class="text-gray-600">Questions</div>
+        </div>
 
 
-          <div class="bg-white shadow-md rounded-lg p-6 text-center">
-            <div class="text-red-500 text-3xl mb-2">
-              <i class="fas fa-comment"></i>
-            </div>
-            <div class="text-gray-800 text-xl font-semibold">0</div>
-            <div class="text-gray-600">Answers</div>
+        <div class="bg-white shadow-md rounded-lg p-6 text-center">
+          <div class="text-red-500 text-3xl mb-2">
+            <i class="fas fa-comment"></i>
           </div>
+          <div class="text-gray-800 text-xl font-semibold">0</div>
+          <div class="text-gray-600">Answers</div>
+        </div>
 
-          <div class="bg-white shadow-md rounded-lg p-6 text-center">
-            <div class="text-green-500 text-3xl mb-2">
-              <i class="fas fa-graduation-cap"></i>
-            </div>
-            <div class="text-gray-800 text-xl font-semibold">0</div>
-            <div class="text-gray-600">Bookmark</div>
+        <div class="bg-white shadow-md rounded-lg p-6 text-center">
+          <div class="text-green-500 text-3xl mb-2">
+            <i class="fas fa-graduation-cap"></i>
           </div>
+          <div class="text-gray-800 text-xl font-semibold">0</div>
+          <div class="text-gray-600">Bookmark</div>
+        </div>
 
-          <div class="bg-white shadow-md rounded-lg p-6 text-center">
-            <div class="text-green-500 text-3xl mb-2">
-              <i class="fas fa-graduation-cap"></i>
-            </div>
-            <div class="text-gray-800 text-xl font-semibold">0</div>
-            <div class="text-gray-600">Reputation</div>
+        <div class="bg-white shadow-md rounded-lg p-6 text-center">
+          <div class="text-green-500 text-3xl mb-2">
+            <i class="fas fa-graduation-cap"></i>
           </div>
+          <div class="text-gray-800 text-xl font-semibold">0</div>
+          <div class="text-gray-600">Reputation</div>
+        </div>
 
-          <div class="bg-white shadow-md rounded-lg p-6 text-center">
-            <div class="text-green-500 text-3xl mb-2">
-              <i class="fas fa-graduation-cap"></i>
-            </div>
-            <div class="text-gray-800 text-xl font-semibold">0</div>
-            <div class="text-gray-600">Badges</div>
+        <div class="bg-white shadow-md rounded-lg p-6 text-center">
+          <div class="text-green-500 text-3xl mb-2">
+            <i class="fas fa-graduation-cap"></i>
           </div>
+          <div class="text-gray-800 text-xl font-semibold">0</div>
+          <div class="text-gray-600">Badges</div>
+        </div>
 
 
       </div>
 
       <div className="py-4 border-b-2 w-full px-4">
         <div class="flex space-x-4 justify-center items-center">
-          
+
           <div class="bg-gray-100 shadow-md rounded-lg p-4 w-64 h-32">
             <div class="flex items-center space-x-2 mb-2">
               <div class="bg-gray-700 text-white p-2 rounded">
@@ -216,7 +224,7 @@ const ProfilePage = ({ params }) => {
             </div>
           </div>
 
-          
+
           <div class="bg-gray-100 shadow-md rounded-lg p-4 w-64 h-32">
             <div class="flex items-center space-x-2 mb-2">
               <div class="bg-gray-700 text-white p-2 rounded">
