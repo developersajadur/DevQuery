@@ -12,11 +12,7 @@ import 'react-tabs/style/react-tabs.css';
 import React, { useEffect, useState } from 'react';
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
-<<<<<<< HEAD
 import { FaFacebookSquare, FaGithub, FaLinkedin } from "react-icons/fa";
-=======
-import { TiDelete } from "react-icons/ti";
->>>>>>> f7af35a1e647446607e29ad62a1fa9dde309ba2a
 
 const ProfilePage = ({ params }) => {
   const { data: session } = useSession();
