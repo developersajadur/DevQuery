@@ -13,6 +13,7 @@ import React, { useEffect, useState } from 'react';
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
 import { FaFacebookSquare, FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaEarthAmericas } from "react-icons/fa6";
 
 const ProfilePage = ({ params }) => {
   const { data: session } = useSession();
@@ -118,9 +119,10 @@ const ProfilePage = ({ params }) => {
               <FiMail className="mr-2" /> {user?.email}
             </p>
             <div className="flex gap-2 items-center">
-              <a href=""><FaFacebookSquare className="text-2xl" /></a>
-              <a href=""><FaLinkedin className="text-2xl" /></a>
-              <a href=""><FaGithub className="text-2xl" /></a>
+              <a href=""><FaFacebookSquare className="text-2xl text-[#1877F2]" /></a>
+              <a href=""><FaLinkedin className="text-2xl text-[#0A66C2]" /></a>
+              <a href=""><FaGithub className="text-2xl text-[#181717]" /></a>
+              <a href=""><FaEarthAmericas className="text-2xl text-[#343A40]"/></a>
             </div>
           </div>
         </div>
