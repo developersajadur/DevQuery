@@ -5,7 +5,7 @@ const { NextResponse } = require("next/server");
 export const DELETE = async (request) => {
   try {
     const { id } = await request.json(); 
-    
+     
     if (!id) {
       return NextResponse.json({ message: "Invalid ID" }, { status: 400 });
     }

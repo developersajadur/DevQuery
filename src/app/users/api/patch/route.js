@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export const PATCH = async (request) => {
     try {
-        const req = await request.json();
+        const req = await request.json(); 
         const {
             existsEmail,
             name,
