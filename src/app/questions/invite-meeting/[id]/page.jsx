@@ -85,20 +85,29 @@ const InviteMeeting = ({ params }) => {
       toName: user?.name || "DevQuery",
       sendingEmail: user?.email,
     };
-   
+    
     try {
       // Send data to the server-side endpoint
       const res = await axios.post("/questions/invite-meeting/api/send-invitation", formData);
   
       if (res.status === 200) {
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "Your Invitation has been sent successfully!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-  
+        const storeData = {
+          meetingLink: data.meetingLink,
+          platform: data.platform,
+          userEmail: user.email,
+          date: selectedDate.toLocaleDateString(),
+          time: selectedTime,
+        }
+        const meetingStoreRes = await axios.post("/questions/invite-meeting/api/store-meeting", storeData)
+        if (meetingStoreRes.status === 200) {
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Your Invitation has been sent successfully!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
         await reset();
         setSelectedTime(null);
       }
