@@ -43,7 +43,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   const { data: session } = useSession();
   const currentUserEmail = session?.user?.email || "";
   const currentUserImage = session?.user?.image || "";
-  const currentUserName = session?.user?.name || ""; 
+  const currentUserName = session?.user?.name || "";
 
   const url = usePathname();
 
@@ -230,7 +230,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
               </Button>
             </div>
 
-            <div className="mt-4 my-4">
+            <div className="mt-8 md:mt-4 my-4">
               <ReactQuill
                 value={answer}
                 onChange={setAnswer}
@@ -241,7 +241,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
                 require
               />
               <Button
-                className="bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l text-white w-full mt-16"
+                className="bg-gradient-to-r from-blue-500 to-blue-700 hover:bg-gradient-to-l text-white w-full mt-24 md:mt-16"
                 onClick={handleAnswerSubmit}
               >
                 Submit Answer
@@ -293,12 +293,12 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
                     rows={2}
                     className="w-full mb-4 p-3 border border-gray-300 rounded-lg"
                   />
-                  <div className="flex items-center justify-between ">
-                    <Button type="submit" gradientMonochrome="purple">
+                  <div className="flex flex-col md:flex-row gap-3 items-center justify-between ">
+                    <Button type="submit" gradientMonochrome="purple" className="w-full">
                       Submit Comment
                     </Button>
                     <Button outline gradientDuoTone="purpleToBlue"
-                      className="text-black hover:text-white"
+                      className="text-black hover:text-white w-full"
                     >
                       <Link
                         href={{
