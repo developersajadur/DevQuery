@@ -8,7 +8,7 @@ const Footer = () => {
         {/* Logo and Social Links */}
         <div className="flex flex-col items-start md:pl-10">
           <Link href="/" className="text-2xl lg:text-3xl font-bold">DevQuery</Link>
-          <div className="mt-4 space-x-4 grid grid-cols-3 lg:grid-cols-5">
+          <div className="mt-4 space-x-4 grid grid-cols-3 lg:grid-cols-5 gap-2">
             {/* Social media icons */}
             <Link href="https://web.facebook.com/developersajadur" aria-label="Facebook" className="hover:text-[rgb(53,114,239)] transition duration-300">
               <FaFacebook className="w-6 h-6" />
