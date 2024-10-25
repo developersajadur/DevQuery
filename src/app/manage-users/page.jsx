@@ -30,15 +30,15 @@ const ManageUsers = () => {
     },
   });
 
-  useEffect(()=>{
-   if(users){
-    setFilteredUsers(users)
-   }
-  },[users])
+  useEffect(() => {
+    if (users) {
+      setFilteredUsers(users);
+    }
+  }, [users]);
 
   // Handle search functionality
   const handleSearch = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (searchTerm.trim() === "") {
       // If search input is empty, show all users
       setFilteredUsers(users);
@@ -54,28 +54,30 @@ const ManageUsers = () => {
   };
 
   // Toggle block/active state handler with confirmation
-  const handleToggleStatus = async (userId, currentStatus) => {
+  const handleToggleStatus = async (userId, newStatus) => {
+    const action = newStatus === "active" ? "activate" : "block";
+
     Swal.fire({
       title: "Are you sure?",
-      text: `You are about to ${currentStatus === "active" ? "block" : "activate"} this user.`,
+      text: `You are about to ${action} this user.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: `Yes, ${currentStatus === "active" ? "block" : "activate"} it!`,
+      confirmButtonText: `Yes, ${action} it!`,
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           const res = await axios.patch("/manage-users/api/actions", {
-            status: currentStatus === "active" ? "blocked" : "active",
+            status: newStatus,
             userId,
           });
           if (res?.status === 200) {
-            refetch();
+            queryClient.invalidateQueries(["all-users"]); // Refetch updated data
             toast.success(res.data.message);
             Swal.fire({
               title: "Success!",
-              text: `User has been ${currentStatus === "active" ? "blocked" : "activated"}.`,
+              text: `User has been ${newStatus === "active" ? "activated" : "blocked"}.`,
               icon: "success",
             });
           }
@@ -139,12 +141,20 @@ const ManageUsers = () => {
                 {user.status === "active" ? "Active" : "Blocked"}
               </td>
               <td className="py-2 px-4 border">
-                <Button
-                  onClick={() => handleToggleStatus(user._id, user.status)}
-                  className={`${user.status === "active" ? "bg-red-600" : "bg-green-600"} text-white`}
+                <select
+                  value={user.status} // Set the dropdown value to the current user status
+                  onChange={(e) => handleToggleStatus(user._id, e.target.value)}
+                  className={`${
+                    user.status === "active" ? "bg-red-600" : "bg-green-600"
+                  } text-white p-2 rounded`}
                 >
-                  {user.status === "active" ? "Block" : "Activate"}
-                </Button>
+                  <option value="active" className="text-black bg-white">
+                    Active
+                  </option>
+                  <option value="blocked" className="text-black bg-white">
+                    Block
+                  </option>
+                </select>
               </td>
             </tr>
           ))}
