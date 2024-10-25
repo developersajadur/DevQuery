@@ -305,6 +305,9 @@ const ProfilePage = ({ params }) => {
       <div className="border-y-[1px] border-t-0 w-full py-4">
         <p className="text-center">{user?.bio}</p>
       </div>
+      <div className="border-y-2 border-t-0 w-full py-4 px-4">
+        <p className="text-start">Address: </p>
+      </div>
 
       <div className="py-4 border-b-[1px] w-full px-4 grid grid-cols-2 md:grid-cols-3 gap-2">
         {/* Questions, Answers, Bookmarks, and Reputation Section */}
