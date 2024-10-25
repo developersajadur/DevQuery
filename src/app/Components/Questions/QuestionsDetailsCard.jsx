@@ -115,7 +115,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
       const postAnswer = await axios.post(
         "/questions/api/answeradd",
         answerData
-      );
+      ); 
       if (postAnswer.status === 200) {
         const sentToData = {
           questionUserEmail: questionDetails.userEmail,
@@ -206,7 +206,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
           {loadingUser ? (
             <Loading />
           ) : (
-            <Link href={`/users/${postUser?.email}`}>
+            <Link href={`/users/${postUser?._id}`}>
               <Avatar img={postUser?.image} />
             </Link>
           )}

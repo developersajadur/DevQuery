@@ -80,7 +80,7 @@ const InviteMeeting = ({ params }) => {
   
     const formData = {
       ...data,
-      date: selectedDate.toLocaleDateString(),
+      date: selectedDate.toISOString().split('T')[0],
       time: selectedTime,
       toName: user?.name || "DevQuery",
       sendingEmail: user?.email,
@@ -95,7 +95,7 @@ const InviteMeeting = ({ params }) => {
           meetingLink: data.meetingLink,
           platform: data.platform,
           userEmail: user.email,
-          date: selectedDate.toLocaleDateString(),
+          date: selectedDate.toISOString().split('T')[0],
           time: selectedTime,
         }
         const meetingStoreRes = await axios.post("/questions/invite-meeting/api/store-meeting", storeData)

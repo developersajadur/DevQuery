@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "@/app/Components/Loading/Loading";
 import axios from "axios";
-import { Button } from "flowbite-react";
+import { Badge, Button } from "flowbite-react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import React, { useEffect, useState } from "react";
@@ -234,7 +234,10 @@ const ProfilePage = ({ params }) => {
             </div>
           )}
           <div>
+            <div className="flex gap-2">
             <h1 className="text-4xl font-bold text-gray-800">{user?.name}</h1>
+            <Badge color="indigo">{user?.plan}</Badge>
+            </div>
             <p className="flex items-center text-gray-600 mt-2 text-lg">
               <FiMail className="mr-2" /> {user?.email}
             </p>

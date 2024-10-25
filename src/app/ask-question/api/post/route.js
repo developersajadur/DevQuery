@@ -13,6 +13,7 @@ export const POST = async (req) => {
 
     // Get the questions collection
     const questionsCollection = db.collection("questions");
+    const usersCollection = db.collection("users");
 
     // Insert the new question document into the collection
     const result = await questionsCollection.insertOne({
@@ -25,6 +26,14 @@ export const POST = async (req) => {
       createdAt: new Date(),  // Optional: Add timestamp
     }, {status:201});
 
+    const updateUser = await usersCollection.updateOne(
+      { email: userEmail },
+      { $inc: { reputations: 1 } }
+  );
+
+  if (updateUser.modifiedCount === 0) {
+    throw new Error('Failed to update user reputation');
+  }
     // Return a success response with the inserted question ID
     return NextResponse.json({
       message: 'Question added successfully',

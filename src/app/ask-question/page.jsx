@@ -15,6 +15,21 @@ const Page = () => {
   const { data: session } = useSession();
   const userEmail = session?.user.email;
 
+
+  const {
+    data: user,
+    isLoading,
+  } = useQuery({
+    queryKey: ["user", userEmail],
+    queryFn: async () => {
+      const response = await axios.get(
+        `/users/api/get-one?email=${userEmail}`
+      );
+      return response.data.user;
+    },
+    enabled: !!userEmail,
+  });
+
   // Initialize react-hook-form
   const {
     register,
@@ -25,11 +40,7 @@ const Page = () => {
 
   // Handle question submission
   const handleAddQuestion = async (data) => {
-    if(!session?.user){
-      toast.error("Please sign in to ask a question!");
-      router.push("/login");
-      return;  
-    }
+
     // Validate tags
     if (tags.length === 0) {
       toast.error("Please add at least one tag before submitting!");

@@ -9,7 +9,7 @@ export const POST = async (request) => {
     const user = await usersCollection.findOne({ email: userData.userEmail });
         // Check if the user exists
         if (!user) {
-            return NextResponse.json({ error: "User not found" }, { status: 404 });
+            return NextResponse.json({ error: "User not found" }, { status: 404 }); 
           }
 
           if (!Array.isArray(user.meetings)) {
