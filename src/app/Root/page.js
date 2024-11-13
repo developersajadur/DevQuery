@@ -45,7 +45,7 @@ const Root = ({ children }) => {
             </div>
 
             {/* Footer */}
-            <footer className="bg-gray-800 text-white shadow-sm mt-auto z-50">
+            <footer className="bg-gray-800 text-white shadow-sm mt-auto z-30">
                 <div className="container mx-auto px-4">
                     <Footer />
                 </div>
@@ -53,7 +53,7 @@ const Root = ({ children }) => {
 
             <Link
                 href="/zini"
-                className="fixed z-20 bottom-10 right-10 w-20 h-20 rounded-full vibrate"
+                className="fixed z-50 bottom-10 right-10 w-20 h-20 rounded-full vibrate"
             >
                 <Image
                     width={200}

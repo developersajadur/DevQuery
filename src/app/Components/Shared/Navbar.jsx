@@ -9,6 +9,7 @@ import { UserNavLinks, AdminNavLinks } from "./NavigationLinks";
 import { TiMessages } from "react-icons/ti";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { FaInfoCircle, FaBlog, FaEnvelope, FaDollarSign } from "react-icons/fa";
 
 
 const Navbar = () => {
@@ -271,42 +272,53 @@ const Navbar = () => {
         </div>
 
 
-        <Drawer open={isOpen} onClose={handleClose}>
-          <Drawer.Header title="MENU" />
-          <Drawer.Items>
-            <Sidebar aria-label="Sidebar with multi-level dropdown example">
-              <div className="flex h-full flex-col justify-between py-2">
-                <Sidebar.Items>
-                  <Sidebar.ItemGroup>
-                    <div className="text-lg font-medium mt-2">
-                      {(showAdminLinks ? AdminNavLinks : UserNavLinks).map((item) => (
-                        <Link
-                          href={item.path}
-                          key={item.path}
-                          onClick={handleClose}
-                          className={`flex items-center gap-2 text-black hover:bg-blue-100 transition duration-300 p-2 rounded-lg ${
-                            pathname === item.path ? "bg-blue-100" : ""
-                          }`}
-                        >
-                          {item.icon && <span>{item.icon}</span>}
-                          {item.title}
-                        </Link>
-                      ))}
-                    </div>
-                    <div className="flex justify-start mt-2 px-5">
-                      <Button
-                        onClick={toggleView}
-                        className="bg-blue-500 text-white hover:bg-blue-600 transition duration-300"
-                      >
-                        {showAdminLinks ? "User View" : "Admin View"}
-                      </Button>
-                    </div>
-                  </Sidebar.ItemGroup>
-                </Sidebar.Items>
-              </div>
-            </Sidebar>
-          </Drawer.Items>
-        </Drawer>
+<Drawer open={isOpen} onClose={handleClose} className="z-40 h-full" >
+   <Drawer.Header title="MENU" />
+    <Drawer.Items>
+    <Sidebar aria-label="Responsive Sidebar with multi-level dropdown example">
+      <div className="flex h-full flex-col justify-between py-4">
+        <Sidebar.Items>
+          <Sidebar.ItemGroup>
+            <div className="text-lg font-semibold mt-2 px-4">
+              {/* Navigation Links */}
+              {(showAdminLinks ? AdminNavLinks : UserNavLinks).concat([
+                { path: "/about", title: "About", icon: <FaInfoCircle color="#FFD700" /> },  // Gold
+                { path: "/blogs", title: "Blogs", icon: <FaBlog color="#FF6347" /> },        // Tomato
+                { path: "/contact", title: "Contact", icon: <FaEnvelope color="#1E90FF" /> }, // Dodger Blue
+                { path: "/subscription", title: "Subscription", icon: <FaDollarSign color="#32CD32" /> }, // Lime Green
+              ]).map((item) => (
+                <Link
+                  href={item.path}
+                  key={item.path}
+                  onClick={handleClose}
+                  className={`flex items-center gap-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition duration-300 p-3 rounded-lg ${
+                    pathname === item.path ? "bg-blue-100 text-blue-700" : ""
+                  }`}
+                >
+                  {item.icon && (
+                    <span className="text-xl">
+                      {item.icon}
+                    </span>
+                  )}
+                  <span className="font-medium">{item.title}</span>
+                </Link>
+              ))}
+            </div>
+            {/* Toggle View Button */}
+            <div className="flex justify-start mt-4 px-4">
+              <Button
+                onClick={toggleView}
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white py-2 rounded-lg font-semibold shadow-lg hover:from-blue-600 hover:to-blue-800 transition duration-300 transform hover:scale-105"
+              >
+                {showAdminLinks ? "Switch to User View" : "Switch to Admin View"}
+              </Button>
+            </div>
+          </Sidebar.ItemGroup>
+        </Sidebar.Items>
+      </div>
+    </Sidebar>
+  </Drawer.Items>
+</Drawer>
 
 
         <div className="mt-3">

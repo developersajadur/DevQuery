@@ -180,9 +180,6 @@ const QuestionsCard = ({ question }) => {
               <span className="font-semibold">{unlikesCount}</span>
             </button>
           </div>
-          {/* <p className="text-sm text-blue-600 flex items-center"> 
-            <AiOutlineEye className="mr-1 text-2xl text-blue" /> {viewCount} Answered
-          </p> */}
         </div>
       </div>
     </div>

@@ -87,7 +87,7 @@ const ManageQuestions = () => {
   }
 
   return (
-    <div className="px-2 md:px-4 py-3">
+    <div className="px-2 md:px-4 py-3 ">
        <div className="mb-4 flex lg:ml-[600px]">
         <input
           type="text"
