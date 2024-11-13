@@ -5,24 +5,6 @@ import Loading from "@/app/Components/Loading/Loading";
 import QuestionsDetailsCard from "@/app/Components/Questions/QuestionsDetailsCard";
 import { useEffect, useState } from "react";
 
-// Dynamic metadata function; remove this if you prefer static metadata
-export async function generateMetadata({ params }) {
-  try {
-    const data = await getQuestionDetail(params.id);
-    return {
-      title: data?.title || "Question Details",
-      description: data?.description || "View detailed information about this question",
-      keywords: `${data?.tags?.join(", ") || "questions, answers, details"}`,
-    };
-  } catch (error) {
-    console.error("Error fetching question metadata:", error);
-    return {
-      title: "Question Details",
-      description: "Get in-depth details of each question and answers",
-    };
-  }
-}
-
 
 const QuestionDetails = ({ params }) => {
   const [questionDetails, setQuestionDetails] = useState(null);
