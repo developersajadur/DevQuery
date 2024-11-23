@@ -106,8 +106,13 @@ const ManageQuestions = () => {
 
       {/* <h1 className="text-2xl font-bold mb-4">
         Manage All Questions ({questions?.length})
+<<<<<<< HEAD
+      </h1>
+      <table className="w-full bg-white border border-gray-300">
+=======
       </h1> */}
       <table className="min-w-full bg-white border border-gray-300">
+>>>>>>> 1ab2fc21bffa3d50bf3f9bdf59fce2b95f7973a6
         <thead>
           <tr className="bg-gray-200">
             <th className="py-2 px-4 border">Question Title</th>

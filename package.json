@@ -9,11 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@codemirror/lang-css": "^6.3.0",
+    "@codemirror/lang-html": "^6.4.9",
+    "@codemirror/lang-javascript": "^6.2.2",
     "@emailjs/browser": "^4.4.1",
     "@google/generative-ai": "^0.21.0",
     "@stripe/react-stripe-js": "^2.8.1",
     "@stripe/stripe-js": "^4.8.0",
     "@tanstack/react-query": "^5.56.2",
+    "@uiw/react-codemirror": "^4.23.6",
     "@uploadthing/react": "^7.0.3",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.7",
