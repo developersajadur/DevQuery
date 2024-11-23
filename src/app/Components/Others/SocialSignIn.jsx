@@ -1,15 +1,17 @@
 "use client"
 import { Button } from 'flowbite-react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react';
 const SocialSignIn = () => {
     const router = useRouter();
+    const searchParams = useSearchParams()
+    const path = searchParams.get('redirect');
     const handleSocialSignIn = async (provider) => {
-        const res = await signIn(provider)
-        if(res.status === 'authenticated') {
-            router.push('/');
-        }
+        const res = await signIn(provider,{
+          redirect: true,
+          callbackUrl: path? path : '/',
+        })
             }
     return (
         <div>

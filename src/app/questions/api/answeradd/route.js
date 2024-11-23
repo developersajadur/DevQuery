@@ -6,18 +6,19 @@ export const POST = async (req) => {
   try {
     // Parse the request body
     const answer = await req.json();
-    const {  user , image, ans, question_id} = answer;
+    const {  userEmail , image, ans, question_id} = answer;
 
     // Connect to the MongoDB database
     const db = await ConnectDB();
 
     // Get the questions collection
     const questionsCollection = db.collection("answer");
+    const usersCollection = db.collection("users");
 
     // Insert the new question document into the collection
     const result = await questionsCollection.insertOne({
       
-      user:user,
+      userEmail:userEmail,
       image:image,
       answer:ans,
       question_id:question_id,
@@ -26,9 +27,18 @@ export const POST = async (req) => {
       createdAt: new Date(),  // Optional: Add timestamp
     }, {status:201});
 
+    const updateUser = await usersCollection.updateOne(
+      { email: userEmail },
+      { $inc: { reputations: 2 } }
+  );
+
+  if (updateUser.modifiedCount === 0) {
+    throw new Error('Failed to update user reputation');
+  }
+
     // Return a success response with the inserted question ID
     return NextResponse.json({
-      message: 'Answer added successfully',
+      message: 'Answered successfully',
       questionId: result.insertedId
     });
 

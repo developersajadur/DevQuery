@@ -4,11 +4,10 @@ import { NextResponse } from "next/server";
 
 export const PATCH = async (request) => {
     try {
-        const req = await request.json();
+        const req = await request.json(); 
         const {
             existsEmail,
             name,
-            email,
             image,
             password,
             country,
@@ -63,7 +62,7 @@ export const PATCH = async (request) => {
         if (updatedUser.modifiedCount > 0) {
             return NextResponse.json({ message: "User updated successfully" }, { status: 200 });
         } else {
-            return NextResponse.json({ message: "No changes made" }, { status: 200 });
+            return NextResponse.json({ message: "No changes made" }, { status: 200 }); 
         }
     } catch (error) {
         console.error("Update error:", error);

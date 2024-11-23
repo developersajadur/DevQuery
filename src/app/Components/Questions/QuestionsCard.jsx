@@ -36,7 +36,7 @@ const QuestionsCard = ({ question }) => {
   const [unliked, setUnliked] = useState(false);
   const [likesCount, setLikesCount] = useState(question?.likes || 0);
   const [unlikesCount, setUnlikesCount] = useState(question?.unlikes || 0);
-  const [viewCount, setViewCount] = useState(question?.views || 0);
+  // const [viewCount, setViewCount] = useState(question?.views || 0);
 
   // Fetch user by email
   const { data: user2, isLoading } = useQuery({
@@ -51,6 +51,7 @@ const QuestionsCard = ({ question }) => {
       setUnliked(question?.unlikedBy?.includes(userEmail));
     }
   }, [session?.user, question, userEmail]);
+
 
   const handleLikeToggle = async () => {
     const isCurrentlyLiked = liked;
@@ -100,6 +101,7 @@ const QuestionsCard = ({ question }) => {
     toast.error("Error fetching user data.");
     return null;
   }
+
 
   const buttonForBookmark = async () => {
     const postBookmark = `${process.env.NEXT_PUBLIC_WEB_URL}/questions/api/post`;
@@ -178,9 +180,6 @@ const QuestionsCard = ({ question }) => {
               <span className="font-semibold">{unlikesCount}</span>
             </button>
           </div>
-          <p className="text-sm text-blue-600 flex items-center"> 
-            <AiOutlineEye className="mr-1 text-2xl text-blue" /> {viewCount} Views
-          </p>
         </div>
       </div>
     </div>

@@ -8,8 +8,8 @@ const SubscriptionPage = () => {
     const plans = [
         {
             name: "BASIC",
-            price: 20,
-            period: "Per Month",
+            price: 50,
+            period: "Three Month",
             features: [
                 "Solve Questions By Zini Ai",
                 "All Features",
@@ -22,7 +22,7 @@ const SubscriptionPage = () => {
         {
             name: "STANDARD",
             price: 80,
-            period: "Per Year",
+            period: "One Year",
             features: [
                 "Solve Questions By Zini Ai",
                 "All Features",
@@ -40,7 +40,7 @@ const SubscriptionPage = () => {
                 "Solve Questions By Zini Ai",
                 "All Features",
                 "Chat Support",
-                "1000 Reputations",
+                "200 Reputations",
                 "Quary Pro Badges",
                 "Email Updates",
             ],

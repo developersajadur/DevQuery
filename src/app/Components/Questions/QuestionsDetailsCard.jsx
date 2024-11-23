@@ -89,6 +89,15 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   });
 
   const handleAnswerSubmit = async () => {
+
+    
+    if(!session?.user){
+      toast.error("Please sign in to ask a question!");
+      router.push("/login");
+      return;  
+    }
+
+
     const plainTextAnswer = stripHtml(answer);
     const answerData = {
       ans: plainTextAnswer,
@@ -96,10 +105,6 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
       userEmail: currentUserEmail,
       image: currentUserImage,
     };
-
-    if (!session?.user) {
-      return router.push("/login");
-    }
 
     if (plainTextAnswer.trim() === "") {
       toast.error("Please write an answer before submitting.");
@@ -110,7 +115,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
       const postAnswer = await axios.post(
         "/questions/api/answeradd",
         answerData
-      );
+      ); 
       if (postAnswer.status === 200) {
         const sentToData = {
           questionUserEmail: questionDetails.userEmail,
@@ -141,6 +146,11 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
   };
 
   const handleCommentSubmit = async (e, answerId) => {
+    if(!session?.user){
+      toast.error("Please sign in to ask a question!");
+      router.push("/login");
+      return;  
+    }
     e.preventDefault();
     const formData = new FormData(e.target);
     const comment = formData.get("comment");
@@ -196,7 +206,7 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
           {loadingUser ? (
             <Loading />
           ) : (
-            <Link href={`/users/${postUser?.email}`}>
+            <Link href={`/users/${postUser?._id}`}>
               <Avatar img={postUser?.image} />
             </Link>
           )}
@@ -213,16 +223,6 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
 
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
               <p className="text-gray-500 my-2 text-sm">Posted: {timeAgo}</p>
-              {/* <div className="flex items-center space-x-4">
-                <div className="flex items-center">
-                  <AiOutlineLike size={20} className="text-blue-500" />
-                  <span className="ml-1 text-sm">{likes} Likes</span>
-                </div>
-                <div className="flex items-center">
-                  <AiOutlineDislike size={20} className="text-red-500" />
-                  <span className="ml-1 text-sm">{unlikes} Dislikes</span>
-                </div>
-              </div> */}
               <Button outline gradientDuoTone="purpleToBlue"
                 className="text-black hover:text-white"
               >
@@ -230,6 +230,8 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
               </Button>
             </div>
 
+          </div>
+        </div>
             <div className="mt-8 md:mt-4 my-4">
               <ReactQuill
                 value={answer}
@@ -247,8 +249,6 @@ const QuestionsDetailsCard = ({ questionDetails }) => {
                 Submit Answer
               </Button>
             </div>
-          </div>
-        </div>
       </Card>
 
       <div className="mb-6">

@@ -1,8 +1,10 @@
-"use client";
-import Loading from "@/app/Components/Loading/Loading";
+"use client"; // Move this to the top
+
 import { getQuestionDetail } from "@/app/Components/Questions/GetQuestions";
+import Loading from "@/app/Components/Loading/Loading";
 import QuestionsDetailsCard from "@/app/Components/Questions/QuestionsDetailsCard";
 import { useEffect, useState } from "react";
+
 
 const QuestionDetails = ({ params }) => {
   const [questionDetails, setQuestionDetails] = useState(null);
@@ -11,7 +13,7 @@ const QuestionDetails = ({ params }) => {
   useEffect(() => {
     const fetchQuestionDetails = async () => {
       try {
-        const data = await getQuestionDetail(params.id); // Assuming this is an API call
+        const data = await getQuestionDetail(params.id);
         setQuestionDetails(data);
       } catch (error) {
         console.error("Error fetching question details:", error);
@@ -24,7 +26,7 @@ const QuestionDetails = ({ params }) => {
   }, [params.id]);
 
   if (loading) {
-    return <Loading/>
+    return <Loading />;
   }
 
   return (
@@ -33,7 +35,6 @@ const QuestionDetails = ({ params }) => {
       <QuestionsDetailsCard questionDetails={questionDetails} />
 
       {/* Answer Section */}
-   
     </div>
   );
 };

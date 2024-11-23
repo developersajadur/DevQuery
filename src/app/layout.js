@@ -18,7 +18,7 @@ export default async function RootLayout({children}) {
         <AuthProvider>
           <body
             className=''>
-            <Toaster />
+            <Toaster /> 
             <div>
 
               <Root>{children}</Root>

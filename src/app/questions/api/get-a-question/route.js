@@ -8,7 +8,7 @@ export const GET = async (request) => {
 
   const db = await ConnectDB();
   const questionsCollection = db.collection("questions");
-
+ 
   try {
     if (!questionId) {
       return NextResponse.json({ message: "Invalid id" }, { status: 400 });

@@ -1,7 +1,7 @@
 "use client";
-
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -9,9 +9,25 @@ import toast from "react-hot-toast";
 const Page = () => {
   const [tags, setTags] = useState([]);
   const [error, setError] = useState(null);  // Error state added
+  const router = useRouter();
   
   const { data: session } = useSession();
   const userEmail = session?.user.email;
+
+
+  // const {
+  //   data: user,
+  //   isLoading,
+  // } = useQuery({
+  //   queryKey: ["user", userEmail],
+  //   queryFn: async () => {
+  //     const response = await axios.get(
+  //       `/users/api/get-one?email=${userEmail}`
+  //     );
+  //     return response.data.user;
+  //   },
+  //   enabled: !!userEmail,
+  // });
 
   // Initialize react-hook-form
   const {
@@ -23,6 +39,7 @@ const Page = () => {
 
   // Handle question submission
   const handleAddQuestion = async (data) => {
+
     // Validate tags
     if (tags.length === 0) {
       toast.error("Please add at least one tag before submitting!");

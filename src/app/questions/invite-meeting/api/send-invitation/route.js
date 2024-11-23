@@ -10,11 +10,11 @@ export async function POST(req) {
 
   try {
     // Create Nodemailer transporter
-    const transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({ 
       service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        pass: process.env.EMAIL_PASS, 
       },
       tls: {
         ciphers: 'SSLv3',
