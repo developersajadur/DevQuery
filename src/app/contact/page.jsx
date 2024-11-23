@@ -85,7 +85,7 @@ const Contact = () => {
         </div>
         <div className='mt-5 mx-6'>
           <form onSubmit={buttonForSubmit}>
-            <div className='grid grid-cols-2 gap-5'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
               {/* Name field */}
               <div>
                 <label htmlFor="" className='text-gray-700'><small>Name</small></label><br />

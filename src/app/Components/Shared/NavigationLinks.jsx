@@ -9,6 +9,7 @@ import { TbLogs } from "react-icons/tb";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import axios from "axios"; // Ensure axios is imported
 import { useQuery } from "@tanstack/react-query";
+import { GrCode } from "react-icons/gr";
 
 export const UserNavLinks = [
   {
@@ -31,6 +32,11 @@ export const UserNavLinks = [
     path: "/jobs",
     icon: <MdOutlineCardTravel className="text-xl text-yellow-500" />,
   },
+  {
+    title: "Playground",
+    path: "/code-editor",
+    icon: <GrCode className="text-xl text-red-500"/>
+  }
 ];
 
 export const AdminNavLinks = [
